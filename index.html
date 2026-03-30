@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shero Shayari Template</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Rozha+One&family=Hind:wght@300;400;600&family=Pacifico&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Hind', sans-serif;
+    background: #0f0f0f;
+    color: #fff;
+    display: flex;
+    gap: 24px;
+    padding: 24px;
+    min-height: 100vh;
+    align-items: flex-start;
+  }
+
+  /* ===== LEFT: CANVAS ===== */
+  .canvas-wrap {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  #card {
+    width: 360px;
+    height: 640px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+    cursor: default;
+  }
+
+  #bg-layer {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #1a0533 0%, #4a0080 50%, #0d001a 100%);
+    transition: all 0.4s;
+  }
+
+  #bg-image-layer {
+    position: absolute; inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  #overlay-layer {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.45);
+  }
+
+  /* Decorative elements */
+  #deco-layer {
+    position: absolute; inset: 0;
+    pointer-events: none;
+  }
+  .deco-line-top {
+    position: absolute; top: 40px; left: 30px; right: 30px;
+    height: 1px; background: rgba(255,215,0,0.5);
+  }
+  .deco-line-top::before, .deco-line-top::after {
+    content: '❋';
+    position: absolute; top: -10px; color: gold; font-size: 18px;
+  }
+  .deco-line-top::before { left: 50%; transform: translateX(-50%); }
+  .deco-line-bottom {
+    position: absolute; bottom: 40px; left: 30px; right: 30px;
+    height: 1px; background: rgba(255,215,0,0.5);
+  }
+  .deco-corner {
+    position: absolute; width: 40px; height: 40px;
+    border-color: rgba(255,215,0,0.5); border-style: solid;
+  }
+  .deco-corner.tl { top: 15px; left: 15px; border-width: 2px 0 0 2px; }
+  .deco-corner.tr { top: 15px; right: 15px; border-width: 2px 2px 0 0; }
+  .deco-corner.bl { bottom: 15px; left: 15px; border-width: 0 0 2px 2px; }
+  .deco-corner.br { bottom: 15px; right: 15px; border-width: 0 2px 2px 0; }
+
+  #content-layer {
+    position: absolute; inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 32px;
+    text-align: center;
+    gap: 16px;
+  }
+
+  #shayari-text {
+    font-family: 'Rozha One', serif;
+    font-size: 22px;
+    line-height: 2;
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+    direction: ltr;
+    white-space: pre-wrap;
+    word-break: break-word;
+    transition: all 0.3s;
+  }
+
+  #author-text {
+    font-family: 'Hind', sans-serif;
+    font-size: 14px;
+    color: rgba(255,215,0,0.9);
+    letter-spacing: 2px;
+    margin-top: 12px;
+    text-transform: uppercase;
+  }
+
+  #logo-text {
+    position: absolute;
+    bottom: 56px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 1px;
+  }
+
+  /* ===== RIGHT: CONTROLS ===== */
+  .controls {
+    flex: 1;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .panel {
+    background: #1a1a1a;
+    border: 1px solid #2e2e2e;
+    border-radius: 12px;
+    padding: 18px;
+  }
+
+  .panel-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #f0c040;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 5px;
+    margin-top: 10px;
+  }
+  label:first-of-type { margin-top: 0; }
+
+  textarea {
+    width: 100%;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 15px;
+    padding: 12px;
+    resize: vertical;
+    min-height: 110px;
+    direction: rtl;
+    font-family: 'Noto Nastaliq Urdu', serif;
+    line-height: 2;
+    outline: none;
+    transition: border 0.2s;
+  }
+  textarea:focus { border-color: #f0c040; }
+
+  input[type="text"] {
+    width: 100%;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border 0.2s;
+  }
+  input[type="text"]:focus { border-color: #f0c040; }
+
+  .row { display: flex; gap: 10px; }
+  .row > * { flex: 1; }
+
+  select {
+    width: 100%;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    padding: 9px 10px;
+    outline: none;
+    cursor: pointer;
+    transition: border 0.2s;
+  }
+  select:focus { border-color: #f0c040; }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: #f0c040;
+    cursor: pointer;
+  }
+
+  input[type="color"] {
+    width: 44px; height: 34px;
+    border: none; border-radius: 6px;
+    background: none; cursor: pointer; padding: 0;
+  }
+
+  .color-row {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .color-row span { font-size: 12px; color: #999; }
+
+  /* Gradient presets */
+  .preset-list {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .preset {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border 0.2s, transform 0.15s;
+  }
+  .preset:hover { transform: scale(1.1); }
+  .preset.active { border-color: #f0c040; }
+
+  /* Upload */
+  .upload-btn {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px;
+    background: #111; border: 1.5px dashed #444;
+    border-radius: 8px; padding: 12px;
+    cursor: pointer; color: #888; font-size: 13px;
+    transition: all 0.2s;
+  }
+  .upload-btn:hover { border-color: #f0c040; color: #f0c040; }
+  #bg-img-input { display: none; }
+
+  /* Download btn */
+  #download-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #f0c040, #e08000);
+    border: none; border-radius: 10px;
+    color: #000; font-size: 15px; font-weight: 700;
+    padding: 15px; cursor: pointer;
+    letter-spacing: 1px;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  #download-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  #download-btn:active { transform: translateY(0); }
+
+  /* Slider value badge */
+  .slider-row { display: flex; align-items: center; gap: 8px; }
+  .slider-row input { flex: 1; }
+  .val { background: #222; border-radius: 4px; padding: 2px 7px; font-size: 12px; color: #f0c040; min-width: 34px; text-align: center; }
+
+  /* Deco toggle */
+  .toggle-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .toggle-btn {
+    background: #222; border: 1px solid #333; border-radius: 6px;
+    color: #aaa; font-size: 12px; padding: 6px 12px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .toggle-btn.on { background: #2a2000; border-color: #f0c040; color: #f0c040; }
+</style>
+</head>
+<body>
+
+<!-- LEFT: Card Preview -->
+<div class="canvas-wrap">
+  <div id="card">
+    <div id="bg-layer"></div>
+    <div id="bg-image-layer"></div>
+    <div id="overlay-layer"></div>
+    <div id="deco-layer">
+      <div class="deco-corner tl"></div>
+      <div class="deco-corner tr"></div>
+      <div class="deco-corner bl"></div>
+      <div class="deco-corner br"></div>
+      <div class="deco-line-top"></div>
+      <div class="deco-line-bottom"></div>
+    </div>
+    <div id="content-layer">
+      <div id="shayari-text">दिल को सुकून न मिला,
+उम्र भर तलाश में रहे,
+तुम मिले तो लगा कि,
+जन्नत यहीं पर है।</div>
+      <div id="author-text">— शायर का नाम</div>
+    </div>
+    <div id="logo-text">shayari.app</div>
+  </div>
+  <button id="download-btn">⬇ Download Image (9:16)</button>
+</div>
+
+<!-- RIGHT: Controls -->
+<div class="controls">
+
+  <!-- Text -->
+  <div class="panel">
+    <div class="panel-title">✍️ &nbsp;Shayari Text</div>
+    <label>Shayari likhen (Urdu / Hindi)</label>
+    <textarea id="shayari-input" placeholder="Apni shayari yahan likhein..." style="direction:ltr; font-family:'Rozha One',serif;">दिल को सुकून न मिला,
+उम्र भर तलाश में रहे,
+तुम मिले तो लगा कि,
+जन्नत यहीं पर है।</textarea>
+    <label>Shayar / Author ka naam</label>
+    <input type="text" id="author-input" value="— शायर का नाम">
+    <label>Watermark / Logo text</label>
+    <input type="text" id="logo-input" value="shayari.app">
+  </div>
+
+  <!-- Font -->
+  <div class="panel">
+    <div class="panel-title">🔤 &nbsp;Font & Size</div>
+    <label>Font Style</label>
+    <select id="font-select">
+      <option value="'Noto Nastaliq Urdu', serif">Noto Nastaliq (Urdu)</option>
+      <option value="'Rozha One', serif" selected>Rozha One (Hindi)</option>
+      <option value="'Playfair Display', serif">Playfair Display</option>
+      <option value="'Dancing Script', cursive">Dancing Script</option>
+      <option value="'Pacifico', cursive">Pacifico</option>
+      <option value="'Hind', sans-serif">Hind (Simple)</option>
+    </select>
+    <label>Font Size: <span class="val" id="fs-val">22px</span></label>
+    <input type="range" id="font-size" min="14" max="40" value="22">
+    <label>Line Height: <span class="val" id="lh-val">2.0</span></label>
+    <input type="range" id="line-height" min="10" max="35" value="20">
+    <label>Text Color</label>
+    <div class="color-row">
+      <input type="color" id="text-color" value="#ffffff">
+      <span>Text ka rang chunein</span>
+    </div>
+  </div>
+
+  <!-- Background -->
+  <div class="panel">
+    <div class="panel-title">🎨 &nbsp;Background</div>
+    <label>Gradient Presets</label>
+    <div class="preset-list" id="preset-list">
+      <div class="preset active" data-grad="linear-gradient(135deg,#1a0533,#4a0080,#0d001a)" style="background:linear-gradient(135deg,#1a0533,#4a0080,#0d001a)"></div>
+      <div class="preset" data-grad="linear-gradient(160deg,#0a0a2e,#1a1a6e,#0d0d0d)" style="background:linear-gradient(160deg,#0a0a2e,#1a1a6e,#0d0d0d)"></div>
+      <div class="preset" data-grad="linear-gradient(135deg,#1a0000,#8b0000,#2d0000)" style="background:linear-gradient(135deg,#1a0000,#8b0000,#2d0000)"></div>
+      <div class="preset" data-grad="linear-gradient(160deg,#001a00,#005500,#001a00)" style="background:linear-gradient(160deg,#001a00,#005500,#001a00)"></div>
+      <div class="preset" data-grad="linear-gradient(135deg,#0d1a1a,#004444,#001111)" style="background:linear-gradient(135deg,#0d1a1a,#004444,#001111)"></div>
+      <div class="preset" data-grad="linear-gradient(135deg,#1a1200,#664400,#1a1200)" style="background:linear-gradient(135deg,#1a1200,#664400,#1a1200)"></div>
+      <div class="preset" data-grad="linear-gradient(135deg,#111111,#333333,#111111)" style="background:linear-gradient(135deg,#111111,#333333,#111111)"></div>
+      <div class="preset" data-grad="linear-gradient(135deg,#1a001a,#660066,#1a001a)" style="background:linear-gradient(135deg,#1a001a,#660066,#1a001a)"></div>
+    </div>
+    <label style="margin-top:14px">Ya Apni Image Upload Karein</label>
+    <label class="upload-btn" for="bg-img-input">📁 &nbsp;Background Image Choose Karein</label>
+    <input type="file" id="bg-img-input" accept="image/*">
+    <label>Overlay Darkness: <span class="val" id="ov-val">45%</span></label>
+    <input type="range" id="overlay-range" min="0" max="90" value="45">
+  </div>
+
+  <!-- Decoration -->
+  <div class="panel">
+    <div class="panel-title">✨ &nbsp;Decoration</div>
+    <label>Elements Toggle</label>
+    <div class="toggle-row">
+      <button class="toggle-btn on" id="tog-corners">Corner Borders</button>
+      <button class="toggle-btn on" id="tog-lines">Decorative Lines</button>
+      <button class="toggle-btn on" id="tog-author">Author Name</button>
+      <button class="toggle-btn on" id="tog-logo">Watermark</button>
+    </div>
+    <label style="margin-top:14px">Author Text Color</label>
+    <div class="color-row">
+      <input type="color" id="author-color" value="#f0c040">
+      <span>Author rang chunein</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// — Live text updates —
+document.getElementById('shayari-input').addEventListener('input', e => {
+  document.getElementById('shayari-text').textContent = e.target.value;
+});
+document.getElementById('author-input').addEventListener('input', e => {
+  document.getElementById('author-text').textContent = e.target.value;
+});
+document.getElementById('logo-input').addEventListener('input', e => {
+  document.getElementById('logo-text').textContent = e.target.value;
+});
+
+// — Font —
+document.getElementById('font-select').addEventListener('change', e => {
+  document.getElementById('shayari-text').style.fontFamily = e.target.value;
+  if(e.target.value.includes('Noto Nastaliq')) {
+    document.getElementById('shayari-text').style.direction = 'rtl';
+  } else {
+    document.getElementById('shayari-text').style.direction = 'ltr';
+  }
+});
+document.getElementById('font-size').addEventListener('input', e => {
+  document.getElementById('shayari-text').style.fontSize = e.target.value + 'px';
+  document.getElementById('fs-val').textContent = e.target.value + 'px';
+});
+document.getElementById('line-height').addEventListener('input', e => {
+  const val = (e.target.value / 10).toFixed(1);
+  document.getElementById('shayari-text').style.lineHeight = val;
+  document.getElementById('lh-val').textContent = val;
+});
+document.getElementById('text-color').addEventListener('input', e => {
+  document.getElementById('shayari-text').style.color = e.target.value;
+});
+
+// — Background Presets —
+document.querySelectorAll('.preset').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('.preset').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    document.getElementById('bg-layer').style.background = p.dataset.grad;
+    // Reset image
+    document.getElementById('bg-image-layer').style.opacity = '0';
+  });
+});
+
+// — Background Image —
+document.getElementById('bg-img-input').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const imgLayer = document.getElementById('bg-image-layer');
+    imgLayer.style.backgroundImage = `url(${ev.target.result})`;
+    imgLayer.style.opacity = '1';
+  };
+  reader.readAsDataURL(file);
+});
+
+// — Overlay —
+document.getElementById('overlay-range').addEventListener('input', e => {
+  document.getElementById('overlay-layer').style.background = `rgba(0,0,0,${e.target.value/100})`;
+  document.getElementById('ov-val').textContent = e.target.value + '%';
+});
+
+// — Toggle decorations —
+function tog(btnId, selector, prop, onVal, offVal) {
+  const btn = document.getElementById(btnId);
+  let on = true;
+  btn.addEventListener('click', () => {
+    on = !on;
+    btn.classList.toggle('on', on);
+    document.querySelectorAll(selector).forEach(el => el.style[prop] = on ? onVal : offVal);
+  });
+}
+tog('tog-corners', '.deco-corner', 'display', 'block', 'none');
+tog('tog-lines', '.deco-line-top, .deco-line-bottom', 'display', 'block', 'none');
+tog('tog-author', '#author-text', 'display', 'block', 'none');
+tog('tog-logo', '#logo-text', 'display', 'block', 'none');
+
+document.getElementById('author-color').addEventListener('input', e => {
+  document.getElementById('author-text').style.color = e.target.value;
+});
+
+// — Download —
+document.getElementById('download-btn').addEventListener('click', async () => {
+  const card = document.getElementById('card');
+  const btn = document.getElementById('download-btn');
+  btn.textContent = '⏳ Generating...';
+  btn.disabled = true;
+  try {
+    const canvas = await html2canvas(card, {
+      scale: 3,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: null,
+      width: card.offsetWidth,
+      height: card.offsetHeight,
+    });
+    const link = document.createElement('a');
+    link.download = 'shayari_' + Date.now() + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch(err) {
+    alert('Download mein problem hui. Dobara try karein.');
+  }
+  btn.textContent = '⬇ Download Image (9:16)';
+  btn.disabled = false;
+});
+</script>
+</body>
+</html>

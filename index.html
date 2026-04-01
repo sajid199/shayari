@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shero Shayari Template</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Rozha+One&family=Hind:wght@300;400;600&family=Pacifico&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Serif+Devanagari:wght@400;700&family=Rozha+One&family=Hind:wght@300;400;600&family=Tiro+Devanagari+Hindi:ital@0;1&family=Baloo+2:wght@400;600;800&family=Poppins:wght@300;400;600&family=Pacifico&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Lora:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;700&family=Abril+Fatface&family=Josefin+Sans:wght@300;400;700&family=Rajdhani:wght@400;600;700&family=Martel:wght@400;700&family=Yatra+One&family=Karma:wght@400;700&family=Mukta:wght@400;700&family=Eczar:wght@400;700&family=Vesper+Libre:wght@400;700&family=Sura:wght@400;700&family=Gulzar&family=Amiri:ital,wght@0,400;0,700;1,400&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -128,7 +128,7 @@
   /* ===== RIGHT: CONTROLS ===== */
   .controls {
     flex: 1;
-    max-width: 420px;
+    max-width: 440px;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -243,17 +243,21 @@
 
   /* Upload */
   .upload-btn {
-    display: flex; align-items: center; justify-content: center;
-    gap: 8px;
-    background: #111; border: 1.5px dashed #444;
-    border-radius: 8px; padding: 12px;
-    cursor: pointer; color: #888; font-size: 13px;
-    transition: all 0.2s;
+    display: block;
+    background: #222;
+    border: 1px dashed #444;
+    border-radius: 8px;
+    color: #aaa;
+    font-size: 13px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: border 0.2s, color 0.2s;
+    margin-top: 8px;
   }
   .upload-btn:hover { border-color: #f0c040; color: #f0c040; }
-  #bg-img-input { display: none; }
+  input[type="file"] { display: none; }
 
-  /* Download btn */
   #download-btn {
     width: 100%;
     background: linear-gradient(135deg, #f0c040, #e08000);
@@ -279,6 +283,62 @@
     cursor: pointer; transition: all 0.2s;
   }
   .toggle-btn.on { background: #2a2000; border-color: #f0c040; color: #f0c040; }
+
+  /* Font preview grid */
+  .font-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 2px;
+  }
+  .font-card {
+    background: #111;
+    border: 2px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 10px 10px 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    text-align: center;
+  }
+  .font-card:hover { border-color: #555; background: #161616; }
+  .font-card.active { border-color: #f0c040; background: #1e1800; }
+  .font-card .preview {
+    font-size: 18px;
+    color: #fff;
+    line-height: 1.5;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .font-card .fname {
+    font-size: 9px;
+    color: #666;
+    letter-spacing: 0.5px;
+    font-family: 'Hind', sans-serif;
+    text-transform: uppercase;
+  }
+  .font-card .ftag {
+    font-size: 8px;
+    color: #f0c040;
+    opacity: 0.6;
+    font-family: 'Hind', sans-serif;
+  }
+
+  /* Section heading inside font panel */
+  .font-section-label {
+    font-size: 10px;
+    color: #666;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 12px 0 6px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 4px;
+  }
+  .font-section-label:first-child { margin-top: 0; }
 </style>
 </head>
 <body>
@@ -328,17 +388,14 @@
 
   <!-- Font -->
   <div class="panel">
-    <div class="panel-title">🔤 &nbsp;Font & Size</div>
-    <label>Font Style</label>
-    <select id="font-select">
-      <option value="'Noto Nastaliq Urdu', serif">Noto Nastaliq (Urdu)</option>
-      <option value="'Rozha One', serif" selected>Rozha One (Hindi)</option>
-      <option value="'Playfair Display', serif">Playfair Display</option>
-      <option value="'Dancing Script', cursive">Dancing Script</option>
-      <option value="'Pacifico', cursive">Pacifico</option>
-      <option value="'Hind', sans-serif">Hind (Simple)</option>
-    </select>
-    <label>Font Size: <span class="val" id="fs-val">22px</span></label>
+    <div class="panel-title">🔤 &nbsp;Font Style</div>
+
+    <div class="font-section-label">🕌 Urdu / Arabic</div>
+    <div class="font-grid" id="font-grid">
+      <!-- populated by JS -->
+    </div>
+
+    <label style="margin-top:16px">Font Size: <span class="val" id="fs-val">22px</span></label>
     <input type="range" id="font-size" min="14" max="40" value="22">
     <label>Line Height: <span class="val" id="lh-val">2.0</span></label>
     <input type="range" id="line-height" min="10" max="35" value="20">
@@ -390,6 +447,88 @@
 </div>
 
 <script>
+// ===== FONT DATA =====
+const fonts = [
+  // Urdu / Arabic
+  { family: "'Noto Nastaliq Urdu', serif", label: "Noto Nastaliq", tag: "Urdu", rtl: true,  preview: "اردو", section: "urdu" },
+  { family: "'Gulzar', serif",             label: "Gulzar",         tag: "Urdu", rtl: true,  preview: "گلزار", section: "urdu" },
+  { family: "'Amiri', serif",              label: "Amiri",          tag: "Arabic", rtl: true, preview: "أميري", section: "urdu" },
+  { family: "'Scheherazade New', serif",   label: "Scheherazade",   tag: "Arabic", rtl: true, preview: "شهرزاد", section: "urdu" },
+
+  // Hindi / Devanagari
+  { family: "'Rozha One', serif",            label: "Rozha One",       tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
+  { family: "'Noto Serif Devanagari', serif",label: "Noto Serif Dev.", tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
+  { family: "'Tiro Devanagari Hindi', serif",label: "Tiro Devanagari", tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
+  { family: "'Yatra One', cursive",          label: "Yatra One",       tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
+  { family: "'Baloo 2', cursive",            label: "Baloo 2",         tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
+  { family: "'Karma', serif",                label: "Karma",           tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
+  { family: "'Eczar', serif",                label: "Eczar",           tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
+  { family: "'Mukta', sans-serif",           label: "Mukta",           tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
+  { family: "'Martel', serif",               label: "Martel",          tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
+  { family: "'Vesper Libre', serif",         label: "Vesper Libre",    tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
+  { family: "'Sura', serif",                 label: "Sura",            tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
+  { family: "'Rajdhani', sans-serif",        label: "Rajdhani",        tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
+
+  // Decorative / Latin
+  { family: "'Playfair Display', serif",   label: "Playfair Display", tag: "Decorative", rtl: false, preview: "Shayari", section: "latin" },
+  { family: "'Cormorant Garamond', serif", label: "Cormorant",        tag: "Elegant",    rtl: false, preview: "Shayari", section: "latin" },
+  { family: "'Lora', serif",               label: "Lora",             tag: "Serif",      rtl: false, preview: "Shayari", section: "latin" },
+  { family: "'Dancing Script', cursive",   label: "Dancing Script",   tag: "Cursive",    rtl: false, preview: "Shayari", section: "latin" },
+  { family: "'Cinzel', serif",             label: "Cinzel",           tag: "Classic",    rtl: false, preview: "SHAYARI", section: "latin" },
+  { family: "'Abril Fatface', cursive",    label: "Abril Fatface",    tag: "Bold",       rtl: false, preview: "Shayari", section: "latin" },
+  { family: "'Josefin Sans', sans-serif",  label: "Josefin Sans",     tag: "Modern",     rtl: false, preview: "Shayari", section: "latin" },
+  { family: "'Pacifico', cursive",         label: "Pacifico",         tag: "Casual",     rtl: false, preview: "Shayari", section: "latin" },
+  { family: "'Poppins', sans-serif",       label: "Poppins",          tag: "Clean",      rtl: false, preview: "Shayari", section: "latin" },
+  { family: "'Hind', sans-serif",          label: "Hind",             tag: "Simple",     rtl: false, preview: "Shayari", section: "latin" },
+];
+
+let activeFont = fonts[4]; // Rozha One default
+
+function buildFontGrid() {
+  const grid = document.getElementById('font-grid');
+  grid.innerHTML = '';
+
+  const sections = [
+    { key: 'urdu',  label: '🕌 Urdu / Arabic' },
+    { key: 'hindi', label: '🪔 Hindi / Devanagari' },
+    { key: 'latin', label: '✒️ Decorative / Latin' },
+  ];
+
+  sections.forEach(sec => {
+    // Section label
+    const lbl = document.createElement('div');
+    lbl.className = 'font-section-label';
+    lbl.textContent = sec.label;
+    lbl.style.gridColumn = '1 / -1';
+    grid.appendChild(lbl);
+
+    fonts.filter(f => f.section === sec.key).forEach(font => {
+      const card = document.createElement('div');
+      card.className = 'font-card' + (font === activeFont ? ' active' : '');
+      card.innerHTML = `
+        <div class="preview" style="font-family:${font.family}; direction:${font.rtl ? 'rtl' : 'ltr'}">${font.preview}</div>
+        <div class="fname">${font.label}</div>
+        <div class="ftag">${font.tag}</div>
+      `;
+      card.addEventListener('click', () => {
+        activeFont = font;
+        document.querySelectorAll('.font-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        applyFont(font);
+      });
+      grid.appendChild(card);
+    });
+  });
+}
+
+function applyFont(font) {
+  const el = document.getElementById('shayari-text');
+  el.style.fontFamily = font.family;
+  el.style.direction = font.rtl ? 'rtl' : 'ltr';
+}
+
+buildFontGrid();
+
 // — Live text updates —
 document.getElementById('shayari-input').addEventListener('input', e => {
   document.getElementById('shayari-text').textContent = e.target.value;
@@ -401,15 +540,7 @@ document.getElementById('logo-input').addEventListener('input', e => {
   document.getElementById('logo-text').textContent = e.target.value;
 });
 
-// — Font —
-document.getElementById('font-select').addEventListener('change', e => {
-  document.getElementById('shayari-text').style.fontFamily = e.target.value;
-  if(e.target.value.includes('Noto Nastaliq')) {
-    document.getElementById('shayari-text').style.direction = 'rtl';
-  } else {
-    document.getElementById('shayari-text').style.direction = 'ltr';
-  }
-});
+// — Font size & line height —
 document.getElementById('font-size').addEventListener('input', e => {
   document.getElementById('shayari-text').style.fontSize = e.target.value + 'px';
   document.getElementById('fs-val').textContent = e.target.value + 'px';
@@ -429,7 +560,6 @@ document.querySelectorAll('.preset').forEach(p => {
     document.querySelectorAll('.preset').forEach(x => x.classList.remove('active'));
     p.classList.add('active');
     document.getElementById('bg-layer').style.background = p.dataset.grad;
-    // Reset image
     document.getElementById('bg-image-layer').style.opacity = '0';
   });
 });

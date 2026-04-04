@@ -3,730 +3,558 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shero Shayari Template</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Serif+Devanagari:wght@400;700&family=Rozha+One&family=Hind:wght@300;400;600&family=Tiro+Devanagari+Hindi:ital@0;1&family=Baloo+2:wght@400;600;800&family=Poppins:wght@300;400;600&family=Pacifico&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Lora:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;700&family=Abril+Fatface&family=Josefin+Sans:wght@300;400;700&family=Rajdhani:wght@400;600;700&family=Martel:wght@400;700&family=Yatra+One&family=Karma:wght@400;700&family=Mukta:wght@400;700&family=Eczar:wght@400;700&family=Vesper+Libre:wght@400;700&family=Sura:wght@400;700&family=Gulzar&family=Amiri:ital,wght@0,400;0,700;1,400&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+<title>Classical Author Template</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&family=Rozha+One&family=Noto+Serif+Devanagari:wght@400;700&family=Baloo+2:wght@700;800&family=Martel:wght@700;900&family=Yatra+One&family=Mukta:wght@700&family=Eczar:wght@700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body {
-    font-family: 'Hind', sans-serif;
-    background: #0f0f0f;
-    color: #fff;
-    display: flex;
-    gap: 24px;
-    padding: 24px;
-    min-height: 100vh;
-    align-items: flex-start;
-  }
+body {
+  font-family: 'Hind', sans-serif;
+  background: #181818;
+  color: #fff;
+  display: flex;
+  gap: 28px;
+  padding: 28px;
+  min-height: 100vh;
+  align-items: flex-start;
+}
 
-  /* ===== LEFT: CANVAS ===== */
-  .canvas-wrap {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-  }
+/* ========== CARD ========== */
+.card-wrap {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
 
-  #card {
-    width: 360px;
-    height: 640px;
-    position: relative;
-    overflow: hidden;
-    border-radius: 16px;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.7);
-    cursor: default;
-  }
+#card {
+  width: 360px;
+  height: 640px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+  background: #d9d9d9;
+  display: flex;
+  flex-direction: column;
+}
 
-  #bg-layer {
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, #1a0533 0%, #4a0080 50%, #0d001a 100%);
-    transition: all 0.4s;
-  }
+/* Background layer */
+#bg-layer {
+  position: absolute; inset: 0;
+  background: #d4d4d4;
+  transition: background 0.3s;
+  z-index: 0;
+}
+#bg-image-layer {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 1;
+}
+#overlay-layer {
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0);
+  z-index: 2;
+}
 
-  #bg-image-layer {
-    position: absolute; inset: 0;
-    background-size: cover;
-    background-position: center;
-    opacity: 0;
-    transition: opacity 0.4s;
-  }
+/* Profile chip — top left */
+#profile-chip {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 10;
+}
 
-  #overlay-layer {
-    position: absolute; inset: 0;
-    background: rgba(0,0,0,0.45);
-  }
+#avatar-wrap {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #888;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  color: #fff;
+  filter: grayscale(30%);
+}
+#avatar-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
 
-  /* Decorative elements */
-  #deco-layer {
-    position: absolute; inset: 0;
-    pointer-events: none;
-  }
-  .deco-line-top {
-    position: absolute; top: 40px; left: 30px; right: 30px;
-    height: 1px; background: rgba(255,215,0,0.5);
-  }
-  .deco-line-top::before, .deco-line-top::after {
-    content: '❋';
-    position: absolute; top: -10px; color: gold; font-size: 18px;
-  }
-  .deco-line-top::before { left: 50%; transform: translateX(-50%); }
-  .deco-line-bottom {
-    position: absolute; bottom: 40px; left: 30px; right: 30px;
-    height: 1px; background: rgba(255,215,0,0.5);
-  }
-  .deco-corner {
-    position: absolute; width: 40px; height: 40px;
-    border-color: rgba(255,215,0,0.5); border-style: solid;
-  }
-  .deco-corner.tl { top: 15px; left: 15px; border-width: 2px 0 0 2px; }
-  .deco-corner.tr { top: 15px; right: 15px; border-width: 2px 2px 0 0; }
-  .deco-corner.bl { bottom: 15px; left: 15px; border-width: 0 0 2px 2px; }
-  .deco-corner.br { bottom: 15px; right: 15px; border-width: 0 2px 2px 0; }
+#profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+#profile-name-display {
+  font-family: 'Hind', sans-serif;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 14px;
+  color: #111;
+  line-height: 1.3;
+  letter-spacing: 0.2px;
+}
+#profile-handle-display {
+  font-family: 'Hind', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: #555;
+  line-height: 1.3;
+}
 
-  #content-layer {
-    position: absolute; inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 32px;
-    text-align: center;
-    gap: 16px;
-  }
+/* Main shayari text */
+#shayari-display {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 36px 80px;
+}
 
-  #shayari-text {
-    font-family: 'Rozha One', serif;
-    font-size: 22px;
-    line-height: 2;
-    color: #fff;
-    text-shadow: 0 2px 12px rgba(0,0,0,0.8);
-    direction: ltr;
-    white-space: pre-wrap;
-    word-break: break-word;
-    transition: all 0.3s;
-  }
+#shayari-text {
+  font-family: 'Hind', sans-serif;
+  font-weight: 700;
+  font-size: 23px;
+  line-height: 2.05;
+  color: #111;
+  text-align: center;
+  white-space: pre-wrap;
+  word-break: break-word;
+  direction: ltr;
+  width: 100%;
+}
 
-  #author-text {
-    font-family: 'Hind', sans-serif;
-    font-size: 14px;
-    color: rgba(255,215,0,0.9);
-    letter-spacing: 2px;
-    margin-top: 12px;
-    text-transform: uppercase;
-  }
+/* Watermark */
+#watermark {
+  position: absolute;
+  bottom: 20px;
+  left: 0; right: 0;
+  text-align: center;
+  font-family: 'Hind', sans-serif;
+  font-size: 11px;
+  color: rgba(0,0,0,0.28);
+  letter-spacing: 1px;
+  z-index: 10;
+}
 
-  #logo-text {
-    position: absolute;
-    bottom: 56px;
-    font-size: 11px;
-    color: rgba(255,255,255,0.4);
-    letter-spacing: 1px;
-  }
+/* ========== DOWNLOAD BTN ========== */
+#download-btn {
+  width: 360px;
+  background: linear-gradient(135deg, #222, #444);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 14px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: opacity 0.2s, transform 0.15s;
+  font-family: 'Hind', sans-serif;
+}
+#download-btn:hover { opacity: 0.85; transform: translateY(-1px); }
 
-  /* ===== CLASSICAL AUTHOR STYLE ===== */
-  #card.style-classical #shayari-text {
-    color: #111 !important;
-    text-shadow: none !important;
-    font-family: 'Hind', sans-serif !important;
-    font-weight: 700;
-    font-size: 24px;
-    line-height: 2.1;
-    letter-spacing: 0.5px;
-  }
-  #card.style-classical #author-text {
-    color: #333 !important;
-    font-size: 13px;
-    letter-spacing: 1px;
-    font-weight: 400;
-  }
-  #card.style-classical #logo-text {
-    color: rgba(0,0,0,0.35) !important;
-  }
-  #card.style-classical .deco-corner {
-    border-color: rgba(0,0,0,0.2) !important;
-  }
-  #card.style-classical .deco-line-top,
-  #card.style-classical .deco-line-bottom {
-    background: rgba(0,0,0,0.15) !important;
-  }
-  #card.style-classical .deco-line-top::before {
-    color: rgba(0,0,0,0.3) !important;
-  }
+/* ========== CONTROLS ========== */
+.controls {
+  flex: 1;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
-  /* Profile chip for Classical style */
-  #profile-chip {
-    display: none;
-    position: absolute;
-    top: 22px;
-    left: 22px;
-    align-items: center;
-    gap: 9px;
-  }
-  #card.style-classical #profile-chip {
-    display: flex;
-  }
-  #profile-avatar {
-    width: 42px; height: 42px;
-    border-radius: 50%;
-    background: #555;
-    overflow: hidden;
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    color: #fff;
-  }
-  #profile-avatar img {
-    width: 100%; height: 100%; object-fit: cover;
-  }
-  #profile-info { display: flex; flex-direction: column; gap: 1px; }
-  #profile-name {
-    font-family: 'Hind', sans-serif;
-    font-weight: 700;
-    font-style: italic;
-    font-size: 13px;
-    color: #111;
-    line-height: 1.2;
-  }
-  #profile-handle {
-    font-family: 'Hind', sans-serif;
-    font-size: 11px;
-    color: #555;
-    line-height: 1.2;
-  }
+.panel {
+  background: #1e1e1e;
+  border: 1px solid #2c2c2c;
+  border-radius: 14px;
+  padding: 18px;
+}
 
-  /* ===== RIGHT: CONTROLS ===== */
-  .controls {
-    flex: 1;
-    max-width: 440px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
+.panel-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ccc;
+  margin-bottom: 14px;
+}
 
-  .panel {
-    background: #1a1a1a;
-    border: 1px solid #2e2e2e;
-    border-radius: 12px;
-    padding: 18px;
-  }
+label {
+  display: block;
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 5px;
+  margin-top: 12px;
+}
+label:first-of-type { margin-top: 0; }
 
-  .panel-title {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #f0c040;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+textarea {
+  width: 100%;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 15px;
+  padding: 12px;
+  resize: vertical;
+  min-height: 120px;
+  font-family: 'Hind', sans-serif;
+  line-height: 1.8;
+  outline: none;
+  transition: border 0.2s;
+  direction: ltr;
+}
+textarea:focus { border-color: #aaa; }
 
-  label {
-    display: block;
-    font-size: 12px;
-    color: #999;
-    margin-bottom: 5px;
-    margin-top: 10px;
-  }
-  label:first-of-type { margin-top: 0; }
+input[type="text"] {
+  width: 100%;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  padding: 9px 12px;
+  outline: none;
+  font-family: 'Hind', sans-serif;
+  transition: border 0.2s;
+}
+input[type="text"]:focus { border-color: #aaa; }
 
-  textarea {
-    width: 100%;
-    background: #111;
-    border: 1px solid #333;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 15px;
-    padding: 12px;
-    resize: vertical;
-    min-height: 110px;
-    direction: rtl;
-    font-family: 'Noto Nastaliq Urdu', serif;
-    line-height: 2;
-    outline: none;
-    transition: border 0.2s;
-  }
-  textarea:focus { border-color: #f0c040; }
+input[type="range"] {
+  width: 100%;
+  accent-color: #ccc;
+  cursor: pointer;
+}
 
-  input[type="text"] {
-    width: 100%;
-    background: #111;
-    border: 1px solid #333;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 13px;
-    padding: 9px 12px;
-    outline: none;
-    transition: border 0.2s;
-  }
-  input[type="text"]:focus { border-color: #f0c040; }
+input[type="color"] {
+  width: 40px; height: 32px;
+  border: none; border-radius: 6px;
+  background: none; cursor: pointer; padding: 0;
+}
 
-  .row { display: flex; gap: 10px; }
-  .row > * { flex: 1; }
+.val {
+  background: #2a2a2a;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 11px;
+  color: #ccc;
+  min-width: 34px;
+  text-align: center;
+}
 
-  select {
-    width: 100%;
-    background: #111;
-    border: 1px solid #333;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 13px;
-    padding: 9px 10px;
-    outline: none;
-    cursor: pointer;
-    transition: border 0.2s;
-  }
-  select:focus { border-color: #f0c040; }
+/* Font selector */
+.font-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+.font-card {
+  background: #111;
+  border: 2px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 9px 8px 7px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  text-align: center;
+}
+.font-card:hover { border-color: #555; background: #161616; }
+.font-card.active { border-color: #ccc; background: #1c1c1c; }
+.font-card .fp {
+  font-size: 17px;
+  color: #fff;
+  line-height: 1.5;
+  margin-bottom: 3px;
+}
+.font-card .fn {
+  font-size: 9px;
+  color: #666;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
 
-  input[type="range"] {
-    width: 100%;
-    accent-color: #f0c040;
-    cursor: pointer;
-  }
+/* Background presets */
+.bg-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.bg-swatch {
+  width: 38px; height: 38px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border 0.2s, transform 0.15s;
+  position: relative;
+}
+.bg-swatch:hover { transform: scale(1.08); }
+.bg-swatch.active { border-color: #ccc; }
 
-  input[type="color"] {
-    width: 44px; height: 34px;
-    border: none; border-radius: 6px;
-    background: none; cursor: pointer; padding: 0;
-  }
+/* Upload */
+.upload-btn {
+  display: block;
+  background: #1a1a1a;
+  border: 1px dashed #3a3a3a;
+  border-radius: 8px;
+  color: #888;
+  font-size: 12px;
+  padding: 9px;
+  text-align: center;
+  cursor: pointer;
+  transition: border 0.2s, color 0.2s;
+  margin-top: 8px;
+  font-family: 'Hind', sans-serif;
+}
+.upload-btn:hover { border-color: #ccc; color: #ccc; }
+input[type="file"] { display: none; }
 
-  .color-row {
-    display: flex; align-items: center; gap: 10px;
-  }
-  .color-row span { font-size: 12px; color: #999; }
-
-  /* Gradient presets */
-  .preset-list {
-    display: flex; flex-wrap: wrap; gap: 8px;
-  }
-  .preset {
-    width: 40px; height: 40px;
-    border-radius: 8px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: border 0.2s, transform 0.15s;
-  }
-  .preset:hover { transform: scale(1.1); }
-  .preset.active { border-color: #f0c040; }
-
-  /* Upload */
-  .upload-btn {
-    display: block;
-    background: #222;
-    border: 1px dashed #444;
-    border-radius: 8px;
-    color: #aaa;
-    font-size: 13px;
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-    transition: border 0.2s, color 0.2s;
-    margin-top: 8px;
-  }
-  .upload-btn:hover { border-color: #f0c040; color: #f0c040; }
-  input[type="file"] { display: none; }
-
-  #download-btn {
-    width: 100%;
-    background: linear-gradient(135deg, #f0c040, #e08000);
-    border: none; border-radius: 10px;
-    color: #000; font-size: 15px; font-weight: 700;
-    padding: 15px; cursor: pointer;
-    letter-spacing: 1px;
-    transition: opacity 0.2s, transform 0.15s;
-  }
-  #download-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-  #download-btn:active { transform: translateY(0); }
-
-  /* Slider value badge */
-  .slider-row { display: flex; align-items: center; gap: 8px; }
-  .slider-row input { flex: 1; }
-  .val { background: #222; border-radius: 4px; padding: 2px 7px; font-size: 12px; color: #f0c040; min-width: 34px; text-align: center; }
-
-  /* Deco toggle */
-  .toggle-row { display: flex; gap: 8px; flex-wrap: wrap; }
-  .toggle-btn {
-    background: #222; border: 1px solid #333; border-radius: 6px;
-    color: #aaa; font-size: 12px; padding: 6px 12px;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .toggle-btn.on { background: #2a2000; border-color: #f0c040; color: #f0c040; }
-
-  /* Font preview grid */
-  .font-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 2px;
-  }
-  .font-card {
-    background: #111;
-    border: 2px solid #2a2a2a;
-    border-radius: 8px;
-    padding: 10px 10px 8px;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    text-align: center;
-  }
-  .font-card:hover { border-color: #555; background: #161616; }
-  .font-card.active { border-color: #f0c040; background: #1e1800; }
-  .font-card .preview {
-    font-size: 18px;
-    color: #fff;
-    line-height: 1.5;
-    min-height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .font-card .fname {
-    font-size: 9px;
-    color: #666;
-    letter-spacing: 0.5px;
-    font-family: 'Hind', sans-serif;
-    text-transform: uppercase;
-  }
-  .font-card .ftag {
-    font-size: 8px;
-    color: #f0c040;
-    opacity: 0.6;
-    font-family: 'Hind', sans-serif;
-  }
-
-  /* Section heading inside font panel */
-  .font-section-label {
-    font-size: 10px;
-    color: #666;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin: 12px 0 6px;
-    border-bottom: 1px solid #222;
-    padding-bottom: 4px;
-  }
-  .font-section-label:first-child { margin-top: 0; }
+.color-row { display: flex; align-items: center; gap: 10px; }
+.color-row span { font-size: 11px; color: #888; }
 </style>
 </head>
 <body>
 
 <!-- LEFT: Card Preview -->
-<div class="canvas-wrap">
+<div class="card-wrap">
   <div id="card">
     <div id="bg-layer"></div>
     <div id="bg-image-layer"></div>
     <div id="overlay-layer"></div>
-    <div id="deco-layer">
-      <div class="deco-corner tl"></div>
-      <div class="deco-corner tr"></div>
-      <div class="deco-corner bl"></div>
-      <div class="deco-corner br"></div>
-      <div class="deco-line-top"></div>
-      <div class="deco-line-bottom"></div>
-    </div>
-    <div id="content-layer">
-      <div id="profile-chip">
-        <div id="profile-avatar">✍️</div>
-        <div id="profile-info">
-          <div id="profile-name">Classical Author</div>
-          <div id="profile-handle">@classicalauthor</div>
-        </div>
+
+    <!-- Profile chip -->
+    <div id="profile-chip">
+      <div id="avatar-wrap">✍️</div>
+      <div id="profile-info">
+        <div id="profile-name-display">Classical Author</div>
+        <div id="profile-handle-display">@classicalauthor</div>
       </div>
-      <div id="shayari-text">दिल को सुकून न मिला,
-उम्र भर तलाश में रहे,
-तुम मिले तो लगा कि,
-जन्नत यहीं पर है।</div>
-      <div id="author-text">Ghalib Nama</div>
     </div>
-    <div id="logo-text">@Ghalibnama</div>
+
+    <!-- Shayari -->
+    <div id="shayari-display">
+      <div id="shayari-text">बेवफा से दिल लगा
+लिया नादान थे हम,
+  गलती हमसे हुई
+क्योंकि इंसान थे हम।
+  आज जिन्हे नज़रें
+  मिलाने में तक़लीफ़
+  होती है, कुछ समय
+  पहले उनकी जान थे
+         हम।</div>
+    </div>
+
+    <!-- Watermark -->
+    <div id="watermark">@classicalauthor</div>
   </div>
+
   <button id="download-btn">⬇ Download Image (9:16)</button>
 </div>
 
 <!-- RIGHT: Controls -->
 <div class="controls">
 
-  <!-- Style Mode -->
-  <div class="panel">
-    <div class="panel-title">🎭 &nbsp;Card Style</div>
-    <label>Template Style</label>
-    <div class="toggle-row" style="margin-bottom:10px">
-      <button class="toggle-btn on" id="style-dark-btn" onclick="setCardStyle('dark')">🌙 Dark / Gradient</button>
-      <button class="toggle-btn" id="style-classical-btn" onclick="setCardStyle('classical')">📄 Classical Author</button>
-    </div>
-    <div id="classical-options" style="display:none">
-      <label>Profile Name</label>
-      <input type="text" id="profile-name-input" value="Classical Author" oninput="document.getElementById('profile-name').textContent=this.value">
-      <label>Profile Handle</label>
-      <input type="text" id="profile-handle-input" value="@classicalauthor" oninput="document.getElementById('profile-handle').textContent=this.value">
-      <label>Profile Avatar Image (optional)</label>
-      <label class="upload-btn" for="avatar-img-input">🖼️ &nbsp;Avatar Image Choose Karein</label>
-      <input type="file" id="avatar-img-input" accept="image/*">
-    </div>
-  </div>
-
   <!-- Text -->
   <div class="panel">
-    <div class="panel-title">✍️ &nbsp;Shayari Text</div>
-    <label>Shayari likhen (Urdu / Hindi)</label>
-    <textarea id="shayari-input" placeholder="Apni shayari yahan likhein..." style="direction:ltr; font-family:'Rozha One',serif;">दिल को सुकून न मिला,
-उम्र भर तलाश में रहे,
-तुम मिले तो लगा कि,
-जन्नत यहीं पर है।</textarea>
-    <label>Shayar / Author ka naam</label>
-    <input type="text" id="author-input" value="— शायर का नाम">
-    <label>Watermark / Logo text</label>
-    <input type="text" id="logo-input" value="shayari.app">
+    <div class="panel-title">✍️ Shayari Text</div>
+    <label>Shayari / Quote likhein</label>
+    <textarea id="shayari-input" placeholder="Apni shayari yahan likhein...">बेवफा से दिल लगा
+लिया नादान थे हम,
+  गलती हमसे हुई
+क्योंकि इंसान थे हम।
+  आज जिन्हे नज़रें
+  मिलाने में तक़लीफ़
+  होती है, कुछ समय
+  पहले उनकी जान थे
+         हम।</textarea>
+    <label>Watermark text</label>
+    <input type="text" id="watermark-input" value="@classicalauthor">
+  </div>
+
+  <!-- Profile -->
+  <div class="panel">
+    <div class="panel-title">👤 Profile Chip</div>
+    <label>Display Name</label>
+    <input type="text" id="pname-input" value="Classical Author">
+    <label>Handle / Username</label>
+    <input type="text" id="phandle-input" value="@classicalauthor">
+    <label>Profile Picture</label>
+    <label class="upload-btn" for="avatar-upload">🖼️ &nbsp;Avatar Image Upload Karein</label>
+    <input type="file" id="avatar-upload" accept="image/*">
+    <label style="margin-top:12px">Name Color</label>
+    <div class="color-row">
+      <input type="color" id="name-color" value="#111111">
+      <span>Profile name ka rang</span>
+    </div>
+    <label>Handle Color</label>
+    <div class="color-row">
+      <input type="color" id="handle-color" value="#555555">
+      <span>Handle ka rang</span>
+    </div>
   </div>
 
   <!-- Font -->
   <div class="panel">
-    <div class="panel-title">🔤 &nbsp;Font Style</div>
-
-    <div class="font-section-label">🕌 Urdu / Arabic</div>
-    <div class="font-grid" id="font-grid">
-      <!-- populated by JS -->
-    </div>
-
-    <label style="margin-top:16px">Font Size: <span class="val" id="fs-val">22px</span></label>
-    <input type="range" id="font-size" min="14" max="40" value="22">
-    <label>Line Height: <span class="val" id="lh-val">2.0</span></label>
-    <input type="range" id="line-height" min="10" max="35" value="20">
+    <div class="panel-title">🔤 Font Style</div>
+    <div class="font-grid" id="font-grid"></div>
+    <label style="margin-top:14px">Font Size: <span class="val" id="fs-val">23px</span></label>
+    <input type="range" id="font-size" min="14" max="42" value="23">
+    <label>Line Height: <span class="val" id="lh-val">2.05</span></label>
+    <input type="range" id="line-height" min="12" max="35" value="21">
     <label>Text Color</label>
     <div class="color-row">
-      <input type="color" id="text-color" value="#ffffff">
+      <input type="color" id="text-color" value="#111111">
       <span>Text ka rang chunein</span>
+    </div>
+    <label>Text Alignment</label>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="font-card active" style="flex:1;padding:8px" onclick="setAlign('center',this)">Center</button>
+      <button class="font-card" style="flex:1;padding:8px" onclick="setAlign('left',this)">Left</button>
+      <button class="font-card" style="flex:1;padding:8px" onclick="setAlign('right',this)">Right</button>
     </div>
   </div>
 
   <!-- Background -->
   <div class="panel">
-    <div class="panel-title">🎨 &nbsp;Background</div>
-    <label>Gradient Presets</label>
-    <div class="preset-list" id="preset-list">
-      <div class="preset active" data-grad="linear-gradient(135deg,#1a0533,#4a0080,#0d001a)" style="background:linear-gradient(135deg,#1a0533,#4a0080,#0d001a)"></div>
-      <div class="preset" data-grad="linear-gradient(160deg,#0a0a2e,#1a1a6e,#0d0d0d)" style="background:linear-gradient(160deg,#0a0a2e,#1a1a6e,#0d0d0d)"></div>
-      <div class="preset" data-grad="linear-gradient(135deg,#1a0000,#8b0000,#2d0000)" style="background:linear-gradient(135deg,#1a0000,#8b0000,#2d0000)"></div>
-      <div class="preset" data-grad="linear-gradient(160deg,#001a00,#005500,#001a00)" style="background:linear-gradient(160deg,#001a00,#005500,#001a00)"></div>
-      <div class="preset" data-grad="linear-gradient(135deg,#0d1a1a,#004444,#001111)" style="background:linear-gradient(135deg,#0d1a1a,#004444,#001111)"></div>
-      <div class="preset" data-grad="linear-gradient(135deg,#1a1200,#664400,#1a1200)" style="background:linear-gradient(135deg,#1a1200,#664400,#1a1200)"></div>
-      <div class="preset" data-grad="linear-gradient(135deg,#111111,#333333,#111111)" style="background:linear-gradient(135deg,#111111,#333333,#111111)"></div>
-      <div class="preset" data-grad="linear-gradient(135deg,#1a001a,#660066,#1a001a)" style="background:linear-gradient(135deg,#1a001a,#660066,#1a001a)"></div>
-    </div>
-    <label style="margin-top:8px">Light / Classical Presets</label>
-    <div class="preset-list" id="preset-list-light">
-      <div class="preset" data-grad="linear-gradient(160deg,#e8e8e8,#f5f5f5,#e0e0e0)" style="background:linear-gradient(160deg,#e8e8e8,#f5f5f5,#e0e0e0)" title="Classic Grey"></div>
-      <div class="preset" data-grad="linear-gradient(160deg,#fdf6e3,#fef9f0,#f7edd5)" style="background:linear-gradient(160deg,#fdf6e3,#fef9f0,#f7edd5)" title="Warm Parchment"></div>
-      <div class="preset" data-grad="linear-gradient(160deg,#f0f4ff,#e8f0fe,#dce8ff)" style="background:linear-gradient(160deg,#f0f4ff,#e8f0fe,#dce8ff)" title="Soft Blue"></div>
-      <div class="preset" data-grad="linear-gradient(160deg,#fff0f5,#ffe8f0,#ffd6e7)" style="background:linear-gradient(160deg,#fff0f5,#ffe8f0,#ffd6e7)" title="Rose Blush"></div>
-      <div class="preset" data-grad="linear-gradient(160deg,#f0fff4,#e6ffed,#d4f5dc)" style="background:linear-gradient(160deg,#f0fff4,#e6ffed,#d4f5dc)" title="Mint Fresh"></div>
-      <div class="preset" data-grad="#ffffff" style="background:#ffffff" title="Pure White"></div>
-    </div>
-    <label style="margin-top:14px">Ya Apni Image Upload Karein</label>
-    <label class="upload-btn" for="bg-img-input">📁 &nbsp;Background Image Choose Karein</label>
-    <input type="file" id="bg-img-input" accept="image/*">
-    <label>Overlay Darkness: <span class="val" id="ov-val">45%</span></label>
-    <input type="range" id="overlay-range" min="0" max="90" value="45">
-  </div>
-
-  <!-- Decoration -->
-  <div class="panel">
-    <div class="panel-title">✨ &nbsp;Decoration</div>
-    <label>Elements Toggle</label>
-    <div class="toggle-row">
-      <button class="toggle-btn on" id="tog-corners">Corner Borders</button>
-      <button class="toggle-btn on" id="tog-lines">Decorative Lines</button>
-      <button class="toggle-btn on" id="tog-author">Author Name</button>
-      <button class="toggle-btn on" id="tog-logo">Watermark</button>
-    </div>
-    <label style="margin-top:14px">Author Text Color</label>
-    <div class="color-row">
-      <input type="color" id="author-color" value="#f0c040">
-      <span>Author rang chunein</span>
-    </div>
+    <div class="panel-title">🎨 Background</div>
+    <label>Presets (Light Tones)</label>
+    <div class="bg-list" id="bg-list"></div>
+    <label style="margin-top:12px">Custom Background Image</label>
+    <label class="upload-btn" for="bg-upload">📁 &nbsp;Background Image Choose Karein</label>
+    <input type="file" id="bg-upload" accept="image/*">
+    <label>Image Overlay: <span class="val" id="ov-val">0%</span></label>
+    <input type="range" id="overlay-range" min="0" max="85" value="0">
   </div>
 
 </div>
 
 <script>
-// ===== CARD STYLE SWITCHER =====
-let currentStyle = 'dark';
-function setCardStyle(style) {
-  currentStyle = style;
-  const card = document.getElementById('card');
-  const classicalOpts = document.getElementById('classical-options');
-  const darkBtn = document.getElementById('style-dark-btn');
-  const classicalBtn = document.getElementById('style-classical-btn');
-
-  if (style === 'classical') {
-    card.classList.add('style-classical');
-    classicalOpts.style.display = 'block';
-    darkBtn.classList.remove('on');
-    classicalBtn.classList.add('on');
-    // Set light background
-    document.getElementById('bg-layer').style.background = 'linear-gradient(160deg,#e8e8e8,#f5f5f5,#e0e0e0)';
-    document.getElementById('bg-image-layer').style.opacity = '0';
-    document.getElementById('overlay-layer').style.background = 'rgba(0,0,0,0)';
-    document.getElementById('overlay-range').value = 0;
-    document.getElementById('ov-val').textContent = '0%';
-  } else {
-    card.classList.remove('style-classical');
-    classicalOpts.style.display = 'none';
-    darkBtn.classList.add('on');
-    classicalBtn.classList.remove('on');
-    // Restore dark background
-    document.getElementById('bg-layer').style.background = 'linear-gradient(135deg,#1a0533,#4a0080,#0d001a)';
-    document.getElementById('overlay-layer').style.background = 'rgba(0,0,0,0.45)';
-    document.getElementById('overlay-range').value = 45;
-    document.getElementById('ov-val').textContent = '45%';
-  }
-}
-
-// Avatar upload
-document.getElementById('avatar-img-input').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const avatar = document.getElementById('profile-avatar');
-    avatar.innerHTML = `<img src="${ev.target.result}" alt="avatar">`;
-  };
-  reader.readAsDataURL(file);
-});
-
-// Light preset list
-document.querySelectorAll('#preset-list-light .preset').forEach(p => {
-  p.addEventListener('click', () => {
-    document.querySelectorAll('.preset').forEach(x => x.classList.remove('active'));
-    p.classList.add('active');
-    document.getElementById('bg-layer').style.background = p.dataset.grad;
-    document.getElementById('bg-image-layer').style.opacity = '0';
-  });
-});
-
-// ===== FONT DATA =====
-const fonts = [
-  // Urdu / Arabic
-  { family: "'Noto Nastaliq Urdu', serif", label: "Noto Nastaliq", tag: "Urdu", rtl: true,  preview: "اردو", section: "urdu" },
-  { family: "'Gulzar', serif",             label: "Gulzar",         tag: "Urdu", rtl: true,  preview: "گلزار", section: "urdu" },
-  { family: "'Amiri', serif",              label: "Amiri",          tag: "Arabic", rtl: true, preview: "أميري", section: "urdu" },
-  { family: "'Scheherazade New', serif",   label: "Scheherazade",   tag: "Arabic", rtl: true, preview: "شهرزاد", section: "urdu" },
-
-  // Hindi / Devanagari
-  { family: "'Rozha One', serif",            label: "Rozha One",       tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
-  { family: "'Noto Serif Devanagari', serif",label: "Noto Serif Dev.", tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
-  { family: "'Tiro Devanagari Hindi', serif",label: "Tiro Devanagari", tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
-  { family: "'Yatra One', cursive",          label: "Yatra One",       tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
-  { family: "'Baloo 2', cursive",            label: "Baloo 2",         tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
-  { family: "'Karma', serif",                label: "Karma",           tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
-  { family: "'Eczar', serif",                label: "Eczar",           tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
-  { family: "'Mukta', sans-serif",           label: "Mukta",           tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
-  { family: "'Martel', serif",               label: "Martel",          tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
-  { family: "'Vesper Libre', serif",         label: "Vesper Libre",    tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
-  { family: "'Sura', serif",                 label: "Sura",            tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
-  { family: "'Rajdhani', sans-serif",        label: "Rajdhani",        tag: "Hindi", rtl: false, preview: "शायरी", section: "hindi" },
-
-  // Decorative / Latin
-  { family: "'Playfair Display', serif",   label: "Playfair Display", tag: "Decorative", rtl: false, preview: "Shayari", section: "latin" },
-  { family: "'Cormorant Garamond', serif", label: "Cormorant",        tag: "Elegant",    rtl: false, preview: "Shayari", section: "latin" },
-  { family: "'Lora', serif",               label: "Lora",             tag: "Serif",      rtl: false, preview: "Shayari", section: "latin" },
-  { family: "'Dancing Script', cursive",   label: "Dancing Script",   tag: "Cursive",    rtl: false, preview: "Shayari", section: "latin" },
-  { family: "'Cinzel', serif",             label: "Cinzel",           tag: "Classic",    rtl: false, preview: "SHAYARI", section: "latin" },
-  { family: "'Abril Fatface', cursive",    label: "Abril Fatface",    tag: "Bold",       rtl: false, preview: "Shayari", section: "latin" },
-  { family: "'Josefin Sans', sans-serif",  label: "Josefin Sans",     tag: "Modern",     rtl: false, preview: "Shayari", section: "latin" },
-  { family: "'Pacifico', cursive",         label: "Pacifico",         tag: "Casual",     rtl: false, preview: "Shayari", section: "latin" },
-  { family: "'Poppins', sans-serif",       label: "Poppins",          tag: "Clean",      rtl: false, preview: "Shayari", section: "latin" },
-  { family: "'Hind', sans-serif",          label: "Hind",             tag: "Simple",     rtl: false, preview: "Shayari", section: "latin" },
+// ===== BG PRESETS =====
+const bgPresets = [
+  { label: 'Classic Grey',  val: 'linear-gradient(160deg,#d2d2d2,#e2e2e2,#cacaca)' },
+  { label: 'Ash White',     val: 'linear-gradient(160deg,#e8e8e8,#f5f5f5,#ddd)' },
+  { label: 'Pure White',    val: '#ffffff' },
+  { label: 'Warm Ivory',    val: 'linear-gradient(160deg,#f5f0e8,#fdf6e3,#ede5d0)' },
+  { label: 'Parchment',     val: 'linear-gradient(160deg,#e8dfc8,#f5edd5,#ddd3b8)' },
+  { label: 'Soft Blue',     val: 'linear-gradient(160deg,#dce8f5,#eaf2ff,#ccdcef)' },
+  { label: 'Rose Blush',    val: 'linear-gradient(160deg,#f5dce8,#ffe8f0,#eecfdf)' },
+  { label: 'Mint',          val: 'linear-gradient(160deg,#d4f0e4,#e6fff2,#c5e8d5)' },
+  { label: 'Lavender',      val: 'linear-gradient(160deg,#e8daf5,#f0eaff,#ddd0f0)' },
+  { label: 'Dark Ash',      val: 'linear-gradient(160deg,#555,#777,#444)' },
+  { label: 'Dark Black',    val: 'linear-gradient(160deg,#111,#222,#0a0a0a)' },
+  { label: 'Sepia Dark',    val: 'linear-gradient(160deg,#2a1f0a,#3d2d10,#1a1205)' },
 ];
 
-let activeFont = fonts[4]; // Rozha One default
-
-function buildFontGrid() {
-  const grid = document.getElementById('font-grid');
-  grid.innerHTML = '';
-
-  const sections = [
-    { key: 'urdu',  label: '🕌 Urdu / Arabic' },
-    { key: 'hindi', label: '🪔 Hindi / Devanagari' },
-    { key: 'latin', label: '✒️ Decorative / Latin' },
-  ];
-
-  sections.forEach(sec => {
-    // Section label
-    const lbl = document.createElement('div');
-    lbl.className = 'font-section-label';
-    lbl.textContent = sec.label;
-    lbl.style.gridColumn = '1 / -1';
-    grid.appendChild(lbl);
-
-    fonts.filter(f => f.section === sec.key).forEach(font => {
-      const card = document.createElement('div');
-      card.className = 'font-card' + (font === activeFont ? ' active' : '');
-      card.innerHTML = `
-        <div class="preview" style="font-family:${font.family}; direction:${font.rtl ? 'rtl' : 'ltr'}">${font.preview}</div>
-        <div class="fname">${font.label}</div>
-        <div class="ftag">${font.tag}</div>
-      `;
-      card.addEventListener('click', () => {
-        activeFont = font;
-        document.querySelectorAll('.font-card').forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
-        applyFont(font);
-      });
-      grid.appendChild(card);
-    });
+const bgList = document.getElementById('bg-list');
+bgPresets.forEach((p, i) => {
+  const sw = document.createElement('div');
+  sw.className = 'bg-swatch' + (i === 0 ? ' active' : '');
+  sw.style.background = p.val;
+  sw.title = p.label;
+  sw.addEventListener('click', () => {
+    document.querySelectorAll('.bg-swatch').forEach(x => x.classList.remove('active'));
+    sw.classList.add('active');
+    document.getElementById('bg-layer').style.background = p.val;
+    document.getElementById('bg-image-layer').style.opacity = '0';
   });
-}
+  bgList.appendChild(sw);
+});
 
-function applyFont(font) {
-  const el = document.getElementById('shayari-text');
-  el.style.fontFamily = font.family;
-  el.style.direction = font.rtl ? 'rtl' : 'ltr';
-}
+// ===== FONTS =====
+const fonts = [
+  { family: "'Hind', sans-serif",               label: 'Hind Bold',     preview: 'शायरी' },
+  { family: "'Rozha One', serif",               label: 'Rozha One',     preview: 'शायरी' },
+  { family: "'Noto Serif Devanagari', serif",   label: 'Noto Serif',    preview: 'शायरी' },
+  { family: "'Baloo 2', cursive",               label: 'Baloo 2',       preview: 'शायरी' },
+  { family: "'Martel', serif",                  label: 'Martel',        preview: 'शायरी' },
+  { family: "'Yatra One', cursive",             label: 'Yatra One',     preview: 'शायरी' },
+  { family: "'Mukta', sans-serif",              label: 'Mukta',         preview: 'शायरी' },
+  { family: "'Eczar', serif",                   label: 'Eczar',         preview: 'शायरी' },
+];
 
-buildFontGrid();
+let activeFont = fonts[0];
+const fontGrid = document.getElementById('font-grid');
+fonts.forEach(f => {
+  const card = document.createElement('div');
+  card.className = 'font-card' + (f === activeFont ? ' active' : '');
+  card.innerHTML = `<div class="fp" style="font-family:${f.family}">${f.preview}</div><div class="fn">${f.label}</div>`;
+  card.addEventListener('click', () => {
+    activeFont = f;
+    document.querySelectorAll('#font-grid .font-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    document.getElementById('shayari-text').style.fontFamily = f.family;
+  });
+  fontGrid.appendChild(card);
+});
 
-// — Live text updates —
+// ===== LIVE INPUTS =====
 document.getElementById('shayari-input').addEventListener('input', e => {
   document.getElementById('shayari-text').textContent = e.target.value;
 });
-document.getElementById('author-input').addEventListener('input', e => {
-  document.getElementById('author-text').textContent = e.target.value;
+document.getElementById('watermark-input').addEventListener('input', e => {
+  document.getElementById('watermark').textContent = e.target.value;
 });
-document.getElementById('logo-input').addEventListener('input', e => {
-  document.getElementById('logo-text').textContent = e.target.value;
+document.getElementById('pname-input').addEventListener('input', e => {
+  document.getElementById('profile-name-display').textContent = e.target.value;
 });
-
-// — Font size & line height —
+document.getElementById('phandle-input').addEventListener('input', e => {
+  document.getElementById('profile-handle-display').textContent = e.target.value;
+  if (!document.getElementById('watermark-input').value.trim()) {
+    document.getElementById('watermark').textContent = e.target.value;
+  }
+});
+document.getElementById('name-color').addEventListener('input', e => {
+  document.getElementById('profile-name-display').style.color = e.target.value;
+});
+document.getElementById('handle-color').addEventListener('input', e => {
+  document.getElementById('profile-handle-display').style.color = e.target.value;
+});
+document.getElementById('text-color').addEventListener('input', e => {
+  document.getElementById('shayari-text').style.color = e.target.value;
+});
 document.getElementById('font-size').addEventListener('input', e => {
   document.getElementById('shayari-text').style.fontSize = e.target.value + 'px';
   document.getElementById('fs-val').textContent = e.target.value + 'px';
 });
 document.getElementById('line-height').addEventListener('input', e => {
-  const val = (e.target.value / 10).toFixed(1);
-  document.getElementById('shayari-text').style.lineHeight = val;
-  document.getElementById('lh-val').textContent = val;
+  const v = (e.target.value / 10).toFixed(2);
+  document.getElementById('shayari-text').style.lineHeight = v;
+  document.getElementById('lh-val').textContent = v;
 });
-document.getElementById('text-color').addEventListener('input', e => {
-  document.getElementById('shayari-text').style.color = e.target.value;
-});
-
-// — Background Presets —
-document.querySelectorAll('.preset').forEach(p => {
-  p.addEventListener('click', () => {
-    document.querySelectorAll('.preset').forEach(x => x.classList.remove('active'));
-    p.classList.add('active');
-    document.getElementById('bg-layer').style.background = p.dataset.grad;
-    document.getElementById('bg-image-layer').style.opacity = '0';
-  });
+document.getElementById('overlay-range').addEventListener('input', e => {
+  document.getElementById('overlay-layer').style.background = `rgba(255,255,255,${e.target.value/100})`;
+  document.getElementById('ov-val').textContent = e.target.value + '%';
 });
 
-// — Background Image —
-document.getElementById('bg-img-input').addEventListener('change', e => {
+// ===== ALIGNMENT =====
+function setAlign(align, btn) {
+  document.getElementById('shayari-text').style.textAlign = align;
+  document.querySelectorAll('.font-card[onclick]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ===== AVATAR UPLOAD =====
+document.getElementById('avatar-upload').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('avatar-wrap').innerHTML = `<img src="${ev.target.result}" alt="avatar">`;
+  };
+  reader.readAsDataURL(file);
+});
+
+// ===== BG IMAGE UPLOAD =====
+document.getElementById('bg-upload').addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -738,32 +566,7 @@ document.getElementById('bg-img-input').addEventListener('change', e => {
   reader.readAsDataURL(file);
 });
 
-// — Overlay —
-document.getElementById('overlay-range').addEventListener('input', e => {
-  document.getElementById('overlay-layer').style.background = `rgba(0,0,0,${e.target.value/100})`;
-  document.getElementById('ov-val').textContent = e.target.value + '%';
-});
-
-// — Toggle decorations —
-function tog(btnId, selector, prop, onVal, offVal) {
-  const btn = document.getElementById(btnId);
-  let on = true;
-  btn.addEventListener('click', () => {
-    on = !on;
-    btn.classList.toggle('on', on);
-    document.querySelectorAll(selector).forEach(el => el.style[prop] = on ? onVal : offVal);
-  });
-}
-tog('tog-corners', '.deco-corner', 'display', 'block', 'none');
-tog('tog-lines', '.deco-line-top, .deco-line-bottom', 'display', 'block', 'none');
-tog('tog-author', '#author-text', 'display', 'block', 'none');
-tog('tog-logo', '#logo-text', 'display', 'block', 'none');
-
-document.getElementById('author-color').addEventListener('input', e => {
-  document.getElementById('author-text').style.color = e.target.value;
-});
-
-// — Download —
+// ===== DOWNLOAD =====
 document.getElementById('download-btn').addEventListener('click', async () => {
   const card = document.getElementById('card');
   const btn = document.getElementById('download-btn');
@@ -779,7 +582,7 @@ document.getElementById('download-btn').addEventListener('click', async () => {
       height: card.offsetHeight,
     });
     const link = document.createElement('a');
-    link.download = 'shayari_' + Date.now() + '.png';
+    link.download = 'classical_shayari_' + Date.now() + '.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
   } catch(err) {

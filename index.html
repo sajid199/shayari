@@ -7,6 +7,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&family=Rozha+One&family=Noto+Serif+Devanagari:wght@400;700&family=Baloo+2:wght@700;800&family=Martel:wght@700;900&family=Yatra+One&family=Mukta:wght@700&family=Eczar:wght@700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
@@ -20,13 +24,17 @@ body {
   align-items: flex-start;
 }
 
-/* ========== CARD ========== */
+/* ============================================================
+   CARD PREVIEW COLUMN
+   ============================================================ */
 .card-wrap {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
+  position: sticky;
+  top: 28px;
 }
 
 #card {
@@ -37,14 +45,13 @@ body {
   border-radius: 18px;
   box-shadow: 0 24px 64px rgba(0,0,0,0.6);
   background: #d9d9d9;
-  display: flex;
-  flex-direction: column;
+  user-select: none;
 }
 
-/* Background layer */
+/* Background layers */
 #bg-layer {
   position: absolute; inset: 0;
-  background: #d4d4d4;
+  background: linear-gradient(160deg,#d2d2d2,#e2e2e2,#cacaca);
   transition: background 0.3s;
   z-index: 0;
 }
@@ -62,7 +69,7 @@ body {
   z-index: 2;
 }
 
-/* Profile chip — top left */
+/* Profile chip — freely draggable */
 #profile-chip {
   position: absolute;
   top: 22px;
@@ -71,7 +78,10 @@ body {
   align-items: center;
   gap: 10px;
   z-index: 10;
+  cursor: grab;
+  touch-action: none;
 }
+#profile-chip:active { cursor: grabbing; }
 
 #avatar-wrap {
   width: 46px; height: 46px;
@@ -79,21 +89,17 @@ body {
   overflow: hidden;
   background: #888;
   flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 20px;
   color: #fff;
   filter: grayscale(30%);
 }
-#avatar-wrap img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
+#avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
 
-#profile-info {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
+#profile-info { display: flex; flex-direction: column; gap: 1px; }
+
 #profile-name-display {
   font-family: 'Hind', sans-serif;
   font-weight: 700;
@@ -102,6 +108,7 @@ body {
   color: #111;
   line-height: 1.3;
   letter-spacing: 0.2px;
+  white-space: nowrap;
 }
 #profile-handle-display {
   font-family: 'Hind', sans-serif;
@@ -109,9 +116,10 @@ body {
   font-size: 12px;
   color: #555;
   line-height: 1.3;
+  white-space: nowrap;
 }
 
-/* Main shayari text */
+/* Shayari text block */
 #shayari-display {
   position: absolute;
   inset: 0;
@@ -120,6 +128,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 100px 36px 80px;
+  pointer-events: none;
 }
 
 #shayari-text {
@@ -129,10 +138,12 @@ body {
   line-height: 2.05;
   color: #111;
   text-align: center;
-  white-space: pre-wrap;
-  word-break: break-word;
-  direction: ltr;
   width: 100%;
+}
+
+/* Each line is a separate block so we can style it individually */
+#shayari-text .line-span {
+  display: block;
 }
 
 /* Watermark */
@@ -146,9 +157,12 @@ body {
   color: rgba(0,0,0,0.28);
   letter-spacing: 1px;
   z-index: 10;
+  pointer-events: none;
 }
 
-/* ========== DOWNLOAD BTN ========== */
+/* ============================================================
+   DOWNLOAD BUTTON
+   ============================================================ */
 #download-btn {
   width: 360px;
   background: linear-gradient(135deg, #222, #444);
@@ -164,23 +178,33 @@ body {
   font-family: 'Hind', sans-serif;
 }
 #download-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+#download-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-/* ========== CONTROLS ========== */
+/* ============================================================
+   CONTROLS COLUMN
+   ============================================================ */
 .controls {
   flex: 1;
-  max-width: 420px;
+  max-width: 450px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-height: calc(100vh - 56px);
+  overflow-y: auto;
+  padding-right: 6px;
+  padding-bottom: 28px;
 }
+.controls::-webkit-scrollbar { width: 4px; }
+.controls::-webkit-scrollbar-track { background: transparent; }
+.controls::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 
+/* Panel card */
 .panel {
   background: #1e1e1e;
   border: 1px solid #2c2c2c;
   border-radius: 14px;
   padding: 18px;
 }
-
 .panel-title {
   font-size: 10px;
   font-weight: 700;
@@ -189,7 +213,14 @@ body {
   color: #ccc;
   margin-bottom: 14px;
 }
+.panel-desc {
+  font-size: 11px;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
 
+/* Form elements */
 label {
   display: block;
   font-size: 11px;
@@ -208,12 +239,11 @@ textarea {
   font-size: 15px;
   padding: 12px;
   resize: vertical;
-  min-height: 120px;
+  min-height: 130px;
   font-family: 'Hind', sans-serif;
   line-height: 1.8;
   outline: none;
   transition: border 0.2s;
-  direction: ltr;
 }
 textarea:focus { border-color: #aaa; }
 
@@ -239,21 +269,51 @@ input[type="range"] {
 
 input[type="color"] {
   width: 40px; height: 32px;
-  border: none; border-radius: 6px;
-  background: none; cursor: pointer; padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  padding: 0;
 }
 
+input[type="file"] { display: none; }
+
+/* Value badge */
 .val {
   background: #2a2a2a;
   border-radius: 4px;
   padding: 2px 7px;
   font-size: 11px;
   color: #ccc;
-  min-width: 34px;
+  min-width: 36px;
   text-align: center;
+  display: inline-block;
 }
 
-/* Font selector */
+/* Color row */
+.color-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.color-row span { font-size: 11px; color: #666; }
+
+/* Upload button */
+.upload-btn {
+  display: block;
+  background: #1a1a1a;
+  border: 1px dashed #3a3a3a;
+  border-radius: 8px;
+  color: #888;
+  font-size: 12px;
+  padding: 9px;
+  text-align: center;
+  cursor: pointer;
+  transition: border 0.2s, color 0.2s;
+  margin-top: 8px;
+  font-family: 'Hind', sans-serif;
+}
+.upload-btn:hover { border-color: #ccc; color: #ccc; }
+
+/* ============================================================
+   FONT GRID
+   ============================================================ */
 .font-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -270,25 +330,31 @@ input[type="color"] {
 }
 .font-card:hover { border-color: #555; background: #161616; }
 .font-card.active { border-color: #ccc; background: #1c1c1c; }
-.font-card .fp {
-  font-size: 17px;
-  color: #fff;
-  line-height: 1.5;
-  margin-bottom: 3px;
-}
-.font-card .fn {
-  font-size: 9px;
-  color: #666;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
+.font-card .fp { font-size: 17px; color: #fff; line-height: 1.5; margin-bottom: 3px; }
+.font-card .fn { font-size: 9px; color: #666; letter-spacing: 0.5px; text-transform: uppercase; }
 
-/* Background presets */
-.bg-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
+/* Alignment buttons */
+.align-row { display: flex; gap: 8px; margin-top: 4px; }
+.align-btn {
+  flex: 1;
+  background: #111;
+  border: 2px solid #2a2a2a;
+  border-radius: 8px;
+  color: #888;
+  font-size: 12px;
+  padding: 8px 4px;
+  cursor: pointer;
+  font-family: 'Hind', sans-serif;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  text-align: center;
 }
+.align-btn:hover { border-color: #555; color: #ccc; }
+.align-btn.active { border-color: #ccc; background: #1c1c1c; color: #fff; }
+
+/* ============================================================
+   BACKGROUND SWATCHES
+   ============================================================ */
+.bg-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
 .bg-swatch {
   width: 38px; height: 38px;
   border-radius: 8px;
@@ -297,41 +363,173 @@ input[type="color"] {
   transition: border 0.2s, transform 0.15s;
   position: relative;
 }
-.bg-swatch:hover { transform: scale(1.08); }
-.bg-swatch.active { border-color: #ccc; }
+.bg-swatch:hover { transform: scale(1.1); }
+.bg-swatch.active { border-color: #fff; }
 
-/* Upload */
-.upload-btn {
-  display: block;
-  background: #1a1a1a;
-  border: 1px dashed #3a3a3a;
-  border-radius: 8px;
-  color: #888;
+/* ============================================================
+   PER-LINE EDITOR
+   ============================================================ */
+#line-editor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+#line-editor-list::-webkit-scrollbar { width: 3px; }
+#line-editor-list::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
+#line-editor-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+.line-row {
+  background: #141414;
+  border: 1px solid #262626;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 0.2s;
+}
+.line-row:hover { border-color: #383838; }
+.line-row.has-override { border-color: #555; background: #1a1818; }
+
+.line-row-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.line-num {
+  font-size: 9px;
+  color: #444;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  min-width: 40px;
+}
+.line-preview {
   font-size: 12px;
-  padding: 9px;
-  text-align: center;
-  cursor: pointer;
-  transition: border 0.2s, color 0.2s;
-  margin-top: 8px;
+  color: #777;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-family: 'Hind', sans-serif;
 }
-.upload-btn:hover { border-color: #ccc; color: #ccc; }
-input[type="file"] { display: none; }
 
-.color-row { display: flex; align-items: center; gap: 10px; }
-.color-row span { font-size: 11px; color: #888; }
+/* Circular colour picker */
+.line-color-wrap {
+  position: relative;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid #333;
+  flex-shrink: 0;
+  overflow: hidden;
+  cursor: pointer;
+}
+.line-color-swatch {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.line-color-wrap input[type="color"] {
+  position: absolute;
+  inset: -4px;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+  opacity: 0;
+  cursor: pointer;
+}
+
+.reset-line-btn {
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #555;
+  font-size: 10px;
+  padding: 3px 7px;
+  cursor: pointer;
+  font-family: 'Hind', sans-serif;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.reset-line-btn:hover { color: #ccc; border-color: #888; }
+
+.line-row-bottom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.line-size-label {
+  font-size: 10px;
+  color: #555;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.line-size-range { flex: 1; }
+.line-size-val {
+  font-size: 10px;
+  color: #888;
+  min-width: 30px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   HEADER POSITION GRID
+   ============================================================ */
+.pos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+.pos-btn {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  color: #777;
+  font-size: 11px;
+  padding: 8px 2px;
+  cursor: pointer;
+  font-family: 'Hind', sans-serif;
+  text-align: center;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.pos-btn:hover { color: #eee; border-color: #666; background: #181818; }
+
+.chip-pos-display {
+  font-size: 10px;
+  color: #444;
+  text-align: center;
+  margin-top: 8px;
+  letter-spacing: 0.3px;
+}
+
+/* Slider + value inline row */
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.slider-row input[type="range"] { flex: 1; }
+
 </style>
 </head>
 <body>
 
-<!-- LEFT: Card Preview -->
+<!-- ============================================================
+     LEFT — CARD PREVIEW
+     ============================================================ -->
 <div class="card-wrap">
   <div id="card">
     <div id="bg-layer"></div>
     <div id="bg-image-layer"></div>
     <div id="overlay-layer"></div>
 
-    <!-- Profile chip -->
+    <!-- Draggable profile chip -->
     <div id="profile-chip">
       <div id="avatar-wrap">✍️</div>
       <div id="profile-info">
@@ -340,17 +538,9 @@ input[type="file"] { display: none; }
       </div>
     </div>
 
-    <!-- Shayari -->
+    <!-- Shayari lines rendered here -->
     <div id="shayari-display">
-      <div id="shayari-text">बेवफा से दिल लगा
-लिया नादान थे हम,
-  गलती हमसे हुई
-क्योंकि इंसान थे हम।
-  आज जिन्हे नज़रें
-  मिलाने में तक़लीफ़
-  होती है, कुछ समय
-  पहले उनकी जान थे
-         हम।</div>
+      <div id="shayari-text"></div>
     </div>
 
     <!-- Watermark -->
@@ -360,101 +550,450 @@ input[type="file"] { display: none; }
   <button id="download-btn">⬇ Download Image (9:16)</button>
 </div>
 
-<!-- RIGHT: Controls -->
+
+<!-- ============================================================
+     RIGHT — CONTROLS
+     ============================================================ -->
 <div class="controls">
 
-  <!-- Text -->
+  <!-- 1. SHAYARI TEXT -->
   <div class="panel">
     <div class="panel-title">✍️ Shayari Text</div>
     <label>Shayari / Quote likhein</label>
-    <textarea id="shayari-input" placeholder="Apni shayari yahan likhein...">बेवफा से दिल लगा
-लिया नादान थे हम,
-  गलती हमसे हुई
-क्योंकि इंसान थे हम।
-  आज जिन्हे नज़रें
-  मिलाने में तक़लीफ़
-  होती है, कुछ समय
-  पहले उनकी जान थे
-         हम।</textarea>
+    <textarea id="shayari-input" placeholder="Apni shayari yahan likhein..."></textarea>
     <label>Watermark text</label>
     <input type="text" id="watermark-input" value="@Ghalibnama">
   </div>
 
-  <!-- Profile -->
+
+  <!-- 2. PER-LINE CUSTOMISATION -->
+  <div class="panel">
+    <div class="panel-title">🎨 Per-Line Style</div>
+    <p class="panel-desc">Change font size and colour of any individual line. Use the circle to pick a colour and the slider for size. "Reset" removes overrides for that line.</p>
+    <div id="line-editor-list"></div>
+  </div>
+
+
+  <!-- 3. PROFILE CHIP -->
   <div class="panel">
     <div class="panel-title">👤 Profile Chip</div>
+
     <label>Display Name</label>
-    <input type="text" id="pname-input" value="Classical Author">
+    <input type="text" id="pname-input" value="Ghalib Nama">
+
     <label>Handle / Username</label>
-    <input type="text" id="phandle-input" value="@classicalauthor">
+    <input type="text" id="phandle-input" value="@Ghalibnama">
+
     <label>Profile Picture</label>
-    <label class="upload-btn" for="avatar-upload">🖼️ &nbsp;Avatar Image Upload Karein</label>
+    <label class="upload-btn" for="avatar-upload">🖼️ &nbsp;Avatar Upload Karein</label>
     <input type="file" id="avatar-upload" accept="image/*">
-    <label style="margin-top:12px">Name Color</label>
+
+    <label>Name Colour</label>
     <div class="color-row">
       <input type="color" id="name-color" value="#111111">
       <span>Profile name ka rang</span>
     </div>
-    <label>Handle Color</label>
+
+    <label>Handle Colour</label>
     <div class="color-row">
       <input type="color" id="handle-color" value="#555555">
       <span>Handle ka rang</span>
     </div>
+
+    <!-- Header position -->
+    <label style="margin-top:18px">Header Position</label>
+    <p class="panel-desc" style="margin-bottom:0">Drag directly on the card, or tap a preset below:</p>
+    <div class="pos-grid">
+      <button class="pos-btn" onclick="setChipPos('top-left')">↖ Top L</button>
+      <button class="pos-btn" onclick="setChipPos('top-center')">↑ Top C</button>
+      <button class="pos-btn" onclick="setChipPos('top-right')">↗ Top R</button>
+      <button class="pos-btn" onclick="setChipPos('mid-left')">← Mid L</button>
+      <button class="pos-btn" onclick="setChipPos('mid-center')">• Center</button>
+      <button class="pos-btn" onclick="setChipPos('mid-right')">→ Mid R</button>
+      <button class="pos-btn" onclick="setChipPos('bot-left')">↙ Bot L</button>
+      <button class="pos-btn" onclick="setChipPos('bot-center')">↓ Bot C</button>
+      <button class="pos-btn" onclick="setChipPos('bot-right')">↘ Bot R</button>
+    </div>
+    <div class="chip-pos-display" id="chip-pos-display">Position: top 22px, left 22px</div>
   </div>
 
-  <!-- Font -->
+
+  <!-- 4. GLOBAL FONT & STYLE -->
   <div class="panel">
-    <div class="panel-title">🔤 Font Style</div>
+    <div class="panel-title">🔤 Global Font &amp; Style</div>
+    <p class="panel-desc" style="margin-bottom:10px">These settings apply to ALL lines unless a per-line override is set above.</p>
+
     <div class="font-grid" id="font-grid"></div>
-    <label style="margin-top:14px">Font Size: <span class="val" id="fs-val">23px</span></label>
-    <input type="range" id="font-size" min="14" max="42" value="23">
+
+    <label style="margin-top:16px">Global Font Size: <span class="val" id="fs-val">23px</span></label>
+    <input type="range" id="font-size" min="10" max="48" value="23">
+
     <label>Line Height: <span class="val" id="lh-val">2.05</span></label>
-    <input type="range" id="line-height" min="12" max="35" value="21">
-    <label>Text Color</label>
+    <input type="range" id="line-height" min="10" max="40" value="21">
+
+    <label>Global Text Colour</label>
     <div class="color-row">
       <input type="color" id="text-color" value="#111111">
-      <span>Text ka rang chunein</span>
+      <span>Applies to lines with no per-line colour</span>
     </div>
+
     <label>Text Alignment</label>
-    <div style="display:flex;gap:8px;margin-top:4px">
-      <button class="font-card active" style="flex:1;padding:8px" onclick="setAlign('center',this)">Center</button>
-      <button class="font-card" style="flex:1;padding:8px" onclick="setAlign('left',this)">Left</button>
-      <button class="font-card" style="flex:1;padding:8px" onclick="setAlign('right',this)">Right</button>
+    <div class="align-row">
+      <button class="align-btn active" data-align="center">Center</button>
+      <button class="align-btn" data-align="left">Left</button>
+      <button class="align-btn" data-align="right">Right</button>
     </div>
   </div>
 
-  <!-- Background -->
+
+  <!-- 5. BACKGROUND -->
   <div class="panel">
-    <div class="panel-title">🎨 Background</div>
-    <label>Presets (Light Tones)</label>
+    <div class="panel-title">🖼️ Background</div>
+    <label>Presets</label>
     <div class="bg-list" id="bg-list"></div>
-    <label style="margin-top:12px">Custom Background Image</label>
+
+    <label style="margin-top:14px">Custom Background Image</label>
     <label class="upload-btn" for="bg-upload">📁 &nbsp;Background Image Choose Karein</label>
     <input type="file" id="bg-upload" accept="image/*">
-    <label>Image Overlay: <span class="val" id="ov-val">0%</span></label>
+
+    <label>White Overlay: <span class="val" id="ov-val">0%</span></label>
     <input type="range" id="overlay-range" min="0" max="85" value="0">
   </div>
 
-</div>
+</div><!-- end .controls -->
+
 
 <script>
-// ===== BG PRESETS =====
-const bgPresets = [
-  { label: 'Classic Grey',  val: 'linear-gradient(160deg,#d2d2d2,#e2e2e2,#cacaca)' },
-  { label: 'Ash White',     val: 'linear-gradient(160deg,#e8e8e8,#f5f5f5,#ddd)' },
-  { label: 'Pure White',    val: '#ffffff' },
-  { label: 'Warm Ivory',    val: 'linear-gradient(160deg,#f5f0e8,#fdf6e3,#ede5d0)' },
-  { label: 'Parchment',     val: 'linear-gradient(160deg,#e8dfc8,#f5edd5,#ddd3b8)' },
-  { label: 'Soft Blue',     val: 'linear-gradient(160deg,#dce8f5,#eaf2ff,#ccdcef)' },
-  { label: 'Rose Blush',    val: 'linear-gradient(160deg,#f5dce8,#ffe8f0,#eecfdf)' },
-  { label: 'Mint',          val: 'linear-gradient(160deg,#d4f0e4,#e6fff2,#c5e8d5)' },
-  { label: 'Lavender',      val: 'linear-gradient(160deg,#e8daf5,#f0eaff,#ddd0f0)' },
-  { label: 'Dark Ash',      val: 'linear-gradient(160deg,#555,#777,#444)' },
-  { label: 'Dark Black',    val: 'linear-gradient(160deg,#111,#222,#0a0a0a)' },
-  { label: 'Sepia Dark',    val: 'linear-gradient(160deg,#2a1f0a,#3d2d10,#1a1205)' },
+/* ============================================================
+   STATE
+   ============================================================ */
+const DEFAULT_TEXT =
+`बेवफा से दिल लगा
+लिया नादान थे हम,
+गलती हमसे हुई
+क्योंकि इंसान थे हम।
+आज जिन्हे नज़रें
+मिलाने में तक़लीफ़
+होती है, कुछ समय
+पहले उनकी जान थे
+हम।`;
+
+let globalFontSize = 23;
+let globalColor    = '#111111';
+// Array of { fontSize: number|null, color: string|null } — one entry per line
+let lineOverrides  = [];
+
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function getLines() {
+  return document.getElementById('shayari-input').value.split('\n');
+}
+
+// Keep lineOverrides in sync with actual line count
+function syncOverrides(lines) {
+  while (lineOverrides.length < lines.length) {
+    lineOverrides.push({ fontSize: null, color: null });
+  }
+  // Trim if lines removed
+  lineOverrides.length = lines.length;
+}
+
+
+/* ============================================================
+   RENDER SHAYARI TEXT (line-by-line spans)
+   ============================================================ */
+function renderShayariText() {
+  const lines = getLines();
+  syncOverrides(lines);
+
+  const container = document.getElementById('shayari-text');
+  container.innerHTML = '';
+
+  lines.forEach((line, i) => {
+    const span = document.createElement('span');
+    span.className = 'line-span';
+    // Use non-breaking space for blank lines so they still take height
+    span.textContent = line.length > 0 ? line : '\u00A0';
+    applyLineStyle(span, i);
+    container.appendChild(span);
+  });
+}
+
+// Apply per-line override (or nothing, inheriting global)
+function applyLineStyle(span, i) {
+  const ov = lineOverrides[i];
+  span.style.fontSize = (ov && ov.fontSize !== null) ? ov.fontSize + 'px' : '';
+  span.style.color    = (ov && ov.color    !== null) ? ov.color           : '';
+}
+
+// Update a single span without full re-render
+function updateSingleSpan(i) {
+  const spans = document.querySelectorAll('#shayari-text .line-span');
+  if (spans[i]) applyLineStyle(spans[i], i);
+}
+
+
+/* ============================================================
+   BUILD PER-LINE EDITOR
+   ============================================================ */
+function buildLineEditor() {
+  const lines = getLines();
+  syncOverrides(lines);
+
+  const list = document.getElementById('line-editor-list');
+  list.innerHTML = '';
+
+  lines.forEach((line, i) => {
+    const ov         = lineOverrides[i];
+    const curSize    = (ov.fontSize !== null) ? ov.fontSize : globalFontSize;
+    const curColor   = (ov.color    !== null) ? ov.color    : globalColor;
+    const hasOv      = (ov.fontSize !== null || ov.color !== null);
+
+    const row = document.createElement('div');
+    row.className = 'line-row' + (hasOv ? ' has-override' : '');
+
+    // Top row: line number | preview text | colour picker | reset button
+    const topRow = document.createElement('div');
+    topRow.className = 'line-row-top';
+
+    const numEl = document.createElement('span');
+    numEl.className = 'line-num';
+    numEl.textContent = 'L' + (i + 1);
+
+    const previewEl = document.createElement('span');
+    previewEl.className = 'line-preview';
+    previewEl.title = line;
+    previewEl.textContent = line || '(empty)';
+
+    // Colour circle
+    const colorWrap = document.createElement('div');
+    colorWrap.className = 'line-color-wrap';
+    colorWrap.title = 'Pick colour for this line';
+
+    const swatch = document.createElement('div');
+    swatch.className = 'line-color-swatch';
+    swatch.style.background = curColor;
+
+    const colorInput = document.createElement('input');
+    colorInput.type  = 'color';
+    colorInput.value = curColor;
+
+    colorWrap.appendChild(swatch);
+    colorWrap.appendChild(colorInput);
+
+    // Reset button (only shown when override exists)
+    const resetBtn = document.createElement('button');
+    resetBtn.className = 'reset-line-btn';
+    resetBtn.textContent = 'Reset';
+    resetBtn.style.display = hasOv ? 'inline-block' : 'none';
+
+    topRow.appendChild(numEl);
+    topRow.appendChild(previewEl);
+    topRow.appendChild(colorWrap);
+    topRow.appendChild(resetBtn);
+
+    // Bottom row: size slider
+    const botRow = document.createElement('div');
+    botRow.className = 'line-row-bottom';
+
+    const sizeLabel = document.createElement('span');
+    sizeLabel.className = 'line-size-label';
+    sizeLabel.textContent = 'Size';
+
+    const sizeRange = document.createElement('input');
+    sizeRange.type      = 'range';
+    sizeRange.className = 'line-size-range';
+    sizeRange.min       = 10;
+    sizeRange.max       = 52;
+    sizeRange.value     = curSize;
+
+    const sizeValEl = document.createElement('span');
+    sizeValEl.className = 'line-size-val';
+    sizeValEl.textContent = curSize + 'px';
+
+    botRow.appendChild(sizeLabel);
+    botRow.appendChild(sizeRange);
+    botRow.appendChild(sizeValEl);
+
+    row.appendChild(topRow);
+    row.appendChild(botRow);
+    list.appendChild(row);
+
+    /* ---- Events ---- */
+
+    // Size slider
+    sizeRange.addEventListener('input', () => {
+      const v = parseInt(sizeRange.value);
+      sizeValEl.textContent = v + 'px';
+      lineOverrides[i].fontSize = v;
+      updateSingleSpan(i);
+      row.classList.add('has-override');
+      resetBtn.style.display = 'inline-block';
+    });
+
+    // Colour picker
+    colorInput.addEventListener('input', () => {
+      const v = colorInput.value;
+      swatch.style.background = v;
+      lineOverrides[i].color = v;
+      updateSingleSpan(i);
+      row.classList.add('has-override');
+      resetBtn.style.display = 'inline-block';
+    });
+
+    // Reset
+    resetBtn.addEventListener('click', () => {
+      lineOverrides[i] = { fontSize: null, color: null };
+      buildLineEditor();      // rebuild to update UI
+      updateSingleSpan(i);   // revert span to global
+    });
+  });
+}
+
+
+/* ============================================================
+   SHAYARI TEXTAREA
+   ============================================================ */
+const shayariInput = document.getElementById('shayari-input');
+shayariInput.value = DEFAULT_TEXT;
+shayariInput.addEventListener('input', () => {
+  renderShayariText();
+  buildLineEditor();
+});
+
+
+/* ============================================================
+   WATERMARK
+   ============================================================ */
+document.getElementById('watermark-input').addEventListener('input', e => {
+  document.getElementById('watermark').textContent = e.target.value;
+});
+
+
+/* ============================================================
+   PROFILE CHIP — TEXT / COLOURS
+   ============================================================ */
+document.getElementById('pname-input').addEventListener('input', e => {
+  document.getElementById('profile-name-display').textContent = e.target.value;
+});
+document.getElementById('phandle-input').addEventListener('input', e => {
+  document.getElementById('profile-handle-display').textContent = e.target.value;
+});
+document.getElementById('name-color').addEventListener('input', e => {
+  document.getElementById('profile-name-display').style.color = e.target.value;
+});
+document.getElementById('handle-color').addEventListener('input', e => {
+  document.getElementById('profile-handle-display').style.color = e.target.value;
+});
+
+
+/* ============================================================
+   AVATAR UPLOAD
+   ============================================================ */
+document.getElementById('avatar-upload').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('avatar-wrap').innerHTML =
+      `<img src="${ev.target.result}" alt="avatar">`;
+  };
+  reader.readAsDataURL(file);
+});
+
+
+/* ============================================================
+   GLOBAL FONT SIZE
+   ============================================================ */
+document.getElementById('font-size').addEventListener('input', e => {
+  globalFontSize = parseInt(e.target.value);
+  document.getElementById('shayari-text').style.fontSize = e.target.value + 'px';
+  document.getElementById('fs-val').textContent = e.target.value + 'px';
+  buildLineEditor(); // refresh sliders to reflect new global default
+});
+
+
+/* ============================================================
+   LINE HEIGHT
+   ============================================================ */
+document.getElementById('line-height').addEventListener('input', e => {
+  const v = (parseInt(e.target.value) / 10).toFixed(2);
+  document.getElementById('shayari-text').style.lineHeight = v;
+  document.getElementById('lh-val').textContent = v;
+});
+
+
+/* ============================================================
+   GLOBAL TEXT COLOUR
+   ============================================================ */
+document.getElementById('text-color').addEventListener('input', e => {
+  globalColor = e.target.value;
+  document.getElementById('shayari-text').style.color = e.target.value;
+  buildLineEditor(); // update colour circles that show global fallback
+});
+
+
+/* ============================================================
+   TEXT ALIGNMENT
+   ============================================================ */
+document.querySelectorAll('.align-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.align-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('shayari-text').style.textAlign = btn.dataset.align;
+  });
+});
+
+
+/* ============================================================
+   FONT CARDS
+   ============================================================ */
+const fonts = [
+  { family: "'Hind', sans-serif",               label: 'Hind Bold',  preview: 'शायरी' },
+  { family: "'Rozha One', serif",               label: 'Rozha One',  preview: 'शायरी' },
+  { family: "'Noto Serif Devanagari', serif",   label: 'Noto Serif', preview: 'शायरी' },
+  { family: "'Baloo 2', cursive",               label: 'Baloo 2',    preview: 'शायरी' },
+  { family: "'Martel', serif",                  label: 'Martel',     preview: 'शायरी' },
+  { family: "'Yatra One', cursive",             label: 'Yatra One',  preview: 'शायरी' },
+  { family: "'Mukta', sans-serif",              label: 'Mukta',      preview: 'शायरी' },
+  { family: "'Eczar', serif",                   label: 'Eczar',      preview: 'शायरी' },
 ];
 
-const bgList = document.getElementById('bg-list');
+const fontGrid = document.getElementById('font-grid');
+fonts.forEach((f, idx) => {
+  const card = document.createElement('div');
+  card.className = 'font-card' + (idx === 0 ? ' active' : '');
+  card.innerHTML = `<div class="fp" style="font-family:${f.family}">${f.preview}</div><div class="fn">${f.label}</div>`;
+  card.addEventListener('click', () => {
+    document.querySelectorAll('#font-grid .font-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    document.getElementById('shayari-text').style.fontFamily = f.family;
+  });
+  fontGrid.appendChild(card);
+});
+
+
+/* ============================================================
+   BACKGROUND PRESETS
+   ============================================================ */
+const bgPresets = [
+  { label: 'Classic Grey', val: 'linear-gradient(160deg,#d2d2d2,#e2e2e2,#cacaca)' },
+  { label: 'Ash White',    val: 'linear-gradient(160deg,#e8e8e8,#f5f5f5,#ddd)' },
+  { label: 'Pure White',   val: '#ffffff' },
+  { label: 'Warm Ivory',   val: 'linear-gradient(160deg,#f5f0e8,#fdf6e3,#ede5d0)' },
+  { label: 'Parchment',    val: 'linear-gradient(160deg,#e8dfc8,#f5edd5,#ddd3b8)' },
+  { label: 'Soft Blue',    val: 'linear-gradient(160deg,#dce8f5,#eaf2ff,#ccdcef)' },
+  { label: 'Rose Blush',   val: 'linear-gradient(160deg,#f5dce8,#ffe8f0,#eecfdf)' },
+  { label: 'Mint',         val: 'linear-gradient(160deg,#d4f0e4,#e6fff2,#c5e8d5)' },
+  { label: 'Lavender',     val: 'linear-gradient(160deg,#e8daf5,#f0eaff,#ddd0f0)' },
+  { label: 'Dark Ash',     val: 'linear-gradient(160deg,#555,#777,#444)' },
+  { label: 'Dark Black',   val: 'linear-gradient(160deg,#111,#222,#0a0a0a)' },
+  { label: 'Sepia Dark',   val: 'linear-gradient(160deg,#2a1f0a,#3d2d10,#1a1205)' },
+];
+
+const bgListEl = document.getElementById('bg-list');
 bgPresets.forEach((p, i) => {
   const sw = document.createElement('div');
   sw.className = 'bg-swatch' + (i === 0 ? ' active' : '');
@@ -466,94 +1005,13 @@ bgPresets.forEach((p, i) => {
     document.getElementById('bg-layer').style.background = p.val;
     document.getElementById('bg-image-layer').style.opacity = '0';
   });
-  bgList.appendChild(sw);
+  bgListEl.appendChild(sw);
 });
 
-// ===== FONTS =====
-const fonts = [
-  { family: "'Hind', sans-serif",               label: 'Hind Bold',     preview: 'शायरी' },
-  { family: "'Rozha One', serif",               label: 'Rozha One',     preview: 'शायरी' },
-  { family: "'Noto Serif Devanagari', serif",   label: 'Noto Serif',    preview: 'शायरी' },
-  { family: "'Baloo 2', cursive",               label: 'Baloo 2',       preview: 'शायरी' },
-  { family: "'Martel', serif",                  label: 'Martel',        preview: 'शायरी' },
-  { family: "'Yatra One', cursive",             label: 'Yatra One',     preview: 'शायरी' },
-  { family: "'Mukta', sans-serif",              label: 'Mukta',         preview: 'शायरी' },
-  { family: "'Eczar', serif",                   label: 'Eczar',         preview: 'शायरी' },
-];
 
-let activeFont = fonts[0];
-const fontGrid = document.getElementById('font-grid');
-fonts.forEach(f => {
-  const card = document.createElement('div');
-  card.className = 'font-card' + (f === activeFont ? ' active' : '');
-  card.innerHTML = `<div class="fp" style="font-family:${f.family}">${f.preview}</div><div class="fn">${f.label}</div>`;
-  card.addEventListener('click', () => {
-    activeFont = f;
-    document.querySelectorAll('#font-grid .font-card').forEach(c => c.classList.remove('active'));
-    card.classList.add('active');
-    document.getElementById('shayari-text').style.fontFamily = f.family;
-  });
-  fontGrid.appendChild(card);
-});
-
-// ===== LIVE INPUTS =====
-document.getElementById('shayari-input').addEventListener('input', e => {
-  document.getElementById('shayari-text').textContent = e.target.value;
-});
-document.getElementById('watermark-input').addEventListener('input', e => {
-  document.getElementById('watermark').textContent = e.target.value;
-});
-document.getElementById('pname-input').addEventListener('input', e => {
-  document.getElementById('profile-name-display').textContent = e.target.value;
-});
-document.getElementById('phandle-input').addEventListener('input', e => {
-  document.getElementById('profile-handle-display').textContent = e.target.value;
-  if (!document.getElementById('watermark-input').value.trim()) {
-    document.getElementById('watermark').textContent = e.target.value;
-  }
-});
-document.getElementById('name-color').addEventListener('input', e => {
-  document.getElementById('profile-name-display').style.color = e.target.value;
-});
-document.getElementById('handle-color').addEventListener('input', e => {
-  document.getElementById('profile-handle-display').style.color = e.target.value;
-});
-document.getElementById('text-color').addEventListener('input', e => {
-  document.getElementById('shayari-text').style.color = e.target.value;
-});
-document.getElementById('font-size').addEventListener('input', e => {
-  document.getElementById('shayari-text').style.fontSize = e.target.value + 'px';
-  document.getElementById('fs-val').textContent = e.target.value + 'px';
-});
-document.getElementById('line-height').addEventListener('input', e => {
-  const v = (e.target.value / 10).toFixed(2);
-  document.getElementById('shayari-text').style.lineHeight = v;
-  document.getElementById('lh-val').textContent = v;
-});
-document.getElementById('overlay-range').addEventListener('input', e => {
-  document.getElementById('overlay-layer').style.background = `rgba(255,255,255,${e.target.value/100})`;
-  document.getElementById('ov-val').textContent = e.target.value + '%';
-});
-
-// ===== ALIGNMENT =====
-function setAlign(align, btn) {
-  document.getElementById('shayari-text').style.textAlign = align;
-  document.querySelectorAll('.font-card[onclick]').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
-
-// ===== AVATAR UPLOAD =====
-document.getElementById('avatar-upload').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    document.getElementById('avatar-wrap').innerHTML = `<img src="${ev.target.result}" alt="avatar">`;
-  };
-  reader.readAsDataURL(file);
-});
-
-// ===== BG IMAGE UPLOAD =====
+/* ============================================================
+   BACKGROUND IMAGE UPLOAD
+   ============================================================ */
 document.getElementById('bg-upload').addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
@@ -566,10 +1024,119 @@ document.getElementById('bg-upload').addEventListener('change', e => {
   reader.readAsDataURL(file);
 });
 
-// ===== DOWNLOAD =====
+
+/* ============================================================
+   OVERLAY SLIDER
+   ============================================================ */
+document.getElementById('overlay-range').addEventListener('input', e => {
+  document.getElementById('overlay-layer').style.background =
+    `rgba(255,255,255,${e.target.value / 100})`;
+  document.getElementById('ov-val').textContent = e.target.value + '%';
+});
+
+
+/* ============================================================
+   DRAGGABLE PROFILE CHIP
+   ============================================================ */
+const chip   = document.getElementById('profile-chip');
+const cardEl = document.getElementById('card');
+let dragging = false;
+let startMouseX, startMouseY, startLeft, startTop;
+
+function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
+
+function getChipStartPos() {
+  const cardRect = cardEl.getBoundingClientRect();
+  const chipRect = chip.getBoundingClientRect();
+  return {
+    left: chipRect.left - cardRect.left,
+    top:  chipRect.top  - cardRect.top,
+  };
+}
+
+function moveChip(newLeft, newTop) {
+  const cardW = cardEl.offsetWidth;
+  const cardH = cardEl.offsetHeight;
+  const chipW = chip.offsetWidth;
+  const chipH = chip.offsetHeight;
+  chip.style.left   = clamp(newLeft, 0, cardW - chipW) + 'px';
+  chip.style.top    = clamp(newTop,  0, cardH - chipH) + 'px';
+  chip.style.right  = 'auto';
+  chip.style.bottom = 'auto';
+  document.getElementById('chip-pos-display').textContent =
+    `Position: top ${Math.round(parseFloat(chip.style.top))}px, left ${Math.round(parseFloat(chip.style.left))}px`;
+}
+
+// Mouse
+chip.addEventListener('mousedown', e => {
+  e.preventDefault();
+  dragging = true;
+  startMouseX = e.clientX;
+  startMouseY = e.clientY;
+  const pos = getChipStartPos();
+  startLeft = pos.left;
+  startTop  = pos.top;
+  chip.style.cursor = 'grabbing';
+});
+document.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  moveChip(startLeft + (e.clientX - startMouseX), startTop + (e.clientY - startMouseY));
+});
+document.addEventListener('mouseup', () => {
+  if (dragging) { dragging = false; chip.style.cursor = 'grab'; }
+});
+
+// Touch
+chip.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const t = e.touches[0];
+  dragging = true;
+  startMouseX = t.clientX;
+  startMouseY = t.clientY;
+  const pos = getChipStartPos();
+  startLeft = pos.left;
+  startTop  = pos.top;
+}, { passive: false });
+document.addEventListener('touchmove', e => {
+  if (!dragging) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  moveChip(startLeft + (t.clientX - startMouseX), startTop + (t.clientY - startMouseY));
+}, { passive: false });
+document.addEventListener('touchend', () => { dragging = false; });
+
+
+/* ============================================================
+   POSITION PRESETS
+   ============================================================ */
+function setChipPos(preset) {
+  const cardW = cardEl.offsetWidth;
+  const cardH = cardEl.offsetHeight;
+  const chipW = chip.offsetWidth;
+  const chipH = chip.offsetHeight;
+  const PAD   = 22;
+  const map = {
+    'top-left':    { top: PAD,                          left: PAD },
+    'top-center':  { top: PAD,                          left: Math.round((cardW - chipW) / 2) },
+    'top-right':   { top: PAD,                          left: cardW - chipW - PAD },
+    'mid-left':    { top: Math.round((cardH - chipH) / 2), left: PAD },
+    'mid-center':  { top: Math.round((cardH - chipH) / 2), left: Math.round((cardW - chipW) / 2) },
+    'mid-right':   { top: Math.round((cardH - chipH) / 2), left: cardW - chipW - PAD },
+    'bot-left':    { top: cardH - chipH - PAD,          left: PAD },
+    'bot-center':  { top: cardH - chipH - PAD,          left: Math.round((cardW - chipW) / 2) },
+    'bot-right':   { top: cardH - chipH - PAD,          left: cardW - chipW - PAD },
+  };
+  const p = map[preset];
+  if (p) moveChip(p.left, p.top);
+}
+
+
+/* ============================================================
+   DOWNLOAD
+   ============================================================ */
 document.getElementById('download-btn').addEventListener('click', async () => {
   const card = document.getElementById('card');
-  const btn = document.getElementById('download-btn');
+  const btn  = document.getElementById('download-btn');
   btn.textContent = '⏳ Generating...';
   btn.disabled = true;
   try {
@@ -578,19 +1145,28 @@ document.getElementById('download-btn').addEventListener('click', async () => {
       useCORS: true,
       allowTaint: true,
       backgroundColor: null,
-      width: card.offsetWidth,
+      width:  card.offsetWidth,
       height: card.offsetHeight,
     });
     const link = document.createElement('a');
-    link.download = 'classical_shayari_' + Date.now() + '.png';
+    link.download = 'shayari_card_' + Date.now() + '.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
-  } catch(err) {
-    alert('Download mein problem hui. Dobara try karein.');
+  } catch (err) {
+    alert('Download mein problem hui. Please dobara try karein.');
+    console.error(err);
   }
   btn.textContent = '⬇ Download Image (9:16)';
   btn.disabled = false;
 });
+
+
+/* ============================================================
+   INITIALISE
+   ============================================================ */
+renderShayariText();
+buildLineEditor();
+
 </script>
 </body>
 </html>

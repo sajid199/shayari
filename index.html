@@ -17,15 +17,49 @@ body {
   font-family: 'Hind', sans-serif;
   background: #141414;
   color: #fff;
-  display: flex;
-  gap: 24px;
-  padding: 24px;
   min-height: 100vh;
-  align-items: flex-start;
+  padding: 16px;
 }
 
 /* ============================================================
-   LEFT COLUMN — CARD PREVIEW
+   MOBILE LAYOUT — card top, controls below (default/mobile first)
+   ============================================================ */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   DESKTOP LAYOUT — side by side (≥ 900px)
+   ============================================================ */
+@media (min-width: 900px) {
+  body {
+    padding: 24px;
+  }
+  .app-layout {
+    flex-direction: row;
+    align-items: flex-start;
+    max-width: 1000px;
+    gap: 24px;
+  }
+  .card-wrap {
+    position: sticky !important;
+    top: 24px !important;
+  }
+  .controls {
+    max-height: calc(100vh - 48px) !important;
+    overflow-y: auto !important;
+    flex: 1 !important;
+  }
+}
+
+/* ============================================================
+   CARD WRAP
    ============================================================ */
 .card-wrap {
   flex-shrink: 0;
@@ -33,8 +67,18 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  position: sticky;
-  top: 24px;
+  width: 100%;
+  position: static;
+  top: auto;
+}
+
+/* Scale card to fit smaller screens */
+.card-outer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
 #card {
@@ -46,6 +90,16 @@ body {
   box-shadow: 0 24px 64px rgba(0,0,0,0.7);
   background: #d9d9d9;
   user-select: none;
+  /* Scale card to fit small screens */
+  transform-origin: top center;
+}
+
+/* On very small screens, scale the card down */
+@media (max-width: 400px) {
+  #card {
+    width: 320px;
+    height: 568px;
+  }
 }
 
 /* Layers */
@@ -105,7 +159,7 @@ body {
   color:#111;
   text-align:center;
   width:100%;
-  pointer-events: none; /* clicks go to words via editor, not direct */
+  pointer-events: none;
 }
 
 /* Word spans for per-word zoom */
@@ -120,9 +174,8 @@ body {
   background: rgba(100,180,255,0.12);
   border-radius: 3px;
 }
-/* Ensure word-level inline color always wins over inherited line/global color */
 #shayari-text .line-span .word-span[style*="color"] {
-  color: inherit; /* placeholder — actual value comes from inline style attribute */
+  color: inherit;
 }
 
 /* Line spans */
@@ -164,7 +217,6 @@ body {
 }
 #word-zoom-bar .wz-reset:hover { color: #ccc; }
 
-/* Color picker circle inside zoom bar */
 #word-zoom-bar .wz-color-wrap {
   position: relative;
   width: 22px; height: 22px;
@@ -222,7 +274,8 @@ body {
    DOWNLOAD BTN
    ============================================================ */
 #download-btn {
-  width: 360px;
+  width: 100%;
+  max-width: 360px;
   background: linear-gradient(135deg,#1a1a1a,#333);
   border: 1px solid #444;
   border-radius: 12px;
@@ -239,19 +292,20 @@ body {
 #download-btn:disabled { opacity:0.5;cursor:not-allowed;transform:none; }
 
 /* ============================================================
-   RIGHT COLUMN — CONTROLS
+   CONTROLS COLUMN
    ============================================================ */
 .controls {
-  flex:1;
-  max-width:460px;
+  width: 100%;
   display:flex;flex-direction:column;gap:14px;
-  max-height:calc(100vh - 48px);
-  overflow-y:auto;
-  padding-right:4px;padding-bottom:28px;
+  overflow-y: visible;
+  padding-bottom: 28px;
 }
-.controls::-webkit-scrollbar{width:3px;}
-.controls::-webkit-scrollbar-track{background:transparent;}
-.controls::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:4px;}
+
+@media (min-width: 900px) {
+  .controls::-webkit-scrollbar{width:3px;}
+  .controls::-webkit-scrollbar-track{background:transparent;}
+  .controls::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:4px;}
+}
 
 /* Panel */
 .panel {
@@ -353,10 +407,7 @@ input[type="file"]  { display:none; }
 .bg-swatch.active { border-color:#fff; }
 
 /* Per-line editor */
-#line-editor-list { display:flex;flex-direction:column;gap:7px;max-height:360px;overflow-y:auto;padding-right:2px; }
-#line-editor-list::-webkit-scrollbar{width:3px;}
-#line-editor-list::-webkit-scrollbar-track{background:#0e0e0e;border-radius:4px;}
-#line-editor-list::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:4px;}
+#line-editor-list { display:flex;flex-direction:column;gap:7px;padding-right:2px; }
 
 .line-row {
   background:#111;border:1px solid #222;border-radius:9px;
@@ -408,212 +459,218 @@ input[type="file"]  { display:none; }
 </head>
 <body>
 
-<!-- ============================================================
-     LEFT — CARD PREVIEW
-     ============================================================ -->
-<div class="card-wrap">
-  <div id="card">
-    <div id="bg-layer"></div>
-    <div id="bg-image-layer"></div>
-    <div id="overlay-layer"></div>
+<div class="app-layout">
 
-    <!-- Word Zoom Floating Bar (inside card) -->
-    <div id="word-zoom-bar">
-      <button id="wz-minus">−</button>
-      <span class="wz-size" id="wz-size-display">23px</span>
-      <button id="wz-plus">+</button>
-      <div class="wz-divider"></div>
-      <div class="wz-color-wrap" title="Word ka colour badlein">
-        <div class="wz-color-swatch" id="wz-color-swatch"></div>
-        <input type="color" id="wz-color-picker" value="#111111">
+  <!-- ============================================================
+       TOP / LEFT — CARD PREVIEW
+       ============================================================ -->
+  <div class="card-wrap">
+    <div class="card-outer">
+      <div id="card">
+        <div id="bg-layer"></div>
+        <div id="bg-image-layer"></div>
+        <div id="overlay-layer"></div>
+
+        <!-- Word Zoom Floating Bar (inside card) -->
+        <div id="word-zoom-bar">
+          <button id="wz-minus">−</button>
+          <span class="wz-size" id="wz-size-display">23px</span>
+          <button id="wz-plus">+</button>
+          <div class="wz-divider"></div>
+          <div class="wz-color-wrap" title="Word ka colour badlein">
+            <div class="wz-color-swatch" id="wz-color-swatch"></div>
+            <input type="color" id="wz-color-picker" value="#111111">
+          </div>
+          <button class="wz-reset" id="wz-reset">✕</button>
+        </div>
+
+        <!-- Draggable Profile Chip -->
+        <div id="profile-chip">
+          <div id="avatar-wrap">✍️</div>
+          <div id="profile-info">
+            <div id="profile-name-display">Ghalib Nama</div>
+            <div id="profile-handle-display">@Ghalibnama</div>
+          </div>
+        </div>
+
+        <!-- Draggable Shayari Text Block -->
+        <div id="shayari-display">
+          <div id="shayari-text"></div>
+          <div id="text-drag-hint">↕ drag to reposition</div>
+        </div>
+
+        <!-- Watermark -->
+        <div id="watermark">@Ghalibnama</div>
       </div>
-      <button class="wz-reset" id="wz-reset">✕</button>
+
+      <button id="download-btn">⬇ Download Image (9:16)</button>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       BOTTOM / RIGHT — CONTROLS
+       ============================================================ -->
+  <div class="controls">
+
+    <!-- 1. PROFILE SELECT -->
+    <div class="panel">
+      <div class="panel-title">📄 Select Facebook Page</div>
+      <div class="profile-tabs" id="profile-tabs">
+        <div class="ptab active" data-idx="0">
+          <div class="pt-name">Ghalib Nama</div>
+          <div class="pt-handle">@Ghalibnama</div>
+        </div>
+        <div class="ptab" data-idx="1">
+          <div class="pt-name">Arpita</div>
+          <div class="pt-handle">@Missingsadly</div>
+        </div>
+        <div class="ptab" data-idx="2">
+          <div class="pt-name">Anju</div>
+          <div class="pt-handle">@thoughtsofanju</div>
+        </div>
+        <div class="ptab" data-idx="3">
+          <div class="pt-name">Shayari Dairy</div>
+          <div class="pt-handle">@anjuclassical</div>
+        </div>
+      </div>
+      <p class="panel-desc" style="margin-bottom:0">
+        ⚙️ <b style="color:#666">Avatar path set karne ke liye:</b> neeche <code style="color:#888;background:#111;padding:1px 5px;border-radius:4px">PROFILE_AVATARS</code> object mein apna path daalein.
+      </p>
     </div>
 
-    <!-- Draggable Profile Chip -->
-    <div id="profile-chip">
-      <div id="avatar-wrap">✍️</div>
-      <div id="profile-info">
-        <div id="profile-name-display">Ghalib Nama</div>
-        <div id="profile-handle-display">@Ghalibnama</div>
+
+    <!-- 2. SHAYARI TEXT -->
+    <div class="panel">
+      <div class="panel-title">✍️ Shayari Text</div>
+      <label>Shayari / Quote likhein</label>
+      <textarea id="shayari-input" placeholder="Apni shayari yahan likhein..."></textarea>
+      <label>Watermark text</label>
+      <input type="text" id="watermark-input" value="@Ghalibnama">
+    </div>
+
+
+    <!-- 3. WORD ZOOM -->
+    <div class="panel">
+      <div class="panel-title">🔍 Word Zoom (Per-Word Size)</div>
+      <div class="word-zoom-info">
+        Kisi bhi <b>word ko card par click</b> karein — uske upar ek zoom bar aayega.<br>
+        <b>+ / −</b> se us word ka size badhayein ya ghatayein.<br>
+        <b>✕</b> se us word ka override hata dein.<br>
+        Aap card par <b>scroll</b> (mouse wheel) bhi kar sakte hain word select karne ke baad.
+      </div>
+      <button id="clear-all-word-overrides" style="width:100%;background:#111;border:1px solid #2a2a2a;border-radius:8px;color:#777;font-size:12px;padding:8px;cursor:pointer;font-family:'Hind',sans-serif;transition:color 0.2s,border-color 0.2s;">
+        🗑 Sabhi Word Overrides Hataayein
+      </button>
+    </div>
+
+
+    <!-- 4. PER-LINE STYLE -->
+    <div class="panel">
+      <div class="panel-title">🎨 Per-Line Style</div>
+      <p class="panel-desc">Har line ka alag colour aur size set karein. Circle = colour, Slider = size.</p>
+      <div id="line-editor-list"></div>
+    </div>
+
+
+    <!-- 5. PROFILE CHIP -->
+    <div class="panel">
+      <div class="panel-title">👤 Profile Chip</div>
+
+      <label>Display Name</label>
+      <input type="text" id="pname-input" value="Ghalib Nama">
+
+      <label>Handle / Username</label>
+      <input type="text" id="phandle-input" value="@Ghalibnama">
+
+      <label>Profile Picture (manual override)</label>
+      <label class="upload-btn" for="avatar-upload">🖼️ &nbsp;Avatar Upload Karein</label>
+      <input type="file" id="avatar-upload" accept="image/*">
+
+      <label>Name Colour</label>
+      <div class="color-row">
+        <input type="color" id="name-color" value="#111111">
+        <span>Profile name ka rang</span>
+      </div>
+      <label>Handle Colour</label>
+      <div class="color-row">
+        <input type="color" id="handle-color" value="#555555">
+        <span>Handle ka rang</span>
+      </div>
+
+      <label style="margin-top:16px">Profile Chip Position</label>
+      <p class="panel-desc" style="margin-bottom:0">Card par directly drag karein, ya preset chunein:</p>
+      <div class="pos-grid">
+        <button class="pos-btn" onclick="setChipPos('top-left')">↖ Top L</button>
+        <button class="pos-btn" onclick="setChipPos('top-center')">↑ Top C</button>
+        <button class="pos-btn" onclick="setChipPos('top-right')">↗ Top R</button>
+        <button class="pos-btn" onclick="setChipPos('mid-left')">← Mid L</button>
+        <button class="pos-btn" onclick="setChipPos('mid-center')">• Center</button>
+        <button class="pos-btn" onclick="setChipPos('mid-right')">→ Mid R</button>
+        <button class="pos-btn" onclick="setChipPos('bot-left')">↙ Bot L</button>
+        <button class="pos-btn" onclick="setChipPos('bot-center')">↓ Bot C</button>
+        <button class="pos-btn" onclick="setChipPos('bot-right')">↘ Bot R</button>
+      </div>
+      <div class="chip-pos-display" id="chip-pos-display">top: 22px, left: 22px</div>
+    </div>
+
+
+    <!-- 6. TEXT BLOCK POSITION -->
+    <div class="panel">
+      <div class="panel-title">↕ Text Block Position</div>
+      <p class="panel-desc">Shayari text block ko card par drag karein, ya neeche presets se set karein:</p>
+      <div class="pos-grid">
+        <button class="pos-btn" onclick="setTextPos('top')">↑ Top</button>
+        <button class="pos-btn" onclick="setTextPos('center')">• Center</button>
+        <button class="pos-btn" onclick="setTextPos('bottom')">↓ Bottom</button>
+      </div>
+      <div class="chip-pos-display" id="text-pos-display">top: 100px, left: 36px</div>
+    </div>
+
+
+    <!-- 7. GLOBAL FONT & STYLE -->
+    <div class="panel">
+      <div class="panel-title">🔤 Global Font &amp; Style</div>
+      <div class="font-grid" id="font-grid"></div>
+
+      <label style="margin-top:14px">Global Font Size: <span class="val" id="fs-val">23px</span></label>
+      <input type="range" id="font-size" min="10" max="48" value="23">
+
+      <label>Line Height: <span class="val" id="lh-val">2.05</span></label>
+      <input type="range" id="line-height" min="10" max="40" value="21">
+
+      <label>Global Text Colour</label>
+      <div class="color-row">
+        <input type="color" id="text-color" value="#111111">
+        <span>Per-line override na hone par apply hoga</span>
+      </div>
+
+      <label>Text Alignment</label>
+      <div class="align-row">
+        <button class="align-btn active" data-align="center">Center</button>
+        <button class="align-btn" data-align="left">Left</button>
+        <button class="align-btn" data-align="right">Right</button>
       </div>
     </div>
 
-    <!-- Draggable Shayari Text Block -->
-    <div id="shayari-display">
-      <div id="shayari-text"></div>
-      <div id="text-drag-hint">↕ drag to reposition</div>
+
+    <!-- 8. BACKGROUND -->
+    <div class="panel">
+      <div class="panel-title">🖼️ Background</div>
+      <label>Presets</label>
+      <div class="bg-list" id="bg-list"></div>
+
+      <label style="margin-top:12px">Custom Background Image</label>
+      <label class="upload-btn" for="bg-upload">📁 &nbsp;Image Choose Karein</label>
+      <input type="file" id="bg-upload" accept="image/*">
+
+      <label>White Overlay: <span class="val" id="ov-val">0%</span></label>
+      <input type="range" id="overlay-range" min="0" max="85" value="0">
     </div>
 
-    <!-- Watermark -->
-    <div id="watermark">@Ghalibnama</div>
-  </div>
+  </div><!-- end .controls -->
 
-  <button id="download-btn">⬇ Download Image (9:16)</button>
-</div>
-
-
-<!-- ============================================================
-     RIGHT — CONTROLS
-     ============================================================ -->
-<div class="controls">
-
-  <!-- 1. PROFILE SELECT -->
-  <div class="panel">
-    <div class="panel-title">📄 Select Facebook Page</div>
-    <div class="profile-tabs" id="profile-tabs">
-      <div class="ptab active" data-idx="0">
-        <div class="pt-name">Ghalib Nama</div>
-        <div class="pt-handle">@Ghalibnama</div>
-      </div>
-      <div class="ptab" data-idx="1">
-        <div class="pt-name">Arpita</div>
-        <div class="pt-handle">@Missingsadly</div>
-      </div>
-      <div class="ptab" data-idx="2">
-        <div class="pt-name">Anju</div>
-        <div class="pt-handle">@thoughtsofanju</div>
-      </div>
-      <div class="ptab" data-idx="3">
-        <div class="pt-name">Shayari Dairy</div>
-        <div class="pt-handle">@anjuclassical</div>
-      </div>
-    </div>
-    <p class="panel-desc" style="margin-bottom:0">
-      ⚙️ <b style="color:#666">Avatar path set karne ke liye:</b> neeche <code style="color:#888;background:#111;padding:1px 5px;border-radius:4px">PROFILE_AVATARS</code> object mein apna path daalein.
-    </p>
-  </div>
-
-
-  <!-- 2. SHAYARI TEXT -->
-  <div class="panel">
-    <div class="panel-title">✍️ Shayari Text</div>
-    <label>Shayari / Quote likhein</label>
-    <textarea id="shayari-input" placeholder="Apni shayari yahan likhein..."></textarea>
-    <label>Watermark text</label>
-    <input type="text" id="watermark-input" value="@Ghalibnama">
-  </div>
-
-
-  <!-- 3. WORD ZOOM -->
-  <div class="panel">
-    <div class="panel-title">🔍 Word Zoom (Per-Word Size)</div>
-    <div class="word-zoom-info">
-      Kisi bhi <b>word ko card par click</b> karein — uske upar ek zoom bar aayega.<br>
-      <b>+ / −</b> se us word ka size badhayein ya ghatayein.<br>
-      <b>✕</b> se us word ka override hata dein.<br>
-      Aap card par <b>scroll</b> (mouse wheel) bhi kar sakte hain word select karne ke baad.
-    </div>
-    <button id="clear-all-word-overrides" style="width:100%;background:#111;border:1px solid #2a2a2a;border-radius:8px;color:#777;font-size:12px;padding:8px;cursor:pointer;font-family:'Hind',sans-serif;transition:color 0.2s,border-color 0.2s;">
-      🗑 Sabhi Word Overrides Hataayein
-    </button>
-  </div>
-
-
-  <!-- 4. PER-LINE STYLE -->
-  <div class="panel">
-    <div class="panel-title">🎨 Per-Line Style</div>
-    <p class="panel-desc">Har line ka alag colour aur size set karein. Circle = colour, Slider = size.</p>
-    <div id="line-editor-list"></div>
-  </div>
-
-
-  <!-- 5. PROFILE CHIP -->
-  <div class="panel">
-    <div class="panel-title">👤 Profile Chip</div>
-
-    <label>Display Name</label>
-    <input type="text" id="pname-input" value="Ghalib Nama">
-
-    <label>Handle / Username</label>
-    <input type="text" id="phandle-input" value="@Ghalibnama">
-
-    <label>Profile Picture (manual override)</label>
-    <label class="upload-btn" for="avatar-upload">🖼️ &nbsp;Avatar Upload Karein</label>
-    <input type="file" id="avatar-upload" accept="image/*">
-
-    <label>Name Colour</label>
-    <div class="color-row">
-      <input type="color" id="name-color" value="#111111">
-      <span>Profile name ka rang</span>
-    </div>
-    <label>Handle Colour</label>
-    <div class="color-row">
-      <input type="color" id="handle-color" value="#555555">
-      <span>Handle ka rang</span>
-    </div>
-
-    <label style="margin-top:16px">Profile Chip Position</label>
-    <p class="panel-desc" style="margin-bottom:0">Card par directly drag karein, ya preset chunein:</p>
-    <div class="pos-grid">
-      <button class="pos-btn" onclick="setChipPos('top-left')">↖ Top L</button>
-      <button class="pos-btn" onclick="setChipPos('top-center')">↑ Top C</button>
-      <button class="pos-btn" onclick="setChipPos('top-right')">↗ Top R</button>
-      <button class="pos-btn" onclick="setChipPos('mid-left')">← Mid L</button>
-      <button class="pos-btn" onclick="setChipPos('mid-center')">• Center</button>
-      <button class="pos-btn" onclick="setChipPos('mid-right')">→ Mid R</button>
-      <button class="pos-btn" onclick="setChipPos('bot-left')">↙ Bot L</button>
-      <button class="pos-btn" onclick="setChipPos('bot-center')">↓ Bot C</button>
-      <button class="pos-btn" onclick="setChipPos('bot-right')">↘ Bot R</button>
-    </div>
-    <div class="chip-pos-display" id="chip-pos-display">top: 22px, left: 22px</div>
-  </div>
-
-
-  <!-- 6. TEXT BLOCK POSITION -->
-  <div class="panel">
-    <div class="panel-title">↕ Text Block Position</div>
-    <p class="panel-desc">Shayari text block ko card par drag karein, ya neeche presets se set karein:</p>
-    <div class="pos-grid">
-      <button class="pos-btn" onclick="setTextPos('top')">↑ Top</button>
-      <button class="pos-btn" onclick="setTextPos('center')">• Center</button>
-      <button class="pos-btn" onclick="setTextPos('bottom')">↓ Bottom</button>
-    </div>
-    <div class="chip-pos-display" id="text-pos-display">top: 100px, left: 36px</div>
-  </div>
-
-
-  <!-- 7. GLOBAL FONT & STYLE -->
-  <div class="panel">
-    <div class="panel-title">🔤 Global Font &amp; Style</div>
-    <div class="font-grid" id="font-grid"></div>
-
-    <label style="margin-top:14px">Global Font Size: <span class="val" id="fs-val">23px</span></label>
-    <input type="range" id="font-size" min="10" max="48" value="23">
-
-    <label>Line Height: <span class="val" id="lh-val">2.05</span></label>
-    <input type="range" id="line-height" min="10" max="40" value="21">
-
-    <label>Global Text Colour</label>
-    <div class="color-row">
-      <input type="color" id="text-color" value="#111111">
-      <span>Per-line override na hone par apply hoga</span>
-    </div>
-
-    <label>Text Alignment</label>
-    <div class="align-row">
-      <button class="align-btn active" data-align="center">Center</button>
-      <button class="align-btn" data-align="left">Left</button>
-      <button class="align-btn" data-align="right">Right</button>
-    </div>
-  </div>
-
-
-  <!-- 8. BACKGROUND -->
-  <div class="panel">
-    <div class="panel-title">🖼️ Background</div>
-    <label>Presets</label>
-    <div class="bg-list" id="bg-list"></div>
-
-    <label style="margin-top:12px">Custom Background Image</label>
-    <label class="upload-btn" for="bg-upload">📁 &nbsp;Image Choose Karein</label>
-    <input type="file" id="bg-upload" accept="image/*">
-
-    <label>White Overlay: <span class="val" id="ov-val">0%</span></label>
-    <input type="range" id="overlay-range" min="0" max="85" value="0">
-  </div>
-
-</div><!-- end .controls -->
+</div><!-- end .app-layout -->
 
 
 <script>
@@ -740,28 +797,22 @@ function renderShayariText() {
 
 // Simple word indexer — count non-whitespace segments
 function getWordIndex(lineIdx, segment, rawIdx) {
-  // just use rawIdx as word position (stable per render)
   return rawIdx;
 }
 
 function applyLineStyle(lineSpan, i) {
   const ov = lineOverrides[i];
-  // Font size on line-span is fine (word-span font-size overrides via inline style)
   lineSpan.style.fontSize = (ov && ov.fontSize !== null) ? ov.fontSize + 'px' : '';
-  // Do NOT set color on line-span — apply it to each word-span so word-level
-  // color overrides (inline style) can win via CSS specificity.
   const lineColor = (ov && ov.color !== null) ? ov.color : globalColor;
   lineSpan.querySelectorAll('.word-span').forEach(ws => {
     const wKey = ws.dataset.key;
     const wOv  = wordOverrides[wKey];
-    // Word override color wins; otherwise use line/global color
     if (wOv && wOv.color !== undefined) {
       ws.style.color = wOv.color;
     } else {
       ws.style.color = lineColor;
     }
   });
-  // For empty lines (no word-spans), set color directly
   if (!lineSpan.querySelector('.word-span')) {
     lineSpan.style.color = lineColor;
   } else {
@@ -780,7 +831,6 @@ function updateSingleSpan(i) {
 const wordZoomBar = document.getElementById('word-zoom-bar');
 
 function enableWordClicks() {
-  // We overlay a transparent div to catch clicks, then find word
   const textEl = document.getElementById('shayari-text');
   textEl.style.pointerEvents = 'auto';
 
@@ -790,18 +840,15 @@ function enableWordClicks() {
 }
 
 function handleWordClick(e) {
-  // Don't trigger during drag
   if (textBlockDragging) return;
   e.stopPropagation();
 
   const key = e.target.dataset.key;
   if (!key) return;
 
-  // Deselect old
   document.querySelectorAll('.word-span.selected-word').forEach(w => w.classList.remove('selected-word'));
 
   if (selectedWordKey === key) {
-    // Toggle off
     selectedWordKey = null;
     wordZoomBar.style.display = 'none';
     return;
@@ -810,7 +857,6 @@ function handleWordClick(e) {
   selectedWordKey = key;
   e.target.classList.add('selected-word');
 
-  // Position zoom bar above the word
   const cardRect = document.getElementById('card').getBoundingClientRect();
   const wordRect = e.target.getBoundingClientRect();
   const barLeft  = wordRect.left + wordRect.width / 2 - cardRect.left;
@@ -820,12 +866,10 @@ function handleWordClick(e) {
   wordZoomBar.style.top     = Math.max(4, barTop) + 'px';
   wordZoomBar.style.display = 'flex';
 
-  // Show current size
   const curSize = wordOverrides[key] !== undefined && wordOverrides[key].fontSize !== undefined
     ? wordOverrides[key].fontSize : globalFontSize;
   document.getElementById('wz-size-display').textContent = curSize + 'px';
 
-  // Show current color in picker
   const curColor = wordOverrides[key] !== undefined && wordOverrides[key].color !== undefined
     ? wordOverrides[key].color : globalColor;
   document.getElementById('wz-color-picker').value = curColor;
@@ -862,28 +906,22 @@ document.getElementById('wz-reset').addEventListener('click', () => {
   wordZoomBar.style.display = 'none';
 });
 
-// Word color picker
 document.getElementById('wz-color-picker').addEventListener('input', e => {
   if (!selectedWordKey) return;
   const color = e.target.value;
   if (!wordOverrides[selectedWordKey]) wordOverrides[selectedWordKey] = {};
   wordOverrides[selectedWordKey].color = color;
   document.getElementById('wz-color-swatch').style.background = color;
-  // Apply color directly to the word span
   const ws = document.querySelector(`.word-span[data-key="${selectedWordKey}"]`);
-  if (ws) {
-    ws.style.color = color;
-  }
+  if (ws) { ws.style.color = color; }
 });
 
-// Mouse wheel zoom on selected word
 document.getElementById('card').addEventListener('wheel', e => {
   if (!selectedWordKey) return;
   e.preventDefault();
   adjustSelectedWordSize(e.deltaY < 0 ? 2 : -2);
 }, { passive: false });
 
-// Click outside card → deselect
 document.addEventListener('click', e => {
   if (!document.getElementById('card').contains(e.target)) {
     document.querySelectorAll('.word-span.selected-word').forEach(w => w.classList.remove('selected-word'));
@@ -892,7 +930,6 @@ document.addEventListener('click', e => {
   }
 });
 
-// Clear all word overrides
 document.getElementById('clear-all-word-overrides').addEventListener('click', () => {
   wordOverrides = {};
   selectedWordKey = null;
@@ -1005,7 +1042,7 @@ function buildLineEditor() {
 const shayariInput = document.getElementById('shayari-input');
 shayariInput.value = DEFAULT_TEXT;
 shayariInput.addEventListener('input', () => {
-  wordOverrides = {};  // reset word overrides when text changes
+  wordOverrides = {};
   renderShayariText();
   buildLineEditor();
 });
@@ -1061,7 +1098,6 @@ function loadProfile(idx) {
   document.getElementById('profile-handle-display').textContent = p.handle;
   document.getElementById('watermark').textContent = p.watermark;
 
-  // Avatar: try path first, fallback to emoji
   const avatarWrap = document.getElementById('avatar-wrap');
   const avatarPath = PROFILE_AVATARS[idx];
   if (avatarPath) {
@@ -1070,7 +1106,6 @@ function loadProfile(idx) {
     avatarWrap.innerHTML = p.emoji;
   }
 
-  // Update tabs
   document.querySelectorAll('.ptab').forEach((t, i) => {
     t.classList.toggle('active', i === idx);
   });
@@ -1106,8 +1141,6 @@ document.getElementById('line-height').addEventListener('input', e => {
    ============================================================ */
 document.getElementById('text-color').addEventListener('input', e => {
   globalColor = e.target.value;
-  // Re-apply all line styles so word overrides are preserved
-  const lines = getLines();
   const lineSpans = document.querySelectorAll('#shayari-text .line-span');
   lineSpans.forEach((ls, i) => applyLineStyle(ls, i));
   buildLineEditor();
@@ -1294,7 +1327,6 @@ function moveTextBlock(newLeft, newTop) {
 }
 
 textBlock.addEventListener('mousedown', e => {
-  // Only drag if target is NOT a word span
   if (e.target.classList.contains('word-span')) return;
   e.preventDefault();
   textBlockDragging = true;
@@ -1340,11 +1372,9 @@ function setTextPos(preset) {
    DOWNLOAD
    ============================================================ */
 document.getElementById('download-btn').addEventListener('click', async () => {
-  // Hide word zoom bar before capture
   wordZoomBar.style.display = 'none';
   document.getElementById('text-drag-hint').style.display = 'none';
 
-  // Deselect word
   document.querySelectorAll('.word-span.selected-word').forEach(w => w.classList.remove('selected-word'));
   selectedWordKey = null;
 

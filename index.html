@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Classical Author Template</title>
+<title>Shayari Card Maker — 4 Pages</title>
 <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&family=Rozha+One&family=Noto+Serif+Devanagari:wght@400;700&family=Baloo+2:wght@700;800&family=Martel:wght@700;900&family=Yatra+One&family=Mukta:wght@700&family=Eczar:wght@700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -15,26 +15,26 @@
 
 body {
   font-family: 'Hind', sans-serif;
-  background: #181818;
+  background: #141414;
   color: #fff;
   display: flex;
-  gap: 28px;
-  padding: 28px;
+  gap: 24px;
+  padding: 24px;
   min-height: 100vh;
   align-items: flex-start;
 }
 
 /* ============================================================
-   CARD PREVIEW COLUMN
+   LEFT COLUMN — CARD PREVIEW
    ============================================================ */
 .card-wrap {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   position: sticky;
-  top: 28px;
+  top: 24px;
 }
 
 #card {
@@ -43,41 +43,24 @@ body {
   position: relative;
   overflow: hidden;
   border-radius: 18px;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.7);
   background: #d9d9d9;
   user-select: none;
 }
 
-/* Background layers */
-#bg-layer {
-  position: absolute; inset: 0;
-  background: linear-gradient(160deg,#d2d2d2,#e2e2e2,#cacaca);
-  transition: background 0.3s;
-  z-index: 0;
-}
-#bg-image-layer {
-  position: absolute; inset: 0;
-  background-size: cover;
-  background-position: center;
-  opacity: 0;
-  transition: opacity 0.3s;
-  z-index: 1;
-}
-#overlay-layer {
-  position: absolute; inset: 0;
-  background: rgba(255,255,255,0);
-  z-index: 2;
-}
+/* Layers */
+#bg-layer       { position:absolute;inset:0;background:linear-gradient(160deg,#d2d2d2,#e2e2e2,#cacaca);transition:background 0.3s;z-index:0; }
+#bg-image-layer { position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 0.3s;z-index:1; }
+#overlay-layer  { position:absolute;inset:0;background:rgba(255,255,255,0);z-index:2; }
 
-/* Profile chip — freely draggable */
+/* ---- PROFILE CHIP (draggable) ---- */
 #profile-chip {
   position: absolute;
-  top: 22px;
-  left: 22px;
+  top: 22px; left: 22px;
   display: flex;
   align-items: center;
   gap: 10px;
-  z-index: 10;
+  z-index: 20;
   cursor: grab;
   touch-action: none;
 }
@@ -89,432 +72,337 @@ body {
   overflow: hidden;
   background: #888;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  color: #fff;
-  filter: grayscale(30%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: #fff;
 }
-#avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
-
-#profile-info { display: flex; flex-direction: column; gap: 1px; }
+#avatar-wrap img { width:100%;height:100%;object-fit:cover; }
 
 #profile-name-display {
-  font-family: 'Hind', sans-serif;
-  font-weight: 700;
-  font-style: italic;
-  font-size: 14px;
-  color: #111;
-  line-height: 1.3;
-  letter-spacing: 0.2px;
-  white-space: nowrap;
+  font-family:'Hind',sans-serif;font-weight:700;font-style:italic;
+  font-size:14px;color:#111;line-height:1.3;white-space:nowrap;
 }
 #profile-handle-display {
-  font-family: 'Hind', sans-serif;
-  font-weight: 400;
-  font-size: 12px;
-  color: #555;
-  line-height: 1.3;
-  white-space: nowrap;
+  font-family:'Hind',sans-serif;font-weight:400;
+  font-size:12px;color:#555;line-height:1.3;white-space:nowrap;
 }
 
-/* Shayari text block */
+/* ---- SHAYARI TEXT (draggable) ---- */
 #shayari-display {
   position: absolute;
-  inset: 0;
+  top: 100px; left: 36px;
+  right: 36px;
   z-index: 9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 100px 36px 80px;
-  pointer-events: none;
+  cursor: grab;
+  touch-action: none;
 }
+#shayari-display:active { cursor: grabbing; }
 
 #shayari-text {
-  font-family: 'Hind', sans-serif;
-  font-weight: 700;
-  font-size: 23px;
-  line-height: 2.05;
-  color: #111;
-  text-align: center;
-  width: 100%;
+  font-family:'Hind',sans-serif;
+  font-weight:700;
+  font-size:23px;
+  line-height:2.05;
+  color:#111;
+  text-align:center;
+  width:100%;
+  pointer-events: none; /* clicks go to words via editor, not direct */
 }
 
-/* Each line is a separate block so we can style it individually */
-#shayari-text .line-span {
-  display: block;
+/* Word spans for per-word zoom */
+#shayari-text .word-span {
+  display: inline;
+  cursor: default;
+  transition: outline 0.1s;
+  border-radius: 2px;
+}
+#shayari-text .word-span.selected-word {
+  outline: 2px solid rgba(100,180,255,0.8);
+  background: rgba(100,180,255,0.12);
+  border-radius: 3px;
+}
+/* Ensure word-level inline color always wins over inherited line/global color */
+#shayari-text .line-span .word-span[style*="color"] {
+  color: inherit; /* placeholder — actual value comes from inline style attribute */
 }
 
-/* Watermark */
-#watermark {
+/* Line spans */
+#shayari-text .line-span { display: block; }
+
+/* WORD ZOOM TOOLTIP inside card */
+#word-zoom-bar {
   position: absolute;
-  bottom: 20px;
-  left: 0; right: 0;
-  text-align: center;
-  font-family: 'Hind', sans-serif;
-  font-size: 11px;
-  color: rgba(0,0,0,0.28);
-  letter-spacing: 1px;
-  z-index: 10;
-  pointer-events: none;
-}
-
-/* ============================================================
-   DOWNLOAD BUTTON
-   ============================================================ */
-#download-btn {
-  width: 360px;
-  background: linear-gradient(135deg, #222, #444);
-  border: none;
-  border-radius: 12px;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-  padding: 14px;
-  cursor: pointer;
-  letter-spacing: 0.5px;
-  transition: opacity 0.2s, transform 0.15s;
-  font-family: 'Hind', sans-serif;
-}
-#download-btn:hover { opacity: 0.85; transform: translateY(-1px); }
-#download-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-/* ============================================================
-   CONTROLS COLUMN
-   ============================================================ */
-.controls {
-  flex: 1;
-  max-width: 450px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  max-height: calc(100vh - 56px);
-  overflow-y: auto;
-  padding-right: 6px;
-  padding-bottom: 28px;
-}
-.controls::-webkit-scrollbar { width: 4px; }
-.controls::-webkit-scrollbar-track { background: transparent; }
-.controls::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-
-/* Panel card */
-.panel {
-  background: #1e1e1e;
-  border: 1px solid #2c2c2c;
-  border-radius: 14px;
-  padding: 18px;
-}
-.panel-title {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #ccc;
-  margin-bottom: 14px;
-}
-.panel-desc {
-  font-size: 11px;
-  color: #555;
-  line-height: 1.6;
-  margin-bottom: 12px;
-}
-
-/* Form elements */
-label {
-  display: block;
-  font-size: 11px;
-  color: #888;
-  margin-bottom: 5px;
-  margin-top: 12px;
-}
-label:first-of-type { margin-top: 0; }
-
-textarea {
-  width: 100%;
-  background: #111;
-  border: 1px solid #333;
-  border-radius: 8px;
-  color: #fff;
-  font-size: 15px;
-  padding: 12px;
-  resize: vertical;
-  min-height: 130px;
-  font-family: 'Hind', sans-serif;
-  line-height: 1.8;
-  outline: none;
-  transition: border 0.2s;
-}
-textarea:focus { border-color: #aaa; }
-
-input[type="text"] {
-  width: 100%;
-  background: #111;
-  border: 1px solid #333;
-  border-radius: 8px;
-  color: #fff;
-  font-size: 13px;
-  padding: 9px 12px;
-  outline: none;
-  font-family: 'Hind', sans-serif;
-  transition: border 0.2s;
-}
-input[type="text"]:focus { border-color: #aaa; }
-
-input[type="range"] {
-  width: 100%;
-  accent-color: #ccc;
-  cursor: pointer;
-}
-
-input[type="color"] {
-  width: 40px; height: 32px;
-  border: none;
-  border-radius: 6px;
-  background: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-input[type="file"] { display: none; }
-
-/* Value badge */
-.val {
-  background: #2a2a2a;
-  border-radius: 4px;
-  padding: 2px 7px;
-  font-size: 11px;
-  color: #ccc;
-  min-width: 36px;
-  text-align: center;
-  display: inline-block;
-}
-
-/* Color row */
-.color-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
-.color-row span { font-size: 11px; color: #666; }
-
-/* Upload button */
-.upload-btn {
-  display: block;
-  background: #1a1a1a;
-  border: 1px dashed #3a3a3a;
-  border-radius: 8px;
-  color: #888;
-  font-size: 12px;
-  padding: 9px;
-  text-align: center;
-  cursor: pointer;
-  transition: border 0.2s, color 0.2s;
-  margin-top: 8px;
-  font-family: 'Hind', sans-serif;
-}
-.upload-btn:hover { border-color: #ccc; color: #ccc; }
-
-/* ============================================================
-   FONT GRID
-   ============================================================ */
-.font-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 7px;
-}
-.font-card {
-  background: #111;
-  border: 2px solid #2a2a2a;
-  border-radius: 8px;
-  padding: 9px 8px 7px;
-  cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
-  text-align: center;
-}
-.font-card:hover { border-color: #555; background: #161616; }
-.font-card.active { border-color: #ccc; background: #1c1c1c; }
-.font-card .fp { font-size: 17px; color: #fff; line-height: 1.5; margin-bottom: 3px; }
-.font-card .fn { font-size: 9px; color: #666; letter-spacing: 0.5px; text-transform: uppercase; }
-
-/* Alignment buttons */
-.align-row { display: flex; gap: 8px; margin-top: 4px; }
-.align-btn {
-  flex: 1;
-  background: #111;
-  border: 2px solid #2a2a2a;
-  border-radius: 8px;
-  color: #888;
-  font-size: 12px;
-  padding: 8px 4px;
-  cursor: pointer;
-  font-family: 'Hind', sans-serif;
-  transition: border-color 0.2s, color 0.2s, background 0.2s;
-  text-align: center;
-}
-.align-btn:hover { border-color: #555; color: #ccc; }
-.align-btn.active { border-color: #ccc; background: #1c1c1c; color: #fff; }
-
-/* ============================================================
-   BACKGROUND SWATCHES
-   ============================================================ */
-.bg-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
-.bg-swatch {
-  width: 38px; height: 38px;
-  border-radius: 8px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: border 0.2s, transform 0.15s;
-  position: relative;
-}
-.bg-swatch:hover { transform: scale(1.1); }
-.bg-swatch.active { border-color: #fff; }
-
-/* ============================================================
-   PER-LINE EDITOR
-   ============================================================ */
-#line-editor-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 380px;
-  overflow-y: auto;
-  padding-right: 2px;
-}
-#line-editor-list::-webkit-scrollbar { width: 3px; }
-#line-editor-list::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
-#line-editor-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-
-.line-row {
-  background: #141414;
-  border: 1px solid #262626;
-  border-radius: 10px;
-  padding: 10px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transition: border-color 0.2s;
-}
-.line-row:hover { border-color: #383838; }
-.line-row.has-override { border-color: #555; background: #1a1818; }
-
-.line-row-top {
-  display: flex;
+  z-index: 30;
+  display: none;
   align-items: center;
-  gap: 8px;
-}
-.line-num {
-  font-size: 9px;
-  color: #444;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  flex-shrink: 0;
-  min-width: 40px;
-}
-.line-preview {
-  font-size: 12px;
-  color: #777;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  gap: 4px;
+  background: rgba(10,10,10,0.88);
+  border: 1px solid #444;
+  border-radius: 20px;
+  padding: 4px 10px;
+  transform: translateX(-50%);
   white-space: nowrap;
-  font-family: 'Hind', sans-serif;
 }
-
-/* Circular colour picker */
-.line-color-wrap {
-  position: relative;
-  width: 28px; height: 28px;
+#word-zoom-bar button {
+  background: #222;
+  border: 1px solid #555;
+  color: #fff;
   border-radius: 50%;
-  border: 2px solid #333;
-  flex-shrink: 0;
+  width: 22px; height: 22px;
+  font-size: 14px;
+  cursor: pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition: background 0.15s;
+}
+#word-zoom-bar button:hover { background: #444; }
+#word-zoom-bar .wz-size {
+  font-size: 11px; color: #ccc; min-width: 30px; text-align: center;
+}
+#word-zoom-bar .wz-reset {
+  font-size: 10px; color: #888; cursor: pointer; padding: 0 4px;
+  background: none; border: none; border-left: 1px solid #333;
+  margin-left: 2px;
+}
+#word-zoom-bar .wz-reset:hover { color: #ccc; }
+
+/* Color picker circle inside zoom bar */
+#word-zoom-bar .wz-color-wrap {
+  position: relative;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid #555;
   overflow: hidden;
   cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 2px;
 }
-.line-color-swatch {
-  position: absolute;
-  inset: 0;
+#word-zoom-bar .wz-color-swatch {
+  position: absolute; inset: 0;
   border-radius: 50%;
+  background: #111111;
   pointer-events: none;
 }
-.line-color-wrap input[type="color"] {
+#word-zoom-bar .wz-color-wrap input[type="color"] {
   position: absolute;
   inset: -4px;
   width: calc(100% + 8px);
   height: calc(100% + 8px);
   opacity: 0;
   cursor: pointer;
+  border: none; padding: 0;
+}
+#word-zoom-bar .wz-divider {
+  width: 1px; height: 14px;
+  background: #333;
+  margin: 0 2px;
+  flex-shrink: 0;
 }
 
-.reset-line-btn {
-  background: transparent;
-  border: 1px solid #333;
-  border-radius: 6px;
-  color: #555;
-  font-size: 10px;
-  padding: 3px 7px;
-  cursor: pointer;
-  font-family: 'Hind', sans-serif;
-  transition: color 0.2s, border-color 0.2s;
-  white-space: nowrap;
-  flex-shrink: 0;
+/* Watermark */
+#watermark {
+  position:absolute;bottom:20px;left:0;right:0;
+  text-align:center;font-family:'Hind',sans-serif;
+  font-size:11px;color:rgba(0,0,0,0.28);
+  letter-spacing:1px;z-index:10;pointer-events:none;
 }
-.reset-line-btn:hover { color: #ccc; border-color: #888; }
 
-.line-row-bottom {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.line-size-label {
-  font-size: 10px;
-  color: #555;
+/* Text drag handle indicator */
+#text-drag-hint {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: rgba(0,0,0,0.25);
+  pointer-events: none;
   white-space: nowrap;
-  flex-shrink: 0;
-}
-.line-size-range { flex: 1; }
-.line-size-val {
-  font-size: 10px;
-  color: #888;
-  min-width: 30px;
-  text-align: right;
-  flex-shrink: 0;
+  letter-spacing: 0.5px;
 }
 
 /* ============================================================
-   HEADER POSITION GRID
+   DOWNLOAD BTN
    ============================================================ */
-.pos-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin-top: 8px;
-}
-.pos-btn {
-  background: #111;
-  border: 1px solid #2a2a2a;
-  border-radius: 8px;
-  color: #777;
-  font-size: 11px;
-  padding: 8px 2px;
+#download-btn {
+  width: 360px;
+  background: linear-gradient(135deg,#1a1a1a,#333);
+  border: 1px solid #444;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 13px;
   cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: opacity 0.2s, transform 0.15s;
   font-family: 'Hind', sans-serif;
-  text-align: center;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
 }
-.pos-btn:hover { color: #eee; border-color: #666; background: #181818; }
+#download-btn:hover { opacity:0.85;transform:translateY(-1px); }
+#download-btn:disabled { opacity:0.5;cursor:not-allowed;transform:none; }
 
-.chip-pos-display {
-  font-size: 10px;
-  color: #444;
-  text-align: center;
-  margin-top: 8px;
-  letter-spacing: 0.3px;
+/* ============================================================
+   RIGHT COLUMN — CONTROLS
+   ============================================================ */
+.controls {
+  flex:1;
+  max-width:460px;
+  display:flex;flex-direction:column;gap:14px;
+  max-height:calc(100vh - 48px);
+  overflow-y:auto;
+  padding-right:4px;padding-bottom:28px;
 }
+.controls::-webkit-scrollbar{width:3px;}
+.controls::-webkit-scrollbar-track{background:transparent;}
+.controls::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:4px;}
 
-/* Slider + value inline row */
-.slider-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+/* Panel */
+.panel {
+  background:#1a1a1a;
+  border:1px solid #262626;
+  border-radius:14px;
+  padding:16px;
 }
-.slider-row input[type="range"] { flex: 1; }
+.panel-title {
+  font-size:10px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:#bbb;margin-bottom:12px;
+}
+.panel-desc { font-size:11px;color:#555;line-height:1.6;margin-bottom:10px; }
+
+/* Forms */
+label {
+  display:block;font-size:11px;color:#777;
+  margin-bottom:4px;margin-top:10px;
+}
+label:first-of-type { margin-top:0; }
+
+textarea {
+  width:100%;background:#0e0e0e;border:1px solid #2e2e2e;
+  border-radius:8px;color:#fff;font-size:15px;padding:11px;
+  resize:vertical;min-height:120px;
+  font-family:'Hind',sans-serif;line-height:1.8;outline:none;
+  transition:border 0.2s;
+}
+textarea:focus { border-color:#888; }
+
+input[type="text"] {
+  width:100%;background:#0e0e0e;border:1px solid #2e2e2e;
+  border-radius:8px;color:#fff;font-size:13px;
+  padding:8px 11px;outline:none;
+  font-family:'Hind',sans-serif;transition:border 0.2s;
+}
+input[type="text"]:focus { border-color:#888; }
+
+input[type="range"] { width:100%;accent-color:#ccc;cursor:pointer; }
+input[type="color"] { width:38px;height:30px;border:none;border-radius:6px;background:none;cursor:pointer;padding:0; }
+input[type="file"]  { display:none; }
+
+.val { background:#222;border-radius:4px;padding:2px 7px;font-size:11px;color:#bbb;min-width:36px;text-align:center;display:inline-block; }
+.color-row { display:flex;align-items:center;gap:10px;margin-top:4px; }
+.color-row span { font-size:11px;color:#555; }
+
+.upload-btn {
+  display:block;background:#111;border:1px dashed #333;border-radius:8px;
+  color:#777;font-size:12px;padding:8px;text-align:center;cursor:pointer;
+  transition:border 0.2s,color 0.2s;margin-top:7px;
+  font-family:'Hind',sans-serif;
+}
+.upload-btn:hover { border-color:#bbb;color:#bbb; }
+
+/* ---- 4-PROFILE TABS ---- */
+.profile-tabs {
+  display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px;
+}
+.ptab {
+  background:#111;border:2px solid #2a2a2a;border-radius:10px;
+  padding:9px 8px;cursor:pointer;text-align:center;
+  transition:border-color 0.2s,background 0.2s;
+}
+.ptab:hover { border-color:#555;background:#171717; }
+.ptab.active { border-color:#bbb;background:#1c1c1c; }
+.ptab .pt-name { font-size:12px;color:#fff;font-weight:700;margin-bottom:2px; }
+.ptab .pt-handle { font-size:10px;color:#555; }
+
+/* ---- FONT GRID ---- */
+.font-grid { display:grid;grid-template-columns:1fr 1fr;gap:6px; }
+.font-card {
+  background:#111;border:2px solid #2a2a2a;border-radius:8px;
+  padding:8px 6px 6px;cursor:pointer;text-align:center;
+  transition:border-color 0.2s,background 0.2s;
+}
+.font-card:hover { border-color:#555;background:#161616; }
+.font-card.active { border-color:#bbb;background:#1c1c1c; }
+.font-card .fp { font-size:16px;color:#fff;line-height:1.5;margin-bottom:2px; }
+.font-card .fn { font-size:9px;color:#555;letter-spacing:0.5px;text-transform:uppercase; }
+
+/* Alignment */
+.align-row { display:flex;gap:7px;margin-top:4px; }
+.align-btn {
+  flex:1;background:#111;border:2px solid #2a2a2a;border-radius:8px;
+  color:#777;font-size:12px;padding:7px 4px;cursor:pointer;
+  font-family:'Hind',sans-serif;transition:border-color 0.2s,color 0.2s,background 0.2s;
+  text-align:center;
+}
+.align-btn:hover { border-color:#555;color:#ccc; }
+.align-btn.active { border-color:#bbb;background:#1c1c1c;color:#fff; }
+
+/* BG swatches */
+.bg-list { display:flex;flex-wrap:wrap;gap:6px;margin-top:4px; }
+.bg-swatch {
+  width:36px;height:36px;border-radius:7px;cursor:pointer;
+  border:2px solid transparent;transition:border 0.2s,transform 0.15s;
+}
+.bg-swatch:hover { transform:scale(1.1); }
+.bg-swatch.active { border-color:#fff; }
+
+/* Per-line editor */
+#line-editor-list { display:flex;flex-direction:column;gap:7px;max-height:360px;overflow-y:auto;padding-right:2px; }
+#line-editor-list::-webkit-scrollbar{width:3px;}
+#line-editor-list::-webkit-scrollbar-track{background:#0e0e0e;border-radius:4px;}
+#line-editor-list::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:4px;}
+
+.line-row {
+  background:#111;border:1px solid #222;border-radius:9px;
+  padding:9px 11px;display:flex;flex-direction:column;gap:7px;
+  transition:border-color 0.2s;
+}
+.line-row:hover { border-color:#333; }
+.line-row.has-override { border-color:#555;background:#181414; }
+.line-row-top { display:flex;align-items:center;gap:7px; }
+.line-num { font-size:9px;color:#383838;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;min-width:36px; }
+.line-preview { font-size:12px;color:#666;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Hind',sans-serif; }
+
+.line-color-wrap { position:relative;width:26px;height:26px;border-radius:50%;border:2px solid #2a2a2a;flex-shrink:0;overflow:hidden;cursor:pointer; }
+.line-color-swatch { position:absolute;inset:0;border-radius:50%;pointer-events:none; }
+.line-color-wrap input[type="color"] { position:absolute;inset:-4px;width:calc(100% + 8px);height:calc(100% + 8px);opacity:0;cursor:pointer; }
+
+.reset-line-btn { background:transparent;border:1px solid #2a2a2a;border-radius:5px;color:#444;font-size:10px;padding:2px 6px;cursor:pointer;font-family:'Hind',sans-serif;transition:color 0.2s,border-color 0.2s;white-space:nowrap;flex-shrink:0; }
+.reset-line-btn:hover { color:#ccc;border-color:#777; }
+
+.line-row-bottom { display:flex;align-items:center;gap:7px; }
+.line-size-label { font-size:10px;color:#444;white-space:nowrap;flex-shrink:0; }
+.line-size-range { flex:1; }
+.line-size-val { font-size:10px;color:#777;min-width:30px;text-align:right;flex-shrink:0; }
+
+/* Position grid */
+.pos-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px; }
+.pos-btn {
+  background:#111;border:1px solid #222;border-radius:7px;
+  color:#666;font-size:11px;padding:7px 2px;cursor:pointer;
+  font-family:'Hind',sans-serif;text-align:center;
+  transition:color 0.2s,border-color 0.2s,background 0.2s;
+}
+.pos-btn:hover { color:#eee;border-color:#555;background:#181818; }
+
+.chip-pos-display { font-size:10px;color:#383838;text-align:center;margin-top:7px; }
+
+.slider-row { display:flex;align-items:center;gap:7px; }
+.slider-row input[type="range"] { flex:1; }
+
+/* Word zoom panel */
+.word-zoom-info {
+  background:#0e0e0e;border:1px solid #222;border-radius:8px;
+  padding:10px 12px;font-size:11px;color:#555;line-height:1.7;
+  margin-bottom:8px;
+}
+.word-zoom-info b { color:#888; }
 
 </style>
 </head>
@@ -529,7 +417,20 @@ input[type="file"] { display: none; }
     <div id="bg-image-layer"></div>
     <div id="overlay-layer"></div>
 
-    <!-- Draggable profile chip -->
+    <!-- Word Zoom Floating Bar (inside card) -->
+    <div id="word-zoom-bar">
+      <button id="wz-minus">−</button>
+      <span class="wz-size" id="wz-size-display">23px</span>
+      <button id="wz-plus">+</button>
+      <div class="wz-divider"></div>
+      <div class="wz-color-wrap" title="Word ka colour badlein">
+        <div class="wz-color-swatch" id="wz-color-swatch"></div>
+        <input type="color" id="wz-color-picker" value="#111111">
+      </div>
+      <button class="wz-reset" id="wz-reset">✕</button>
+    </div>
+
+    <!-- Draggable Profile Chip -->
     <div id="profile-chip">
       <div id="avatar-wrap">✍️</div>
       <div id="profile-info">
@@ -538,9 +439,10 @@ input[type="file"] { display: none; }
       </div>
     </div>
 
-    <!-- Shayari lines rendered here -->
+    <!-- Draggable Shayari Text Block -->
     <div id="shayari-display">
       <div id="shayari-text"></div>
+      <div id="text-drag-hint">↕ drag to reposition</div>
     </div>
 
     <!-- Watermark -->
@@ -556,7 +458,34 @@ input[type="file"] { display: none; }
      ============================================================ -->
 <div class="controls">
 
-  <!-- 1. SHAYARI TEXT -->
+  <!-- 1. PROFILE SELECT -->
+  <div class="panel">
+    <div class="panel-title">📄 Select Facebook Page</div>
+    <div class="profile-tabs" id="profile-tabs">
+      <div class="ptab active" data-idx="0">
+        <div class="pt-name">Ghalib Nama</div>
+        <div class="pt-handle">@Ghalibnama</div>
+      </div>
+      <div class="ptab" data-idx="1">
+        <div class="pt-name">Arpita</div>
+        <div class="pt-handle">@Missingsadly</div>
+      </div>
+      <div class="ptab" data-idx="2">
+        <div class="pt-name">Anju</div>
+        <div class="pt-handle">@thoughtsofanju</div>
+      </div>
+      <div class="ptab" data-idx="3">
+        <div class="pt-name">Shayari Dairy</div>
+        <div class="pt-handle">@anjuclassical</div>
+      </div>
+    </div>
+    <p class="panel-desc" style="margin-bottom:0">
+      ⚙️ <b style="color:#666">Avatar path set karne ke liye:</b> neeche <code style="color:#888;background:#111;padding:1px 5px;border-radius:4px">PROFILE_AVATARS</code> object mein apna path daalein.
+    </p>
+  </div>
+
+
+  <!-- 2. SHAYARI TEXT -->
   <div class="panel">
     <div class="panel-title">✍️ Shayari Text</div>
     <label>Shayari / Quote likhein</label>
@@ -566,15 +495,30 @@ input[type="file"] { display: none; }
   </div>
 
 
-  <!-- 2. PER-LINE CUSTOMISATION -->
+  <!-- 3. WORD ZOOM -->
+  <div class="panel">
+    <div class="panel-title">🔍 Word Zoom (Per-Word Size)</div>
+    <div class="word-zoom-info">
+      Kisi bhi <b>word ko card par click</b> karein — uske upar ek zoom bar aayega.<br>
+      <b>+ / −</b> se us word ka size badhayein ya ghatayein.<br>
+      <b>✕</b> se us word ka override hata dein.<br>
+      Aap card par <b>scroll</b> (mouse wheel) bhi kar sakte hain word select karne ke baad.
+    </div>
+    <button id="clear-all-word-overrides" style="width:100%;background:#111;border:1px solid #2a2a2a;border-radius:8px;color:#777;font-size:12px;padding:8px;cursor:pointer;font-family:'Hind',sans-serif;transition:color 0.2s,border-color 0.2s;">
+      🗑 Sabhi Word Overrides Hataayein
+    </button>
+  </div>
+
+
+  <!-- 4. PER-LINE STYLE -->
   <div class="panel">
     <div class="panel-title">🎨 Per-Line Style</div>
-    <p class="panel-desc">Change font size and colour of any individual line. Use the circle to pick a colour and the slider for size. "Reset" removes overrides for that line.</p>
+    <p class="panel-desc">Har line ka alag colour aur size set karein. Circle = colour, Slider = size.</p>
     <div id="line-editor-list"></div>
   </div>
 
 
-  <!-- 3. PROFILE CHIP -->
+  <!-- 5. PROFILE CHIP -->
   <div class="panel">
     <div class="panel-title">👤 Profile Chip</div>
 
@@ -584,7 +528,7 @@ input[type="file"] { display: none; }
     <label>Handle / Username</label>
     <input type="text" id="phandle-input" value="@Ghalibnama">
 
-    <label>Profile Picture</label>
+    <label>Profile Picture (manual override)</label>
     <label class="upload-btn" for="avatar-upload">🖼️ &nbsp;Avatar Upload Karein</label>
     <input type="file" id="avatar-upload" accept="image/*">
 
@@ -593,16 +537,14 @@ input[type="file"] { display: none; }
       <input type="color" id="name-color" value="#111111">
       <span>Profile name ka rang</span>
     </div>
-
     <label>Handle Colour</label>
     <div class="color-row">
       <input type="color" id="handle-color" value="#555555">
       <span>Handle ka rang</span>
     </div>
 
-    <!-- Header position -->
-    <label style="margin-top:18px">Header Position</label>
-    <p class="panel-desc" style="margin-bottom:0">Drag directly on the card, or tap a preset below:</p>
+    <label style="margin-top:16px">Profile Chip Position</label>
+    <p class="panel-desc" style="margin-bottom:0">Card par directly drag karein, ya preset chunein:</p>
     <div class="pos-grid">
       <button class="pos-btn" onclick="setChipPos('top-left')">↖ Top L</button>
       <button class="pos-btn" onclick="setChipPos('top-center')">↑ Top C</button>
@@ -614,18 +556,29 @@ input[type="file"] { display: none; }
       <button class="pos-btn" onclick="setChipPos('bot-center')">↓ Bot C</button>
       <button class="pos-btn" onclick="setChipPos('bot-right')">↘ Bot R</button>
     </div>
-    <div class="chip-pos-display" id="chip-pos-display">Position: top 22px, left 22px</div>
+    <div class="chip-pos-display" id="chip-pos-display">top: 22px, left: 22px</div>
   </div>
 
 
-  <!-- 4. GLOBAL FONT & STYLE -->
+  <!-- 6. TEXT BLOCK POSITION -->
+  <div class="panel">
+    <div class="panel-title">↕ Text Block Position</div>
+    <p class="panel-desc">Shayari text block ko card par drag karein, ya neeche presets se set karein:</p>
+    <div class="pos-grid">
+      <button class="pos-btn" onclick="setTextPos('top')">↑ Top</button>
+      <button class="pos-btn" onclick="setTextPos('center')">• Center</button>
+      <button class="pos-btn" onclick="setTextPos('bottom')">↓ Bottom</button>
+    </div>
+    <div class="chip-pos-display" id="text-pos-display">top: 100px, left: 36px</div>
+  </div>
+
+
+  <!-- 7. GLOBAL FONT & STYLE -->
   <div class="panel">
     <div class="panel-title">🔤 Global Font &amp; Style</div>
-    <p class="panel-desc" style="margin-bottom:10px">These settings apply to ALL lines unless a per-line override is set above.</p>
-
     <div class="font-grid" id="font-grid"></div>
 
-    <label style="margin-top:16px">Global Font Size: <span class="val" id="fs-val">23px</span></label>
+    <label style="margin-top:14px">Global Font Size: <span class="val" id="fs-val">23px</span></label>
     <input type="range" id="font-size" min="10" max="48" value="23">
 
     <label>Line Height: <span class="val" id="lh-val">2.05</span></label>
@@ -634,7 +587,7 @@ input[type="file"] { display: none; }
     <label>Global Text Colour</label>
     <div class="color-row">
       <input type="color" id="text-color" value="#111111">
-      <span>Applies to lines with no per-line colour</span>
+      <span>Per-line override na hone par apply hoga</span>
     </div>
 
     <label>Text Alignment</label>
@@ -646,14 +599,14 @@ input[type="file"] { display: none; }
   </div>
 
 
-  <!-- 5. BACKGROUND -->
+  <!-- 8. BACKGROUND -->
   <div class="panel">
     <div class="panel-title">🖼️ Background</div>
     <label>Presets</label>
     <div class="bg-list" id="bg-list"></div>
 
-    <label style="margin-top:14px">Custom Background Image</label>
-    <label class="upload-btn" for="bg-upload">📁 &nbsp;Background Image Choose Karein</label>
+    <label style="margin-top:12px">Custom Background Image</label>
+    <label class="upload-btn" for="bg-upload">📁 &nbsp;Image Choose Karein</label>
     <input type="file" id="bg-upload" accept="image/*">
 
     <label>White Overlay: <span class="val" id="ov-val">0%</span></label>
@@ -664,6 +617,34 @@ input[type="file"] { display: none; }
 
 
 <script>
+/* ============================================================
+   ██████████ PATH CONFIG — YAHAN APNA PATH DAALO ██████████
+   
+   Har profile ke liye avatar image ka path set karein.
+   
+   Example (same folder):         "./ghalibnama.jpg"
+   Example (folder ke andar):     "./avatars/ghalibnama.jpg"
+   Example (Windows path NOTE):   Use forward slashes only.
+   
+   Agar koi profile ka avatar nahi chahiye toh null rakhein —
+   tab default emoji dikhega.
+   ============================================================ */
+
+const PROFILE_AVATARS = {
+  0: "./avatars/Ghalib.jpeg",
+  1: "./avatars/Arpita.jpeg",
+  2: "./avatars/Anju Ji.jpeg",
+  3: "./avatars/AnjuClassical.jpeg",
+};
+
+/* Har profile ki default settings */
+const PROFILES = [
+  { name: 'Ghalib Nama',   handle: '@Ghalibnama',     watermark: '@Ghalibnama',    emoji: '✍️' },
+  { name: 'Arpita',        handle: '@Missingsadly',   watermark: '@Missingsadly',  emoji: '🌸' },
+  { name: 'Anju',          handle: '@thoughtsofanju', watermark: '@thoughtsofanju',emoji: '💫' },
+  { name: 'Shayari Dairy', handle: '@anjuclassical',  watermark: '@anjuclassical', emoji: '📖' },
+];
+
 /* ============================================================
    STATE
    ============================================================ */
@@ -680,29 +661,30 @@ const DEFAULT_TEXT =
 
 let globalFontSize = 23;
 let globalColor    = '#111111';
-// Array of { fontSize: number|null, color: string|null } — one entry per line
-let lineOverrides  = [];
+let lineOverrides  = [];           // { fontSize, color } per line
+let wordOverrides  = {};           // "lineIdx-wordIdx" => { fontSize, color }
 
+let activeProfileIdx = 0;
+let selectedWordKey  = null;       // currently selected word key
 
 /* ============================================================
-   HELPERS
+   UTILITY
    ============================================================ */
+function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
+
 function getLines() {
   return document.getElementById('shayari-input').value.split('\n');
 }
 
-// Keep lineOverrides in sync with actual line count
 function syncOverrides(lines) {
   while (lineOverrides.length < lines.length) {
     lineOverrides.push({ fontSize: null, color: null });
   }
-  // Trim if lines removed
   lineOverrides.length = lines.length;
 }
 
-
 /* ============================================================
-   RENDER SHAYARI TEXT (line-by-line spans)
+   RENDER SHAYARI — each word gets its own span for zoom
    ============================================================ */
 function renderShayariText() {
   const lines = getLines();
@@ -711,29 +693,216 @@ function renderShayariText() {
   const container = document.getElementById('shayari-text');
   container.innerHTML = '';
 
-  lines.forEach((line, i) => {
-    const span = document.createElement('span');
-    span.className = 'line-span';
-    // Use non-breaking space for blank lines so they still take height
-    span.textContent = line.length > 0 ? line : '\u00A0';
-    applyLineStyle(span, i);
-    container.appendChild(span);
+  lines.forEach((line, li) => {
+    const lineSpan = document.createElement('span');
+    lineSpan.className = 'line-span';
+
+    if (line.trim() === '') {
+      lineSpan.innerHTML = '&nbsp;';
+    } else {
+      // Split by spaces, preserving structure
+      const words = line.split(/(\s+)/);
+      words.forEach((segment, wi) => {
+        if (segment.match(/^\s+$/)) {
+          lineSpan.appendChild(document.createTextNode(segment));
+          return;
+        }
+        if (segment === '') return;
+
+        const wordIdx = getWordIndex(li, segment, wi);
+        const key = li + '-' + wordIdx;
+
+        const wspan = document.createElement('span');
+        wspan.className = 'word-span';
+        wspan.dataset.key = key;
+        wspan.dataset.line = li;
+        wspan.dataset.word = wordIdx;
+        wspan.textContent = segment;
+
+        // Apply word override if any
+        if (wordOverrides[key] !== undefined) {
+          if (wordOverrides[key].fontSize !== undefined) wspan.style.fontSize = wordOverrides[key].fontSize + 'px';
+          if (wordOverrides[key].color    !== undefined) wspan.style.color    = wordOverrides[key].color;
+        }
+
+        lineSpan.appendChild(wspan);
+      });
+    }
+
+    applyLineStyle(lineSpan, li);
+    container.appendChild(lineSpan);
   });
+
+  // Re-enable pointer events on words for clicking
+  document.getElementById('shayari-text').style.pointerEvents = 'none';
+  enableWordClicks();
 }
 
-// Apply per-line override (or nothing, inheriting global)
-function applyLineStyle(span, i) {
+// Simple word indexer — count non-whitespace segments
+function getWordIndex(lineIdx, segment, rawIdx) {
+  // just use rawIdx as word position (stable per render)
+  return rawIdx;
+}
+
+function applyLineStyle(lineSpan, i) {
   const ov = lineOverrides[i];
-  span.style.fontSize = (ov && ov.fontSize !== null) ? ov.fontSize + 'px' : '';
-  span.style.color    = (ov && ov.color    !== null) ? ov.color           : '';
+  // Font size on line-span is fine (word-span font-size overrides via inline style)
+  lineSpan.style.fontSize = (ov && ov.fontSize !== null) ? ov.fontSize + 'px' : '';
+  // Do NOT set color on line-span — apply it to each word-span so word-level
+  // color overrides (inline style) can win via CSS specificity.
+  const lineColor = (ov && ov.color !== null) ? ov.color : globalColor;
+  lineSpan.querySelectorAll('.word-span').forEach(ws => {
+    const wKey = ws.dataset.key;
+    const wOv  = wordOverrides[wKey];
+    // Word override color wins; otherwise use line/global color
+    if (wOv && wOv.color !== undefined) {
+      ws.style.color = wOv.color;
+    } else {
+      ws.style.color = lineColor;
+    }
+  });
+  // For empty lines (no word-spans), set color directly
+  if (!lineSpan.querySelector('.word-span')) {
+    lineSpan.style.color = lineColor;
+  } else {
+    lineSpan.style.color = '';
+  }
 }
 
-// Update a single span without full re-render
 function updateSingleSpan(i) {
   const spans = document.querySelectorAll('#shayari-text .line-span');
   if (spans[i]) applyLineStyle(spans[i], i);
 }
 
+/* ============================================================
+   WORD CLICK / ZOOM
+   ============================================================ */
+const wordZoomBar = document.getElementById('word-zoom-bar');
+
+function enableWordClicks() {
+  // We overlay a transparent div to catch clicks, then find word
+  const textEl = document.getElementById('shayari-text');
+  textEl.style.pointerEvents = 'auto';
+
+  document.querySelectorAll('.word-span').forEach(ws => {
+    ws.addEventListener('click', handleWordClick);
+  });
+}
+
+function handleWordClick(e) {
+  // Don't trigger during drag
+  if (textBlockDragging) return;
+  e.stopPropagation();
+
+  const key = e.target.dataset.key;
+  if (!key) return;
+
+  // Deselect old
+  document.querySelectorAll('.word-span.selected-word').forEach(w => w.classList.remove('selected-word'));
+
+  if (selectedWordKey === key) {
+    // Toggle off
+    selectedWordKey = null;
+    wordZoomBar.style.display = 'none';
+    return;
+  }
+
+  selectedWordKey = key;
+  e.target.classList.add('selected-word');
+
+  // Position zoom bar above the word
+  const cardRect = document.getElementById('card').getBoundingClientRect();
+  const wordRect = e.target.getBoundingClientRect();
+  const barLeft  = wordRect.left + wordRect.width / 2 - cardRect.left;
+  const barTop   = wordRect.top - cardRect.top - 36;
+
+  wordZoomBar.style.left    = barLeft + 'px';
+  wordZoomBar.style.top     = Math.max(4, barTop) + 'px';
+  wordZoomBar.style.display = 'flex';
+
+  // Show current size
+  const curSize = wordOverrides[key] !== undefined && wordOverrides[key].fontSize !== undefined
+    ? wordOverrides[key].fontSize : globalFontSize;
+  document.getElementById('wz-size-display').textContent = curSize + 'px';
+
+  // Show current color in picker
+  const curColor = wordOverrides[key] !== undefined && wordOverrides[key].color !== undefined
+    ? wordOverrides[key].color : globalColor;
+  document.getElementById('wz-color-picker').value = curColor;
+  document.getElementById('wz-color-swatch').style.background = curColor;
+}
+
+function adjustSelectedWordSize(delta) {
+  if (!selectedWordKey) return;
+  const ws = document.querySelector(`.word-span[data-key="${selectedWordKey}"]`);
+  if (!ws) return;
+  if (!wordOverrides[selectedWordKey]) wordOverrides[selectedWordKey] = {};
+  const cur = wordOverrides[selectedWordKey].fontSize !== undefined
+    ? wordOverrides[selectedWordKey].fontSize
+    : parseInt(ws.style.fontSize || globalFontSize);
+  const next = clamp(cur + delta, 8, 80);
+  wordOverrides[selectedWordKey].fontSize = next;
+  ws.style.fontSize = next + 'px';
+  document.getElementById('wz-size-display').textContent = next + 'px';
+}
+
+document.getElementById('wz-plus').addEventListener('click', () => adjustSelectedWordSize(2));
+document.getElementById('wz-minus').addEventListener('click', () => adjustSelectedWordSize(-2));
+
+document.getElementById('wz-reset').addEventListener('click', () => {
+  if (!selectedWordKey) return;
+  delete wordOverrides[selectedWordKey];
+  const ws = document.querySelector(`.word-span[data-key="${selectedWordKey}"]`);
+  if (ws) {
+    ws.style.fontSize = '';
+    ws.style.color    = '';
+    ws.classList.remove('selected-word');
+  }
+  selectedWordKey = null;
+  wordZoomBar.style.display = 'none';
+});
+
+// Word color picker
+document.getElementById('wz-color-picker').addEventListener('input', e => {
+  if (!selectedWordKey) return;
+  const color = e.target.value;
+  if (!wordOverrides[selectedWordKey]) wordOverrides[selectedWordKey] = {};
+  wordOverrides[selectedWordKey].color = color;
+  document.getElementById('wz-color-swatch').style.background = color;
+  // Apply color directly to the word span
+  const ws = document.querySelector(`.word-span[data-key="${selectedWordKey}"]`);
+  if (ws) {
+    ws.style.color = color;
+  }
+});
+
+// Mouse wheel zoom on selected word
+document.getElementById('card').addEventListener('wheel', e => {
+  if (!selectedWordKey) return;
+  e.preventDefault();
+  adjustSelectedWordSize(e.deltaY < 0 ? 2 : -2);
+}, { passive: false });
+
+// Click outside card → deselect
+document.addEventListener('click', e => {
+  if (!document.getElementById('card').contains(e.target)) {
+    document.querySelectorAll('.word-span.selected-word').forEach(w => w.classList.remove('selected-word'));
+    selectedWordKey = null;
+    wordZoomBar.style.display = 'none';
+  }
+});
+
+// Clear all word overrides
+document.getElementById('clear-all-word-overrides').addEventListener('click', () => {
+  wordOverrides = {};
+  selectedWordKey = null;
+  wordZoomBar.style.display = 'none';
+  document.querySelectorAll('.word-span').forEach(ws => {
+    ws.style.fontSize = '';
+    ws.style.color = '';
+    ws.classList.remove('selected-word');
+  });
+});
 
 /* ============================================================
    BUILD PER-LINE EDITOR
@@ -741,20 +910,18 @@ function updateSingleSpan(i) {
 function buildLineEditor() {
   const lines = getLines();
   syncOverrides(lines);
-
   const list = document.getElementById('line-editor-list');
   list.innerHTML = '';
 
   lines.forEach((line, i) => {
-    const ov         = lineOverrides[i];
-    const curSize    = (ov.fontSize !== null) ? ov.fontSize : globalFontSize;
-    const curColor   = (ov.color    !== null) ? ov.color    : globalColor;
-    const hasOv      = (ov.fontSize !== null || ov.color !== null);
+    const ov       = lineOverrides[i];
+    const curSize  = (ov.fontSize !== null) ? ov.fontSize : globalFontSize;
+    const curColor = (ov.color    !== null) ? ov.color    : globalColor;
+    const hasOv    = (ov.fontSize !== null || ov.color !== null);
 
     const row = document.createElement('div');
     row.className = 'line-row' + (hasOv ? ' has-override' : '');
 
-    // Top row: line number | preview text | colour picker | reset button
     const topRow = document.createElement('div');
     topRow.className = 'line-row-top';
 
@@ -767,23 +934,17 @@ function buildLineEditor() {
     previewEl.title = line;
     previewEl.textContent = line || '(empty)';
 
-    // Colour circle
-    const colorWrap = document.createElement('div');
+    const colorWrap  = document.createElement('div');
     colorWrap.className = 'line-color-wrap';
-    colorWrap.title = 'Pick colour for this line';
-
-    const swatch = document.createElement('div');
+    const swatch     = document.createElement('div');
     swatch.className = 'line-color-swatch';
     swatch.style.background = curColor;
-
     const colorInput = document.createElement('input');
     colorInput.type  = 'color';
     colorInput.value = curColor;
-
     colorWrap.appendChild(swatch);
     colorWrap.appendChild(colorInput);
 
-    // Reset button (only shown when override exists)
     const resetBtn = document.createElement('button');
     resetBtn.className = 'reset-line-btn';
     resetBtn.textContent = 'Reset';
@@ -794,21 +955,14 @@ function buildLineEditor() {
     topRow.appendChild(colorWrap);
     topRow.appendChild(resetBtn);
 
-    // Bottom row: size slider
     const botRow = document.createElement('div');
     botRow.className = 'line-row-bottom';
-
     const sizeLabel = document.createElement('span');
     sizeLabel.className = 'line-size-label';
     sizeLabel.textContent = 'Size';
-
     const sizeRange = document.createElement('input');
-    sizeRange.type      = 'range';
-    sizeRange.className = 'line-size-range';
-    sizeRange.min       = 10;
-    sizeRange.max       = 52;
-    sizeRange.value     = curSize;
-
+    sizeRange.type = 'range'; sizeRange.className = 'line-size-range';
+    sizeRange.min = 10; sizeRange.max = 52; sizeRange.value = curSize;
     const sizeValEl = document.createElement('span');
     sizeValEl.className = 'line-size-val';
     sizeValEl.textContent = curSize + 'px';
@@ -821,9 +975,6 @@ function buildLineEditor() {
     row.appendChild(botRow);
     list.appendChild(row);
 
-    /* ---- Events ---- */
-
-    // Size slider
     sizeRange.addEventListener('input', () => {
       const v = parseInt(sizeRange.value);
       sizeValEl.textContent = v + 'px';
@@ -832,8 +983,6 @@ function buildLineEditor() {
       row.classList.add('has-override');
       resetBtn.style.display = 'inline-block';
     });
-
-    // Colour picker
     colorInput.addEventListener('input', () => {
       const v = colorInput.value;
       swatch.style.background = v;
@@ -842,27 +991,24 @@ function buildLineEditor() {
       row.classList.add('has-override');
       resetBtn.style.display = 'inline-block';
     });
-
-    // Reset
     resetBtn.addEventListener('click', () => {
       lineOverrides[i] = { fontSize: null, color: null };
-      buildLineEditor();      // rebuild to update UI
-      updateSingleSpan(i);   // revert span to global
+      buildLineEditor();
+      updateSingleSpan(i);
     });
   });
 }
 
-
 /* ============================================================
-   SHAYARI TEXTAREA
+   SHAYARI INPUT
    ============================================================ */
 const shayariInput = document.getElementById('shayari-input');
 shayariInput.value = DEFAULT_TEXT;
 shayariInput.addEventListener('input', () => {
+  wordOverrides = {};  // reset word overrides when text changes
   renderShayariText();
   buildLineEditor();
 });
-
 
 /* ============================================================
    WATERMARK
@@ -871,9 +1017,8 @@ document.getElementById('watermark-input').addEventListener('input', e => {
   document.getElementById('watermark').textContent = e.target.value;
 });
 
-
 /* ============================================================
-   PROFILE CHIP — TEXT / COLOURS
+   PROFILE CHIP TEXT/COLOURS
    ============================================================ */
 document.getElementById('pname-input').addEventListener('input', e => {
   document.getElementById('profile-name-display').textContent = e.target.value;
@@ -888,21 +1033,54 @@ document.getElementById('handle-color').addEventListener('input', e => {
   document.getElementById('profile-handle-display').style.color = e.target.value;
 });
 
-
 /* ============================================================
-   AVATAR UPLOAD
+   AVATAR UPLOAD (manual)
    ============================================================ */
 document.getElementById('avatar-upload').addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
-    document.getElementById('avatar-wrap').innerHTML =
-      `<img src="${ev.target.result}" alt="avatar">`;
+    document.getElementById('avatar-wrap').innerHTML = `<img src="${ev.target.result}" alt="avatar">`;
   };
   reader.readAsDataURL(file);
 });
 
+/* ============================================================
+   PROFILE SWITCHER
+   ============================================================ */
+function loadProfile(idx) {
+  activeProfileIdx = idx;
+  const p = PROFILES[idx];
+
+  document.getElementById('pname-input').value = p.name;
+  document.getElementById('phandle-input').value = p.handle;
+  document.getElementById('watermark-input').value = p.watermark;
+
+  document.getElementById('profile-name-display').textContent = p.name;
+  document.getElementById('profile-handle-display').textContent = p.handle;
+  document.getElementById('watermark').textContent = p.watermark;
+
+  // Avatar: try path first, fallback to emoji
+  const avatarWrap = document.getElementById('avatar-wrap');
+  const avatarPath = PROFILE_AVATARS[idx];
+  if (avatarPath) {
+    avatarWrap.innerHTML = `<img src="${avatarPath}" alt="${p.name}" onerror="this.parentElement.innerHTML='${p.emoji}'">`;
+  } else {
+    avatarWrap.innerHTML = p.emoji;
+  }
+
+  // Update tabs
+  document.querySelectorAll('.ptab').forEach((t, i) => {
+    t.classList.toggle('active', i === idx);
+  });
+}
+
+document.getElementById('profile-tabs').addEventListener('click', e => {
+  const tab = e.target.closest('.ptab');
+  if (!tab) return;
+  loadProfile(parseInt(tab.dataset.idx));
+});
 
 /* ============================================================
    GLOBAL FONT SIZE
@@ -911,9 +1089,8 @@ document.getElementById('font-size').addEventListener('input', e => {
   globalFontSize = parseInt(e.target.value);
   document.getElementById('shayari-text').style.fontSize = e.target.value + 'px';
   document.getElementById('fs-val').textContent = e.target.value + 'px';
-  buildLineEditor(); // refresh sliders to reflect new global default
+  buildLineEditor();
 });
-
 
 /* ============================================================
    LINE HEIGHT
@@ -924,16 +1101,17 @@ document.getElementById('line-height').addEventListener('input', e => {
   document.getElementById('lh-val').textContent = v;
 });
 
-
 /* ============================================================
    GLOBAL TEXT COLOUR
    ============================================================ */
 document.getElementById('text-color').addEventListener('input', e => {
   globalColor = e.target.value;
-  document.getElementById('shayari-text').style.color = e.target.value;
-  buildLineEditor(); // update colour circles that show global fallback
+  // Re-apply all line styles so word overrides are preserved
+  const lines = getLines();
+  const lineSpans = document.querySelectorAll('#shayari-text .line-span');
+  lineSpans.forEach((ls, i) => applyLineStyle(ls, i));
+  buildLineEditor();
 });
-
 
 /* ============================================================
    TEXT ALIGNMENT
@@ -946,21 +1124,19 @@ document.querySelectorAll('.align-btn').forEach(btn => {
   });
 });
 
-
 /* ============================================================
    FONT CARDS
    ============================================================ */
 const fonts = [
-  { family: "'Hind', sans-serif",               label: 'Hind Bold',  preview: 'शायरी' },
-  { family: "'Rozha One', serif",               label: 'Rozha One',  preview: 'शायरी' },
-  { family: "'Noto Serif Devanagari', serif",   label: 'Noto Serif', preview: 'शायरी' },
-  { family: "'Baloo 2', cursive",               label: 'Baloo 2',    preview: 'शायरी' },
-  { family: "'Martel', serif",                  label: 'Martel',     preview: 'शायरी' },
-  { family: "'Yatra One', cursive",             label: 'Yatra One',  preview: 'शायरी' },
-  { family: "'Mukta', sans-serif",              label: 'Mukta',      preview: 'शायरी' },
-  { family: "'Eczar', serif",                   label: 'Eczar',      preview: 'शायरी' },
+  { family:"'Hind',sans-serif",             label:'Hind Bold',  preview:'शायरी' },
+  { family:"'Rozha One',serif",             label:'Rozha One',  preview:'शायरी' },
+  { family:"'Noto Serif Devanagari',serif", label:'Noto Serif', preview:'शायरी' },
+  { family:"'Baloo 2',cursive",             label:'Baloo 2',    preview:'शायरी' },
+  { family:"'Martel',serif",                label:'Martel',     preview:'शायरी' },
+  { family:"'Yatra One',cursive",           label:'Yatra One',  preview:'शायरी' },
+  { family:"'Mukta',sans-serif",            label:'Mukta',      preview:'शायरी' },
+  { family:"'Eczar',serif",                 label:'Eczar',      preview:'शायरी' },
 ];
-
 const fontGrid = document.getElementById('font-grid');
 fonts.forEach((f, idx) => {
   const card = document.createElement('div');
@@ -974,25 +1150,23 @@ fonts.forEach((f, idx) => {
   fontGrid.appendChild(card);
 });
 
-
 /* ============================================================
    BACKGROUND PRESETS
    ============================================================ */
 const bgPresets = [
-  { label: 'Classic Grey', val: 'linear-gradient(160deg,#d2d2d2,#e2e2e2,#cacaca)' },
-  { label: 'Ash White',    val: 'linear-gradient(160deg,#e8e8e8,#f5f5f5,#ddd)' },
-  { label: 'Pure White',   val: '#ffffff' },
-  { label: 'Warm Ivory',   val: 'linear-gradient(160deg,#f5f0e8,#fdf6e3,#ede5d0)' },
-  { label: 'Parchment',    val: 'linear-gradient(160deg,#e8dfc8,#f5edd5,#ddd3b8)' },
-  { label: 'Soft Blue',    val: 'linear-gradient(160deg,#dce8f5,#eaf2ff,#ccdcef)' },
-  { label: 'Rose Blush',   val: 'linear-gradient(160deg,#f5dce8,#ffe8f0,#eecfdf)' },
-  { label: 'Mint',         val: 'linear-gradient(160deg,#d4f0e4,#e6fff2,#c5e8d5)' },
-  { label: 'Lavender',     val: 'linear-gradient(160deg,#e8daf5,#f0eaff,#ddd0f0)' },
-  { label: 'Dark Ash',     val: 'linear-gradient(160deg,#555,#777,#444)' },
-  { label: 'Dark Black',   val: 'linear-gradient(160deg,#111,#222,#0a0a0a)' },
-  { label: 'Sepia Dark',   val: 'linear-gradient(160deg,#2a1f0a,#3d2d10,#1a1205)' },
+  { label:'Classic Grey', val:'linear-gradient(160deg,#d2d2d2,#e2e2e2,#cacaca)' },
+  { label:'Ash White',    val:'linear-gradient(160deg,#e8e8e8,#f5f5f5,#ddd)' },
+  { label:'Pure White',   val:'#ffffff' },
+  { label:'Warm Ivory',   val:'linear-gradient(160deg,#f5f0e8,#fdf6e3,#ede5d0)' },
+  { label:'Parchment',    val:'linear-gradient(160deg,#e8dfc8,#f5edd5,#ddd3b8)' },
+  { label:'Soft Blue',    val:'linear-gradient(160deg,#dce8f5,#eaf2ff,#ccdcef)' },
+  { label:'Rose Blush',   val:'linear-gradient(160deg,#f5dce8,#ffe8f0,#eecfdf)' },
+  { label:'Mint',         val:'linear-gradient(160deg,#d4f0e4,#e6fff2,#c5e8d5)' },
+  { label:'Lavender',     val:'linear-gradient(160deg,#e8daf5,#f0eaff,#ddd0f0)' },
+  { label:'Dark Ash',     val:'linear-gradient(160deg,#555,#777,#444)' },
+  { label:'Dark Black',   val:'linear-gradient(160deg,#111,#222,#0a0a0a)' },
+  { label:'Sepia Dark',   val:'linear-gradient(160deg,#2a1f0a,#3d2d10,#1a1205)' },
 ];
-
 const bgListEl = document.getElementById('bg-list');
 bgPresets.forEach((p, i) => {
   const sw = document.createElement('div');
@@ -1008,9 +1182,8 @@ bgPresets.forEach((p, i) => {
   bgListEl.appendChild(sw);
 });
 
-
 /* ============================================================
-   BACKGROUND IMAGE UPLOAD
+   BG IMAGE UPLOAD
    ============================================================ */
 document.getElementById('bg-upload').addEventListener('change', e => {
   const file = e.target.files[0];
@@ -1024,146 +1197,185 @@ document.getElementById('bg-upload').addEventListener('change', e => {
   reader.readAsDataURL(file);
 });
 
-
 /* ============================================================
-   OVERLAY SLIDER
+   OVERLAY
    ============================================================ */
 document.getElementById('overlay-range').addEventListener('input', e => {
-  document.getElementById('overlay-layer').style.background =
-    `rgba(255,255,255,${e.target.value / 100})`;
+  document.getElementById('overlay-layer').style.background = `rgba(255,255,255,${e.target.value / 100})`;
   document.getElementById('ov-val').textContent = e.target.value + '%';
 });
 
-
 /* ============================================================
-   DRAGGABLE PROFILE CHIP
+   DRAGGABLE — PROFILE CHIP
    ============================================================ */
 const chip   = document.getElementById('profile-chip');
 const cardEl = document.getElementById('card');
-let dragging = false;
-let startMouseX, startMouseY, startLeft, startTop;
+let chipDragging = false, chipStartMX, chipStartMY, chipStartL, chipStartT;
 
-function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
-
-function getChipStartPos() {
-  const cardRect = cardEl.getBoundingClientRect();
-  const chipRect = chip.getBoundingClientRect();
-  return {
-    left: chipRect.left - cardRect.left,
-    top:  chipRect.top  - cardRect.top,
-  };
+function getElemStartPos(el) {
+  const cR = cardEl.getBoundingClientRect();
+  const eR = el.getBoundingClientRect();
+  return { left: eR.left - cR.left, top: eR.top - cR.top };
 }
 
 function moveChip(newLeft, newTop) {
-  const cardW = cardEl.offsetWidth;
-  const cardH = cardEl.offsetHeight;
-  const chipW = chip.offsetWidth;
-  const chipH = chip.offsetHeight;
-  chip.style.left   = clamp(newLeft, 0, cardW - chipW) + 'px';
-  chip.style.top    = clamp(newTop,  0, cardH - chipH) + 'px';
-  chip.style.right  = 'auto';
-  chip.style.bottom = 'auto';
+  const cardW = cardEl.offsetWidth, cardH = cardEl.offsetHeight;
+  chip.style.left   = clamp(newLeft, 0, cardW - chip.offsetWidth) + 'px';
+  chip.style.top    = clamp(newTop,  0, cardH - chip.offsetHeight) + 'px';
+  chip.style.right  = 'auto'; chip.style.bottom = 'auto';
   document.getElementById('chip-pos-display').textContent =
-    `Position: top ${Math.round(parseFloat(chip.style.top))}px, left ${Math.round(parseFloat(chip.style.left))}px`;
+    `top: ${Math.round(parseFloat(chip.style.top))}px, left: ${Math.round(parseFloat(chip.style.left))}px`;
 }
 
-// Mouse
 chip.addEventListener('mousedown', e => {
   e.preventDefault();
-  dragging = true;
-  startMouseX = e.clientX;
-  startMouseY = e.clientY;
-  const pos = getChipStartPos();
-  startLeft = pos.left;
-  startTop  = pos.top;
+  chipDragging = true;
+  chipStartMX = e.clientX; chipStartMY = e.clientY;
+  const p = getElemStartPos(chip);
+  chipStartL = p.left; chipStartT = p.top;
   chip.style.cursor = 'grabbing';
 });
 document.addEventListener('mousemove', e => {
-  if (!dragging) return;
-  moveChip(startLeft + (e.clientX - startMouseX), startTop + (e.clientY - startMouseY));
+  if (!chipDragging) return;
+  moveChip(chipStartL + (e.clientX - chipStartMX), chipStartT + (e.clientY - chipStartMY));
 });
 document.addEventListener('mouseup', () => {
-  if (dragging) { dragging = false; chip.style.cursor = 'grab'; }
+  if (chipDragging) { chipDragging = false; chip.style.cursor = 'grab'; }
 });
-
-// Touch
 chip.addEventListener('touchstart', e => {
   e.preventDefault();
   const t = e.touches[0];
-  dragging = true;
-  startMouseX = t.clientX;
-  startMouseY = t.clientY;
-  const pos = getChipStartPos();
-  startLeft = pos.left;
-  startTop  = pos.top;
+  chipDragging = true;
+  chipStartMX = t.clientX; chipStartMY = t.clientY;
+  const p = getElemStartPos(chip);
+  chipStartL = p.left; chipStartT = p.top;
 }, { passive: false });
 document.addEventListener('touchmove', e => {
-  if (!dragging) return;
+  if (!chipDragging) return;
   e.preventDefault();
   const t = e.touches[0];
-  moveChip(startLeft + (t.clientX - startMouseX), startTop + (t.clientY - startMouseY));
+  moveChip(chipStartL + (t.clientX - chipStartMX), chipStartT + (t.clientY - chipStartMY));
 }, { passive: false });
-document.addEventListener('touchend', () => { dragging = false; });
+document.addEventListener('touchend', () => { chipDragging = false; });
 
-
-/* ============================================================
-   POSITION PRESETS
-   ============================================================ */
 function setChipPos(preset) {
-  const cardW = cardEl.offsetWidth;
-  const cardH = cardEl.offsetHeight;
-  const chipW = chip.offsetWidth;
-  const chipH = chip.offsetHeight;
-  const PAD   = 22;
+  const cW = cardEl.offsetWidth, cH = cardEl.offsetHeight;
+  const eW = chip.offsetWidth,   eH = chip.offsetHeight;
+  const PAD = 22;
   const map = {
-    'top-left':    { top: PAD,                          left: PAD },
-    'top-center':  { top: PAD,                          left: Math.round((cardW - chipW) / 2) },
-    'top-right':   { top: PAD,                          left: cardW - chipW - PAD },
-    'mid-left':    { top: Math.round((cardH - chipH) / 2), left: PAD },
-    'mid-center':  { top: Math.round((cardH - chipH) / 2), left: Math.round((cardW - chipW) / 2) },
-    'mid-right':   { top: Math.round((cardH - chipH) / 2), left: cardW - chipW - PAD },
-    'bot-left':    { top: cardH - chipH - PAD,          left: PAD },
-    'bot-center':  { top: cardH - chipH - PAD,          left: Math.round((cardW - chipW) / 2) },
-    'bot-right':   { top: cardH - chipH - PAD,          left: cardW - chipW - PAD },
+    'top-left':   { top:PAD,                         left:PAD },
+    'top-center': { top:PAD,                         left:Math.round((cW-eW)/2) },
+    'top-right':  { top:PAD,                         left:cW-eW-PAD },
+    'mid-left':   { top:Math.round((cH-eH)/2),       left:PAD },
+    'mid-center': { top:Math.round((cH-eH)/2),       left:Math.round((cW-eW)/2) },
+    'mid-right':  { top:Math.round((cH-eH)/2),       left:cW-eW-PAD },
+    'bot-left':   { top:cH-eH-PAD,                   left:PAD },
+    'bot-center': { top:cH-eH-PAD,                   left:Math.round((cW-eW)/2) },
+    'bot-right':  { top:cH-eH-PAD,                   left:cW-eW-PAD },
   };
-  const p = map[preset];
-  if (p) moveChip(p.left, p.top);
+  const pos = map[preset]; if (pos) moveChip(pos.left, pos.top);
 }
 
+/* ============================================================
+   DRAGGABLE — TEXT BLOCK
+   ============================================================ */
+const textBlock = document.getElementById('shayari-display');
+let textBlockDragging = false;
+let tbStartMX, tbStartMY, tbStartL, tbStartT;
+
+function moveTextBlock(newLeft, newTop) {
+  const cW = cardEl.offsetWidth, cH = cardEl.offsetHeight;
+  const bW = textBlock.offsetWidth, bH = textBlock.offsetHeight;
+  textBlock.style.left   = clamp(newLeft, 0, cW - bW) + 'px';
+  textBlock.style.top    = clamp(newTop,  0, cH - 20) + 'px';
+  textBlock.style.right  = 'auto';
+  document.getElementById('text-pos-display').textContent =
+    `top: ${Math.round(parseFloat(textBlock.style.top))}px, left: ${Math.round(parseFloat(textBlock.style.left))}px`;
+}
+
+textBlock.addEventListener('mousedown', e => {
+  // Only drag if target is NOT a word span
+  if (e.target.classList.contains('word-span')) return;
+  e.preventDefault();
+  textBlockDragging = true;
+  tbStartMX = e.clientX; tbStartMY = e.clientY;
+  const p = getElemStartPos(textBlock);
+  tbStartL = p.left; tbStartT = p.top;
+  textBlock.style.cursor = 'grabbing';
+});
+document.addEventListener('mousemove', e => {
+  if (!textBlockDragging) return;
+  moveTextBlock(tbStartL + (e.clientX - tbStartMX), tbStartT + (e.clientY - tbStartMY));
+});
+document.addEventListener('mouseup', () => {
+  if (textBlockDragging) { textBlockDragging = false; textBlock.style.cursor = 'grab'; }
+});
+textBlock.addEventListener('touchstart', e => {
+  if (e.target.classList.contains('word-span')) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  textBlockDragging = true;
+  tbStartMX = t.clientX; tbStartMY = t.clientY;
+  const p = getElemStartPos(textBlock);
+  tbStartL = p.left; tbStartT = p.top;
+}, { passive: false });
+document.addEventListener('touchmove', e => {
+  if (!textBlockDragging) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  moveTextBlock(tbStartL + (t.clientX - tbStartMX), tbStartT + (t.clientY - tbStartMY));
+}, { passive: false });
+document.addEventListener('touchend', () => { textBlockDragging = false; });
+
+function setTextPos(preset) {
+  const cW = cardEl.offsetWidth, cH = cardEl.offsetHeight;
+  const bW = textBlock.offsetWidth, bH = textBlock.offsetHeight;
+  const PAD = 36;
+  if (preset === 'top')    moveTextBlock(PAD, 80);
+  if (preset === 'center') moveTextBlock(PAD, Math.round((cH - bH) / 2));
+  if (preset === 'bottom') moveTextBlock(PAD, cH - bH - 40);
+}
 
 /* ============================================================
    DOWNLOAD
    ============================================================ */
 document.getElementById('download-btn').addEventListener('click', async () => {
-  const card = document.getElementById('card');
-  const btn  = document.getElementById('download-btn');
+  // Hide word zoom bar before capture
+  wordZoomBar.style.display = 'none';
+  document.getElementById('text-drag-hint').style.display = 'none';
+
+  // Deselect word
+  document.querySelectorAll('.word-span.selected-word').forEach(w => w.classList.remove('selected-word'));
+  selectedWordKey = null;
+
+  const btn = document.getElementById('download-btn');
   btn.textContent = '⏳ Generating...';
   btn.disabled = true;
+
   try {
-    const canvas = await html2canvas(card, {
-      scale: 3,
-      useCORS: true,
-      allowTaint: true,
+    const canvas = await html2canvas(cardEl, {
+      scale: 3, useCORS: true, allowTaint: true,
       backgroundColor: null,
-      width:  card.offsetWidth,
-      height: card.offsetHeight,
+      width: cardEl.offsetWidth, height: cardEl.offsetHeight,
     });
     const link = document.createElement('a');
-    link.download = 'shayari_card_' + Date.now() + '.png';
+    link.download = 'shayari_' + PROFILES[activeProfileIdx].handle.replace('@','') + '_' + Date.now() + '.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
   } catch (err) {
-    alert('Download mein problem hui. Please dobara try karein.');
+    alert('Download mein problem hui. Dobara try karein.');
     console.error(err);
   }
+
+  document.getElementById('text-drag-hint').style.display = '';
   btn.textContent = '⬇ Download Image (9:16)';
   btn.disabled = false;
 });
 
-
 /* ============================================================
-   INITIALISE
+   INIT
    ============================================================ */
+loadProfile(0);
 renderShayariText();
 buildLineEditor();
 

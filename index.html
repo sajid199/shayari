@@ -3,14 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shayari Card Maker — 4 Pages</title>
+<title>Shayari Card Maker — Multi Size</title>
 <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&family=Rozha+One&family=Noto+Serif+Devanagari:wght@400;700&family=Baloo+2:wght@700;800&family=Martel:wght@700;900&family=Yatra+One&family=Mukta:wght@700&family=Eczar:wght@700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 
-/* ============================================================
-   RESET & BASE
-   ============================================================ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
@@ -21,9 +18,6 @@ body {
   padding: 16px;
 }
 
-/* ============================================================
-   MOBILE LAYOUT — card top, controls below (default/mobile first)
-   ============================================================ */
 .app-layout {
   display: flex;
   flex-direction: column;
@@ -34,23 +28,15 @@ body {
   margin: 0 auto;
 }
 
-/* ============================================================
-   DESKTOP LAYOUT — side by side (≥ 900px)
-   ============================================================ */
 @media (min-width: 900px) {
-  body {
-    padding: 24px;
-  }
+  body { padding: 24px; }
   .app-layout {
     flex-direction: row;
     align-items: flex-start;
-    max-width: 1000px;
+    max-width: 1060px;
     gap: 24px;
   }
-  .card-wrap {
-    position: sticky !important;
-    top: 24px !important;
-  }
+  .card-wrap { position: sticky !important; top: 24px !important; }
   .controls {
     max-height: calc(100vh - 48px) !important;
     overflow-y: auto !important;
@@ -58,9 +44,7 @@ body {
   }
 }
 
-/* ============================================================
-   CARD WRAP
-   ============================================================ */
+/* CARD WRAP */
 .card-wrap {
   flex-shrink: 0;
   display: flex;
@@ -68,11 +52,8 @@ body {
   align-items: center;
   gap: 12px;
   width: 100%;
-  position: static;
-  top: auto;
 }
 
-/* Scale card to fit smaller screens */
 .card-outer {
   width: 100%;
   display: flex;
@@ -81,25 +62,15 @@ body {
   gap: 12px;
 }
 
+/* The card itself — size controlled by JS */
 #card {
-  width: 360px;
-  height: 640px;
   position: relative;
   overflow: hidden;
   border-radius: 18px;
   box-shadow: 0 24px 64px rgba(0,0,0,0.7);
   background: #d9d9d9;
   user-select: none;
-  /* Scale card to fit small screens */
-  transform-origin: top center;
-}
-
-/* On very small screens, scale the card down */
-@media (max-width: 400px) {
-  #card {
-    width: 320px;
-    height: 568px;
-  }
+  transition: width 0.3s, height 0.3s;
 }
 
 /* Layers */
@@ -107,7 +78,7 @@ body {
 #bg-image-layer { position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 0.3s;z-index:1; }
 #overlay-layer  { position:absolute;inset:0;background:rgba(255,255,255,0);z-index:2; }
 
-/* ---- PROFILE CHIP (draggable) ---- */
+/* PROFILE CHIP */
 #profile-chip {
   position: absolute;
   top: 22px; left: 22px;
@@ -140,7 +111,7 @@ body {
   font-size:12px;color:#555;line-height:1.3;white-space:nowrap;
 }
 
-/* ---- SHAYARI TEXT (draggable) ---- */
+/* SHAYARI TEXT */
 #shayari-display {
   position: absolute;
   top: 100px; left: 36px;
@@ -162,7 +133,6 @@ body {
   pointer-events: none;
 }
 
-/* Word spans for per-word zoom */
 #shayari-text .word-span {
   display: inline;
   cursor: default;
@@ -174,14 +144,9 @@ body {
   background: rgba(100,180,255,0.12);
   border-radius: 3px;
 }
-#shayari-text .line-span .word-span[style*="color"] {
-  color: inherit;
-}
-
-/* Line spans */
 #shayari-text .line-span { display: block; }
 
-/* WORD ZOOM TOOLTIP inside card */
+/* WORD ZOOM BAR */
 #word-zoom-bar {
   position: absolute;
   z-index: 30;
@@ -196,58 +161,35 @@ body {
   white-space: nowrap;
 }
 #word-zoom-bar button {
-  background: #222;
-  border: 1px solid #555;
-  color: #fff;
-  border-radius: 50%;
-  width: 22px; height: 22px;
-  font-size: 14px;
-  cursor: pointer;
+  background: #222; border: 1px solid #555; color: #fff;
+  border-radius: 50%; width: 22px; height: 22px;
+  font-size: 14px; cursor: pointer;
   display:flex;align-items:center;justify-content:center;
   transition: background 0.15s;
 }
 #word-zoom-bar button:hover { background: #444; }
-#word-zoom-bar .wz-size {
-  font-size: 11px; color: #ccc; min-width: 30px; text-align: center;
-}
+#word-zoom-bar .wz-size { font-size: 11px; color: #ccc; min-width: 30px; text-align: center; }
 #word-zoom-bar .wz-reset {
   font-size: 10px; color: #888; cursor: pointer; padding: 0 4px;
   background: none; border: none; border-left: 1px solid #333;
   margin-left: 2px;
 }
 #word-zoom-bar .wz-reset:hover { color: #ccc; }
-
 #word-zoom-bar .wz-color-wrap {
-  position: relative;
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  border: 2px solid #555;
-  overflow: hidden;
-  cursor: pointer;
-  flex-shrink: 0;
-  margin-left: 2px;
+  position: relative; width: 22px; height: 22px;
+  border-radius: 50%; border: 2px solid #555;
+  overflow: hidden; cursor: pointer; flex-shrink: 0; margin-left: 2px;
 }
 #word-zoom-bar .wz-color-swatch {
-  position: absolute; inset: 0;
-  border-radius: 50%;
-  background: #111111;
-  pointer-events: none;
+  position: absolute; inset: 0; border-radius: 50%;
+  background: #111111; pointer-events: none;
 }
 #word-zoom-bar .wz-color-wrap input[type="color"] {
-  position: absolute;
-  inset: -4px;
-  width: calc(100% + 8px);
-  height: calc(100% + 8px);
-  opacity: 0;
-  cursor: pointer;
-  border: none; padding: 0;
+  position: absolute; inset: -4px;
+  width: calc(100% + 8px); height: calc(100% + 8px);
+  opacity: 0; cursor: pointer; border: none; padding: 0;
 }
-#word-zoom-bar .wz-divider {
-  width: 1px; height: 14px;
-  background: #333;
-  margin: 0 2px;
-  flex-shrink: 0;
-}
+#word-zoom-bar .wz-divider { width: 1px; height: 14px; background: #333; margin: 0 2px; flex-shrink: 0; }
 
 /* Watermark */
 #watermark {
@@ -257,25 +199,47 @@ body {
   letter-spacing:1px;z-index:10;pointer-events:none;
 }
 
-/* Text drag handle indicator */
 #text-drag-hint {
-  position: absolute;
-  bottom: -18px;
-  left: 50%;
+  position: absolute; bottom: -18px; left: 50%;
   transform: translateX(-50%);
-  font-size: 9px;
-  color: rgba(0,0,0,0.25);
-  pointer-events: none;
-  white-space: nowrap;
-  letter-spacing: 0.5px;
+  font-size: 9px; color: rgba(0,0,0,0.25);
+  pointer-events: none; white-space: nowrap; letter-spacing: 0.5px;
 }
 
-/* ============================================================
-   DOWNLOAD BTN
-   ============================================================ */
+/* SIZE SELECTOR */
+.size-selector {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.size-btn {
+  flex: 1;
+  min-width: 90px;
+  background: #1a1a1a;
+  border: 2px solid #2a2a2a;
+  border-radius: 10px;
+  color: #777;
+  font-family: 'Hind', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 8px 6px 6px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  line-height: 1.4;
+}
+.size-btn:hover { border-color: #555; color: #ccc; }
+.size-btn.active { border-color: #bbb; background: #1c1c1c; color: #fff; }
+.size-btn .sb-ratio { font-size: 14px; display: block; margin-bottom: 2px; }
+.size-btn .sb-label { font-size: 9px; color: inherit; opacity: 0.7; letter-spacing: 0.5px; text-transform: uppercase; }
+
+/* DOWNLOAD BTN */
 #download-btn {
   width: 100%;
-  max-width: 360px;
+  max-width: 420px;
   background: linear-gradient(135deg,#1a1a1a,#333);
   border: 1px solid #444;
   border-radius: 12px;
@@ -291,9 +255,7 @@ body {
 #download-btn:hover { opacity:0.85;transform:translateY(-1px); }
 #download-btn:disabled { opacity:0.5;cursor:not-allowed;transform:none; }
 
-/* ============================================================
-   CONTROLS COLUMN
-   ============================================================ */
+/* CONTROLS */
 .controls {
   width: 100%;
   display:flex;flex-direction:column;gap:14px;
@@ -307,24 +269,11 @@ body {
   .controls::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:4px;}
 }
 
-/* Panel */
-.panel {
-  background:#1a1a1a;
-  border:1px solid #262626;
-  border-radius:14px;
-  padding:16px;
-}
-.panel-title {
-  font-size:10px;font-weight:700;letter-spacing:2px;
-  text-transform:uppercase;color:#bbb;margin-bottom:12px;
-}
+.panel { background:#1a1a1a;border:1px solid #262626;border-radius:14px;padding:16px; }
+.panel-title { font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#bbb;margin-bottom:12px; }
 .panel-desc { font-size:11px;color:#555;line-height:1.6;margin-bottom:10px; }
 
-/* Forms */
-label {
-  display:block;font-size:11px;color:#777;
-  margin-bottom:4px;margin-top:10px;
-}
+label { display:block;font-size:11px;color:#777;margin-bottom:4px;margin-top:10px; }
 label:first-of-type { margin-top:0; }
 
 textarea {
@@ -360,10 +309,8 @@ input[type="file"]  { display:none; }
 }
 .upload-btn:hover { border-color:#bbb;color:#bbb; }
 
-/* ---- 4-PROFILE TABS ---- */
-.profile-tabs {
-  display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px;
-}
+/* PROFILE TABS */
+.profile-tabs { display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px; }
 .ptab {
   background:#111;border:2px solid #2a2a2a;border-radius:10px;
   padding:9px 8px;cursor:pointer;text-align:center;
@@ -374,7 +321,7 @@ input[type="file"]  { display:none; }
 .ptab .pt-name { font-size:12px;color:#fff;font-weight:700;margin-bottom:2px; }
 .ptab .pt-handle { font-size:10px;color:#555; }
 
-/* ---- FONT GRID ---- */
+/* FONT GRID */
 .font-grid { display:grid;grid-template-columns:1fr 1fr;gap:6px; }
 .font-card {
   background:#111;border:2px solid #2a2a2a;border-radius:8px;
@@ -386,7 +333,6 @@ input[type="file"]  { display:none; }
 .font-card .fp { font-size:16px;color:#fff;line-height:1.5;margin-bottom:2px; }
 .font-card .fn { font-size:9px;color:#555;letter-spacing:0.5px;text-transform:uppercase; }
 
-/* Alignment */
 .align-row { display:flex;gap:7px;margin-top:4px; }
 .align-btn {
   flex:1;background:#111;border:2px solid #2a2a2a;border-radius:8px;
@@ -397,7 +343,6 @@ input[type="file"]  { display:none; }
 .align-btn:hover { border-color:#555;color:#ccc; }
 .align-btn.active { border-color:#bbb;background:#1c1c1c;color:#fff; }
 
-/* BG swatches */
 .bg-list { display:flex;flex-wrap:wrap;gap:6px;margin-top:4px; }
 .bg-swatch {
   width:36px;height:36px;border-radius:7px;cursor:pointer;
@@ -406,7 +351,7 @@ input[type="file"]  { display:none; }
 .bg-swatch:hover { transform:scale(1.1); }
 .bg-swatch.active { border-color:#fff; }
 
-/* Per-line editor */
+/* PER-LINE EDITOR */
 #line-editor-list { display:flex;flex-direction:column;gap:7px;padding-right:2px; }
 
 .line-row {
@@ -432,7 +377,6 @@ input[type="file"]  { display:none; }
 .line-size-range { flex:1; }
 .line-size-val { font-size:10px;color:#777;min-width:30px;text-align:right;flex-shrink:0; }
 
-/* Position grid */
 .pos-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px; }
 .pos-btn {
   background:#111;border:1px solid #222;border-radius:7px;
@@ -441,13 +385,10 @@ input[type="file"]  { display:none; }
   transition:color 0.2s,border-color 0.2s,background 0.2s;
 }
 .pos-btn:hover { color:#eee;border-color:#555;background:#181818; }
-
 .chip-pos-display { font-size:10px;color:#383838;text-align:center;margin-top:7px; }
-
 .slider-row { display:flex;align-items:center;gap:7px; }
 .slider-row input[type="range"] { flex:1; }
 
-/* Word zoom panel */
 .word-zoom-info {
   background:#0e0e0e;border:1px solid #222;border-radius:8px;
   padding:10px 12px;font-size:11px;color:#555;line-height:1.7;
@@ -461,23 +402,38 @@ input[type="file"]  { display:none; }
 
 <div class="app-layout">
 
-  <!-- ============================================================
-       TOP / LEFT — CARD PREVIEW
-       ============================================================ -->
+  <!-- CARD PREVIEW -->
   <div class="card-wrap">
     <div class="card-outer">
+
+      <!-- SIZE SELECTOR -->
+      <div class="size-selector">
+        <button class="size-btn" data-size="story" onclick="setCardSize('story')">
+          <span class="sb-ratio">9:16</span>
+          <span class="sb-label">Story / Reel</span>
+        </button>
+        <button class="size-btn" data-size="post" onclick="setCardSize('post')">
+          <span class="sb-ratio">1:1</span>
+          <span class="sb-label">FB / IG Post</span>
+        </button>
+        <button class="size-btn" data-size="portrait" onclick="setCardSize('portrait')">
+          <span class="sb-ratio">4:5</span>
+          <span class="sb-label">IG Portrait</span>
+        </button>
+      </div>
+
       <div id="card">
         <div id="bg-layer"></div>
         <div id="bg-image-layer"></div>
         <div id="overlay-layer"></div>
 
-        <!-- Word Zoom Floating Bar (inside card) -->
+        <!-- Word Zoom Bar -->
         <div id="word-zoom-bar">
           <button id="wz-minus">−</button>
           <span class="wz-size" id="wz-size-display">23px</span>
           <button id="wz-plus">+</button>
           <div class="wz-divider"></div>
-          <div class="wz-color-wrap" title="Word ka colour badlein">
+          <div class="wz-color-wrap" title="Word colour">
             <div class="wz-color-swatch" id="wz-color-swatch"></div>
             <input type="color" id="wz-color-picker" value="#111111">
           </div>
@@ -493,7 +449,7 @@ input[type="file"]  { display:none; }
           </div>
         </div>
 
-        <!-- Draggable Shayari Text Block -->
+        <!-- Draggable Shayari Text -->
         <div id="shayari-display">
           <div id="shayari-text"></div>
           <div id="text-drag-hint">↕ drag to reposition</div>
@@ -503,14 +459,12 @@ input[type="file"]  { display:none; }
         <div id="watermark">@Ghalibnama</div>
       </div>
 
-      <button id="download-btn">⬇ Download Image (9:16)</button>
+      <button id="download-btn">⬇ Download Image</button>
     </div>
   </div>
 
 
-  <!-- ============================================================
-       BOTTOM / RIGHT — CONTROLS
-       ============================================================ -->
+  <!-- CONTROLS -->
   <div class="controls">
 
     <!-- 1. PROFILE SELECT -->
@@ -535,10 +489,9 @@ input[type="file"]  { display:none; }
         </div>
       </div>
       <p class="panel-desc" style="margin-bottom:0">
-        ⚙️ <b style="color:#666">Avatar path set karne ke liye:</b> neeche <code style="color:#888;background:#111;padding:1px 5px;border-radius:4px">PROFILE_AVATARS</code> object mein apna path daalein.
+        ⚙️ <b style="color:#666">Avatar path:</b> neeche <code style="color:#888;background:#111;padding:1px 5px;border-radius:4px">PROFILE_AVATARS</code> object mein apna path daalein.
       </p>
     </div>
-
 
     <!-- 2. SHAYARI TEXT -->
     <div class="panel">
@@ -549,44 +502,36 @@ input[type="file"]  { display:none; }
       <input type="text" id="watermark-input" value="@Ghalibnama">
     </div>
 
-
     <!-- 3. WORD ZOOM -->
     <div class="panel">
       <div class="panel-title">🔍 Word Zoom (Per-Word Size)</div>
       <div class="word-zoom-info">
         Kisi bhi <b>word ko card par click</b> karein — uske upar ek zoom bar aayega.<br>
         <b>+ / −</b> se us word ka size badhayein ya ghatayein.<br>
-        <b>✕</b> se us word ka override hata dein.<br>
-        Aap card par <b>scroll</b> (mouse wheel) bhi kar sakte hain word select karne ke baad.
+        <b>✕</b> se us word ka override hata dein.
       </div>
       <button id="clear-all-word-overrides" style="width:100%;background:#111;border:1px solid #2a2a2a;border-radius:8px;color:#777;font-size:12px;padding:8px;cursor:pointer;font-family:'Hind',sans-serif;transition:color 0.2s,border-color 0.2s;">
         🗑 Sabhi Word Overrides Hataayein
       </button>
     </div>
 
-
     <!-- 4. PER-LINE STYLE -->
     <div class="panel">
       <div class="panel-title">🎨 Per-Line Style</div>
-      <p class="panel-desc">Har line ka alag colour aur size set karein. Circle = colour, Slider = size.</p>
+      <p class="panel-desc">Har line ka alag colour aur size set karein.</p>
       <div id="line-editor-list"></div>
     </div>
-
 
     <!-- 5. PROFILE CHIP -->
     <div class="panel">
       <div class="panel-title">👤 Profile Chip</div>
-
       <label>Display Name</label>
       <input type="text" id="pname-input" value="Ghalib Nama">
-
       <label>Handle / Username</label>
       <input type="text" id="phandle-input" value="@Ghalibnama">
-
       <label>Profile Picture (manual override)</label>
       <label class="upload-btn" for="avatar-upload">🖼️ &nbsp;Avatar Upload Karein</label>
       <input type="file" id="avatar-upload" accept="image/*">
-
       <label>Name Colour</label>
       <div class="color-row">
         <input type="color" id="name-color" value="#111111">
@@ -597,7 +542,6 @@ input[type="file"]  { display:none; }
         <input type="color" id="handle-color" value="#555555">
         <span>Handle ka rang</span>
       </div>
-
       <label style="margin-top:16px">Profile Chip Position</label>
       <p class="panel-desc" style="margin-bottom:0">Card par directly drag karein, ya preset chunein:</p>
       <div class="pos-grid">
@@ -614,7 +558,6 @@ input[type="file"]  { display:none; }
       <div class="chip-pos-display" id="chip-pos-display">top: 22px, left: 22px</div>
     </div>
 
-
     <!-- 6. TEXT BLOCK POSITION -->
     <div class="panel">
       <div class="panel-title">↕ Text Block Position</div>
@@ -627,24 +570,19 @@ input[type="file"]  { display:none; }
       <div class="chip-pos-display" id="text-pos-display">top: 100px, left: 36px</div>
     </div>
 
-
     <!-- 7. GLOBAL FONT & STYLE -->
     <div class="panel">
       <div class="panel-title">🔤 Global Font &amp; Style</div>
       <div class="font-grid" id="font-grid"></div>
-
       <label style="margin-top:14px">Global Font Size: <span class="val" id="fs-val">23px</span></label>
       <input type="range" id="font-size" min="10" max="48" value="23">
-
       <label>Line Height: <span class="val" id="lh-val">2.05</span></label>
       <input type="range" id="line-height" min="10" max="40" value="21">
-
       <label>Global Text Colour</label>
       <div class="color-row">
         <input type="color" id="text-color" value="#111111">
         <span>Per-line override na hone par apply hoga</span>
       </div>
-
       <label>Text Alignment</label>
       <div class="align-row">
         <button class="align-btn active" data-align="center">Center</button>
@@ -653,40 +591,26 @@ input[type="file"]  { display:none; }
       </div>
     </div>
 
-
     <!-- 8. BACKGROUND -->
     <div class="panel">
       <div class="panel-title">🖼️ Background</div>
       <label>Presets</label>
       <div class="bg-list" id="bg-list"></div>
-
       <label style="margin-top:12px">Custom Background Image</label>
       <label class="upload-btn" for="bg-upload">📁 &nbsp;Image Choose Karein</label>
       <input type="file" id="bg-upload" accept="image/*">
-
       <label>White Overlay: <span class="val" id="ov-val">0%</span></label>
       <input type="range" id="overlay-range" min="0" max="85" value="0">
     </div>
 
-  </div><!-- end .controls -->
-
-</div><!-- end .app-layout -->
+  </div>
+</div>
 
 
 <script>
-/* ============================================================
-   ██████████ PATH CONFIG — YAHAN APNA PATH DAALO ██████████
-   
-   Har profile ke liye avatar image ka path set karein.
-   
-   Example (same folder):         "./ghalibnama.jpg"
-   Example (folder ke andar):     "./avatars/ghalibnama.jpg"
-   Example (Windows path NOTE):   Use forward slashes only.
-   
-   Agar koi profile ka avatar nahi chahiye toh null rakhein —
-   tab default emoji dikhega.
-   ============================================================ */
-
+/* ====================================================
+   PATH CONFIG
+   ==================================================== */
 const PROFILE_AVATARS = {
   0: "./avatars/Ghalib.jpeg",
   1: "./avatars/Arpita.jpeg",
@@ -694,7 +618,6 @@ const PROFILE_AVATARS = {
   3: "./avatars/AnjuClassical.jpeg",
 };
 
-/* Har profile ki default settings */
 const PROFILES = [
   { name: 'Ghalib Nama',   handle: '@Ghalibnama',     watermark: '@Ghalibnama',    emoji: '✍️' },
   { name: 'Arpita',        handle: '@Missingsadly',   watermark: '@Missingsadly',  emoji: '🌸' },
@@ -702,9 +625,52 @@ const PROFILES = [
   { name: 'Shayari Dairy', handle: '@anjuclassical',  watermark: '@anjuclassical', emoji: '📖' },
 ];
 
-/* ============================================================
+/* ====================================================
+   CARD SIZE DEFINITIONS
+   actual pixel dimensions for export (at 1x, then scaled 3x by html2canvas)
+   display dimensions are scaled to fit screen
+   ==================================================== */
+const CARD_SIZES = {
+  story:    { w: 360, h: 640,  label: '9:16 Story/Reel',  exportW: 1080, exportH: 1920 },
+  post:     { w: 400, h: 400,  label: '1:1 FB/IG Post',   exportW: 1080, exportH: 1080 },
+  portrait: { w: 360, h: 450,  label: '4:5 IG Portrait',  exportW: 1080, exportH: 1350 },
+};
+
+let currentSize = 'story';
+
+function setCardSize(sizeKey) {
+  currentSize = sizeKey;
+  const s = CARD_SIZES[sizeKey];
+  const cardEl = document.getElementById('card');
+
+  cardEl.style.width  = s.w + 'px';
+  cardEl.style.height = s.h + 'px';
+  cardEl.style.borderRadius = sizeKey === 'post' ? '12px' : '18px';
+
+  // Update active button
+  document.querySelectorAll('.size-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.size === sizeKey);
+  });
+
+  // Update download button label
+  document.getElementById('download-btn').textContent = `⬇ Download Image (${s.label})`;
+
+  // Re-center text block after resize
+  setTimeout(() => {
+    const tb = document.getElementById('shayari-display');
+    const tbH = tb.offsetHeight;
+    const newTop = Math.max(100, Math.round((s.h - tbH) / 2));
+    tb.style.top  = newTop + 'px';
+    tb.style.left = '36px';
+    tb.style.right = '36px';
+    document.getElementById('text-pos-display').textContent =
+      `top: ${newTop}px, left: 36px`;
+  }, 50);
+}
+
+/* ====================================================
    STATE
-   ============================================================ */
+   ==================================================== */
 const DEFAULT_TEXT =
 `बेवफा से दिल लगा
 लिया नादान थे हम,
@@ -718,35 +684,27 @@ const DEFAULT_TEXT =
 
 let globalFontSize = 23;
 let globalColor    = '#111111';
-let lineOverrides  = [];           // { fontSize, color } per line
-let wordOverrides  = {};           // "lineIdx-wordIdx" => { fontSize, color }
-
+let lineOverrides  = [];
+let wordOverrides  = {};
 let activeProfileIdx = 0;
-let selectedWordKey  = null;       // currently selected word key
+let selectedWordKey  = null;
 
-/* ============================================================
+/* ====================================================
    UTILITY
-   ============================================================ */
+   ==================================================== */
 function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
-
-function getLines() {
-  return document.getElementById('shayari-input').value.split('\n');
-}
-
+function getLines() { return document.getElementById('shayari-input').value.split('\n'); }
 function syncOverrides(lines) {
-  while (lineOverrides.length < lines.length) {
-    lineOverrides.push({ fontSize: null, color: null });
-  }
+  while (lineOverrides.length < lines.length) lineOverrides.push({ fontSize: null, color: null });
   lineOverrides.length = lines.length;
 }
 
-/* ============================================================
-   RENDER SHAYARI — each word gets its own span for zoom
-   ============================================================ */
+/* ====================================================
+   RENDER SHAYARI
+   ==================================================== */
 function renderShayariText() {
   const lines = getLines();
   syncOverrides(lines);
-
   const container = document.getElementById('shayari-text');
   container.innerHTML = '';
 
@@ -757,47 +715,30 @@ function renderShayariText() {
     if (line.trim() === '') {
       lineSpan.innerHTML = '&nbsp;';
     } else {
-      // Split by spaces, preserving structure
       const words = line.split(/(\s+)/);
       words.forEach((segment, wi) => {
-        if (segment.match(/^\s+$/)) {
-          lineSpan.appendChild(document.createTextNode(segment));
-          return;
-        }
+        if (segment.match(/^\s+$/)) { lineSpan.appendChild(document.createTextNode(segment)); return; }
         if (segment === '') return;
-
-        const wordIdx = getWordIndex(li, segment, wi);
-        const key = li + '-' + wordIdx;
-
+        const key = li + '-' + wi;
         const wspan = document.createElement('span');
         wspan.className = 'word-span';
         wspan.dataset.key = key;
         wspan.dataset.line = li;
-        wspan.dataset.word = wordIdx;
+        wspan.dataset.word = wi;
         wspan.textContent = segment;
-
-        // Apply word override if any
         if (wordOverrides[key] !== undefined) {
           if (wordOverrides[key].fontSize !== undefined) wspan.style.fontSize = wordOverrides[key].fontSize + 'px';
           if (wordOverrides[key].color    !== undefined) wspan.style.color    = wordOverrides[key].color;
         }
-
         lineSpan.appendChild(wspan);
       });
     }
-
     applyLineStyle(lineSpan, li);
     container.appendChild(lineSpan);
   });
 
-  // Re-enable pointer events on words for clicking
   document.getElementById('shayari-text').style.pointerEvents = 'none';
   enableWordClicks();
-}
-
-// Simple word indexer — count non-whitespace segments
-function getWordIndex(lineIdx, segment, rawIdx) {
-  return rawIdx;
 }
 
 function applyLineStyle(lineSpan, i) {
@@ -807,17 +748,10 @@ function applyLineStyle(lineSpan, i) {
   lineSpan.querySelectorAll('.word-span').forEach(ws => {
     const wKey = ws.dataset.key;
     const wOv  = wordOverrides[wKey];
-    if (wOv && wOv.color !== undefined) {
-      ws.style.color = wOv.color;
-    } else {
-      ws.style.color = lineColor;
-    }
+    ws.style.color = (wOv && wOv.color !== undefined) ? wOv.color : lineColor;
   });
-  if (!lineSpan.querySelector('.word-span')) {
-    lineSpan.style.color = lineColor;
-  } else {
-    lineSpan.style.color = '';
-  }
+  if (!lineSpan.querySelector('.word-span')) lineSpan.style.color = lineColor;
+  else lineSpan.style.color = '';
 }
 
 function updateSingleSpan(i) {
@@ -825,15 +759,13 @@ function updateSingleSpan(i) {
   if (spans[i]) applyLineStyle(spans[i], i);
 }
 
-/* ============================================================
+/* ====================================================
    WORD CLICK / ZOOM
-   ============================================================ */
+   ==================================================== */
 const wordZoomBar = document.getElementById('word-zoom-bar');
 
 function enableWordClicks() {
-  const textEl = document.getElementById('shayari-text');
-  textEl.style.pointerEvents = 'auto';
-
+  document.getElementById('shayari-text').style.pointerEvents = 'auto';
   document.querySelectorAll('.word-span').forEach(ws => {
     ws.addEventListener('click', handleWordClick);
   });
@@ -842,36 +774,26 @@ function enableWordClicks() {
 function handleWordClick(e) {
   if (textBlockDragging) return;
   e.stopPropagation();
-
   const key = e.target.dataset.key;
   if (!key) return;
-
   document.querySelectorAll('.word-span.selected-word').forEach(w => w.classList.remove('selected-word'));
-
   if (selectedWordKey === key) {
     selectedWordKey = null;
     wordZoomBar.style.display = 'none';
     return;
   }
-
   selectedWordKey = key;
   e.target.classList.add('selected-word');
-
   const cardRect = document.getElementById('card').getBoundingClientRect();
   const wordRect = e.target.getBoundingClientRect();
   const barLeft  = wordRect.left + wordRect.width / 2 - cardRect.left;
   const barTop   = wordRect.top - cardRect.top - 36;
-
   wordZoomBar.style.left    = barLeft + 'px';
   wordZoomBar.style.top     = Math.max(4, barTop) + 'px';
   wordZoomBar.style.display = 'flex';
-
-  const curSize = wordOverrides[key] !== undefined && wordOverrides[key].fontSize !== undefined
-    ? wordOverrides[key].fontSize : globalFontSize;
+  const curSize = (wordOverrides[key] && wordOverrides[key].fontSize !== undefined) ? wordOverrides[key].fontSize : globalFontSize;
   document.getElementById('wz-size-display').textContent = curSize + 'px';
-
-  const curColor = wordOverrides[key] !== undefined && wordOverrides[key].color !== undefined
-    ? wordOverrides[key].color : globalColor;
+  const curColor = (wordOverrides[key] && wordOverrides[key].color !== undefined) ? wordOverrides[key].color : globalColor;
   document.getElementById('wz-color-picker').value = curColor;
   document.getElementById('wz-color-swatch').style.background = curColor;
 }
@@ -881,27 +803,21 @@ function adjustSelectedWordSize(delta) {
   const ws = document.querySelector(`.word-span[data-key="${selectedWordKey}"]`);
   if (!ws) return;
   if (!wordOverrides[selectedWordKey]) wordOverrides[selectedWordKey] = {};
-  const cur = wordOverrides[selectedWordKey].fontSize !== undefined
-    ? wordOverrides[selectedWordKey].fontSize
-    : parseInt(ws.style.fontSize || globalFontSize);
+  const cur = wordOverrides[selectedWordKey].fontSize !== undefined ? wordOverrides[selectedWordKey].fontSize : parseInt(ws.style.fontSize || globalFontSize);
   const next = clamp(cur + delta, 8, 80);
   wordOverrides[selectedWordKey].fontSize = next;
   ws.style.fontSize = next + 'px';
   document.getElementById('wz-size-display').textContent = next + 'px';
 }
 
-document.getElementById('wz-plus').addEventListener('click', () => adjustSelectedWordSize(2));
+document.getElementById('wz-plus').addEventListener('click',  () => adjustSelectedWordSize(2));
 document.getElementById('wz-minus').addEventListener('click', () => adjustSelectedWordSize(-2));
 
 document.getElementById('wz-reset').addEventListener('click', () => {
   if (!selectedWordKey) return;
   delete wordOverrides[selectedWordKey];
   const ws = document.querySelector(`.word-span[data-key="${selectedWordKey}"]`);
-  if (ws) {
-    ws.style.fontSize = '';
-    ws.style.color    = '';
-    ws.classList.remove('selected-word');
-  }
+  if (ws) { ws.style.fontSize = ''; ws.style.color = ''; ws.classList.remove('selected-word'); }
   selectedWordKey = null;
   wordZoomBar.style.display = 'none';
 });
@@ -913,7 +829,7 @@ document.getElementById('wz-color-picker').addEventListener('input', e => {
   wordOverrides[selectedWordKey].color = color;
   document.getElementById('wz-color-swatch').style.background = color;
   const ws = document.querySelector(`.word-span[data-key="${selectedWordKey}"]`);
-  if (ws) { ws.style.color = color; }
+  if (ws) ws.style.color = color;
 });
 
 document.getElementById('card').addEventListener('wheel', e => {
@@ -935,15 +851,14 @@ document.getElementById('clear-all-word-overrides').addEventListener('click', ()
   selectedWordKey = null;
   wordZoomBar.style.display = 'none';
   document.querySelectorAll('.word-span').forEach(ws => {
-    ws.style.fontSize = '';
-    ws.style.color = '';
+    ws.style.fontSize = ''; ws.style.color = '';
     ws.classList.remove('selected-word');
   });
 });
 
-/* ============================================================
-   BUILD PER-LINE EDITOR
-   ============================================================ */
+/* ====================================================
+   PER-LINE EDITOR
+   ==================================================== */
 function buildLineEditor() {
   const lines = getLines();
   syncOverrides(lines);
@@ -1036,9 +951,9 @@ function buildLineEditor() {
   });
 }
 
-/* ============================================================
+/* ====================================================
    SHAYARI INPUT
-   ============================================================ */
+   ==================================================== */
 const shayariInput = document.getElementById('shayari-input');
 shayariInput.value = DEFAULT_TEXT;
 shayariInput.addEventListener('input', () => {
@@ -1047,16 +962,16 @@ shayariInput.addEventListener('input', () => {
   buildLineEditor();
 });
 
-/* ============================================================
+/* ====================================================
    WATERMARK
-   ============================================================ */
+   ==================================================== */
 document.getElementById('watermark-input').addEventListener('input', e => {
   document.getElementById('watermark').textContent = e.target.value;
 });
 
-/* ============================================================
+/* ====================================================
    PROFILE CHIP TEXT/COLOURS
-   ============================================================ */
+   ==================================================== */
 document.getElementById('pname-input').addEventListener('input', e => {
   document.getElementById('profile-name-display').textContent = e.target.value;
 });
@@ -1070,9 +985,9 @@ document.getElementById('handle-color').addEventListener('input', e => {
   document.getElementById('profile-handle-display').style.color = e.target.value;
 });
 
-/* ============================================================
-   AVATAR UPLOAD (manual)
-   ============================================================ */
+/* ====================================================
+   AVATAR UPLOAD
+   ==================================================== */
 document.getElementById('avatar-upload').addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
@@ -1083,21 +998,18 @@ document.getElementById('avatar-upload').addEventListener('change', e => {
   reader.readAsDataURL(file);
 });
 
-/* ============================================================
+/* ====================================================
    PROFILE SWITCHER
-   ============================================================ */
+   ==================================================== */
 function loadProfile(idx) {
   activeProfileIdx = idx;
   const p = PROFILES[idx];
-
-  document.getElementById('pname-input').value = p.name;
+  document.getElementById('pname-input').value   = p.name;
   document.getElementById('phandle-input').value = p.handle;
   document.getElementById('watermark-input').value = p.watermark;
-
-  document.getElementById('profile-name-display').textContent = p.name;
+  document.getElementById('profile-name-display').textContent   = p.name;
   document.getElementById('profile-handle-display').textContent = p.handle;
   document.getElementById('watermark').textContent = p.watermark;
-
   const avatarWrap = document.getElementById('avatar-wrap');
   const avatarPath = PROFILE_AVATARS[idx];
   if (avatarPath) {
@@ -1105,10 +1017,7 @@ function loadProfile(idx) {
   } else {
     avatarWrap.innerHTML = p.emoji;
   }
-
-  document.querySelectorAll('.ptab').forEach((t, i) => {
-    t.classList.toggle('active', i === idx);
-  });
+  document.querySelectorAll('.ptab').forEach((t, i) => t.classList.toggle('active', i === idx));
 }
 
 document.getElementById('profile-tabs').addEventListener('click', e => {
@@ -1117,9 +1026,9 @@ document.getElementById('profile-tabs').addEventListener('click', e => {
   loadProfile(parseInt(tab.dataset.idx));
 });
 
-/* ============================================================
+/* ====================================================
    GLOBAL FONT SIZE
-   ============================================================ */
+   ==================================================== */
 document.getElementById('font-size').addEventListener('input', e => {
   globalFontSize = parseInt(e.target.value);
   document.getElementById('shayari-text').style.fontSize = e.target.value + 'px';
@@ -1127,18 +1036,18 @@ document.getElementById('font-size').addEventListener('input', e => {
   buildLineEditor();
 });
 
-/* ============================================================
+/* ====================================================
    LINE HEIGHT
-   ============================================================ */
+   ==================================================== */
 document.getElementById('line-height').addEventListener('input', e => {
   const v = (parseInt(e.target.value) / 10).toFixed(2);
   document.getElementById('shayari-text').style.lineHeight = v;
   document.getElementById('lh-val').textContent = v;
 });
 
-/* ============================================================
+/* ====================================================
    GLOBAL TEXT COLOUR
-   ============================================================ */
+   ==================================================== */
 document.getElementById('text-color').addEventListener('input', e => {
   globalColor = e.target.value;
   const lineSpans = document.querySelectorAll('#shayari-text .line-span');
@@ -1146,9 +1055,9 @@ document.getElementById('text-color').addEventListener('input', e => {
   buildLineEditor();
 });
 
-/* ============================================================
+/* ====================================================
    TEXT ALIGNMENT
-   ============================================================ */
+   ==================================================== */
 document.querySelectorAll('.align-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.align-btn').forEach(b => b.classList.remove('active'));
@@ -1157,9 +1066,9 @@ document.querySelectorAll('.align-btn').forEach(btn => {
   });
 });
 
-/* ============================================================
-   FONT CARDS
-   ============================================================ */
+/* ====================================================
+   FONTS
+   ==================================================== */
 const fonts = [
   { family:"'Hind',sans-serif",             label:'Hind Bold',  preview:'शायरी' },
   { family:"'Rozha One',serif",             label:'Rozha One',  preview:'शायरी' },
@@ -1183,9 +1092,9 @@ fonts.forEach((f, idx) => {
   fontGrid.appendChild(card);
 });
 
-/* ============================================================
+/* ====================================================
    BACKGROUND PRESETS
-   ============================================================ */
+   ==================================================== */
 const bgPresets = [
   { label:'Classic Grey', val:'linear-gradient(160deg,#d2d2d2,#e2e2e2,#cacaca)' },
   { label:'Ash White',    val:'linear-gradient(160deg,#e8e8e8,#f5f5f5,#ddd)' },
@@ -1215,9 +1124,9 @@ bgPresets.forEach((p, i) => {
   bgListEl.appendChild(sw);
 });
 
-/* ============================================================
+/* ====================================================
    BG IMAGE UPLOAD
-   ============================================================ */
+   ==================================================== */
 document.getElementById('bg-upload').addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
@@ -1230,17 +1139,17 @@ document.getElementById('bg-upload').addEventListener('change', e => {
   reader.readAsDataURL(file);
 });
 
-/* ============================================================
+/* ====================================================
    OVERLAY
-   ============================================================ */
+   ==================================================== */
 document.getElementById('overlay-range').addEventListener('input', e => {
   document.getElementById('overlay-layer').style.background = `rgba(255,255,255,${e.target.value / 100})`;
   document.getElementById('ov-val').textContent = e.target.value + '%';
 });
 
-/* ============================================================
+/* ====================================================
    DRAGGABLE — PROFILE CHIP
-   ============================================================ */
+   ==================================================== */
 const chip   = document.getElementById('profile-chip');
 const cardEl = document.getElementById('card');
 let chipDragging = false, chipStartMX, chipStartMY, chipStartL, chipStartT;
@@ -1252,41 +1161,31 @@ function getElemStartPos(el) {
 }
 
 function moveChip(newLeft, newTop) {
-  const cardW = cardEl.offsetWidth, cardH = cardEl.offsetHeight;
-  chip.style.left   = clamp(newLeft, 0, cardW - chip.offsetWidth) + 'px';
-  chip.style.top    = clamp(newTop,  0, cardH - chip.offsetHeight) + 'px';
+  chip.style.left   = clamp(newLeft, 0, cardEl.offsetWidth  - chip.offsetWidth)  + 'px';
+  chip.style.top    = clamp(newTop,  0, cardEl.offsetHeight - chip.offsetHeight) + 'px';
   chip.style.right  = 'auto'; chip.style.bottom = 'auto';
   document.getElementById('chip-pos-display').textContent =
     `top: ${Math.round(parseFloat(chip.style.top))}px, left: ${Math.round(parseFloat(chip.style.left))}px`;
 }
 
 chip.addEventListener('mousedown', e => {
-  e.preventDefault();
-  chipDragging = true;
+  e.preventDefault(); chipDragging = true;
   chipStartMX = e.clientX; chipStartMY = e.clientY;
-  const p = getElemStartPos(chip);
-  chipStartL = p.left; chipStartT = p.top;
+  const p = getElemStartPos(chip); chipStartL = p.left; chipStartT = p.top;
   chip.style.cursor = 'grabbing';
 });
 document.addEventListener('mousemove', e => {
   if (!chipDragging) return;
   moveChip(chipStartL + (e.clientX - chipStartMX), chipStartT + (e.clientY - chipStartMY));
 });
-document.addEventListener('mouseup', () => {
-  if (chipDragging) { chipDragging = false; chip.style.cursor = 'grab'; }
-});
+document.addEventListener('mouseup', () => { if (chipDragging) { chipDragging = false; chip.style.cursor = 'grab'; } });
 chip.addEventListener('touchstart', e => {
-  e.preventDefault();
-  const t = e.touches[0];
-  chipDragging = true;
+  e.preventDefault(); const t = e.touches[0]; chipDragging = true;
   chipStartMX = t.clientX; chipStartMY = t.clientY;
-  const p = getElemStartPos(chip);
-  chipStartL = p.left; chipStartT = p.top;
+  const p = getElemStartPos(chip); chipStartL = p.left; chipStartT = p.top;
 }, { passive: false });
 document.addEventListener('touchmove', e => {
-  if (!chipDragging) return;
-  e.preventDefault();
-  const t = e.touches[0];
+  if (!chipDragging) return; e.preventDefault(); const t = e.touches[0];
   moveChip(chipStartL + (t.clientX - chipStartMX), chipStartT + (t.clientY - chipStartMY));
 }, { passive: false });
 document.addEventListener('touchend', () => { chipDragging = false; });
@@ -1296,100 +1195,100 @@ function setChipPos(preset) {
   const eW = chip.offsetWidth,   eH = chip.offsetHeight;
   const PAD = 22;
   const map = {
-    'top-left':   { top:PAD,                         left:PAD },
-    'top-center': { top:PAD,                         left:Math.round((cW-eW)/2) },
-    'top-right':  { top:PAD,                         left:cW-eW-PAD },
-    'mid-left':   { top:Math.round((cH-eH)/2),       left:PAD },
-    'mid-center': { top:Math.round((cH-eH)/2),       left:Math.round((cW-eW)/2) },
-    'mid-right':  { top:Math.round((cH-eH)/2),       left:cW-eW-PAD },
-    'bot-left':   { top:cH-eH-PAD,                   left:PAD },
-    'bot-center': { top:cH-eH-PAD,                   left:Math.round((cW-eW)/2) },
-    'bot-right':  { top:cH-eH-PAD,                   left:cW-eW-PAD },
+    'top-left':   { top:PAD,                  left:PAD },
+    'top-center': { top:PAD,                  left:Math.round((cW-eW)/2) },
+    'top-right':  { top:PAD,                  left:cW-eW-PAD },
+    'mid-left':   { top:Math.round((cH-eH)/2),left:PAD },
+    'mid-center': { top:Math.round((cH-eH)/2),left:Math.round((cW-eW)/2) },
+    'mid-right':  { top:Math.round((cH-eH)/2),left:cW-eW-PAD },
+    'bot-left':   { top:cH-eH-PAD,            left:PAD },
+    'bot-center': { top:cH-eH-PAD,            left:Math.round((cW-eW)/2) },
+    'bot-right':  { top:cH-eH-PAD,            left:cW-eW-PAD },
   };
   const pos = map[preset]; if (pos) moveChip(pos.left, pos.top);
 }
 
-/* ============================================================
+/* ====================================================
    DRAGGABLE — TEXT BLOCK
-   ============================================================ */
+   ==================================================== */
 const textBlock = document.getElementById('shayari-display');
-let textBlockDragging = false;
-let tbStartMX, tbStartMY, tbStartL, tbStartT;
+let textBlockDragging = false, tbStartMX, tbStartMY, tbStartL, tbStartT;
 
 function moveTextBlock(newLeft, newTop) {
   const cW = cardEl.offsetWidth, cH = cardEl.offsetHeight;
-  const bW = textBlock.offsetWidth, bH = textBlock.offsetHeight;
-  textBlock.style.left   = clamp(newLeft, 0, cW - bW) + 'px';
-  textBlock.style.top    = clamp(newTop,  0, cH - 20) + 'px';
-  textBlock.style.right  = 'auto';
+  const bW = textBlock.offsetWidth;
+  textBlock.style.left  = clamp(newLeft, 0, cW - bW) + 'px';
+  textBlock.style.top   = clamp(newTop,  0, cH - 20) + 'px';
+  textBlock.style.right = 'auto';
   document.getElementById('text-pos-display').textContent =
     `top: ${Math.round(parseFloat(textBlock.style.top))}px, left: ${Math.round(parseFloat(textBlock.style.left))}px`;
 }
 
 textBlock.addEventListener('mousedown', e => {
   if (e.target.classList.contains('word-span')) return;
-  e.preventDefault();
-  textBlockDragging = true;
+  e.preventDefault(); textBlockDragging = true;
   tbStartMX = e.clientX; tbStartMY = e.clientY;
-  const p = getElemStartPos(textBlock);
-  tbStartL = p.left; tbStartT = p.top;
+  const p = getElemStartPos(textBlock); tbStartL = p.left; tbStartT = p.top;
   textBlock.style.cursor = 'grabbing';
 });
 document.addEventListener('mousemove', e => {
   if (!textBlockDragging) return;
   moveTextBlock(tbStartL + (e.clientX - tbStartMX), tbStartT + (e.clientY - tbStartMY));
 });
-document.addEventListener('mouseup', () => {
-  if (textBlockDragging) { textBlockDragging = false; textBlock.style.cursor = 'grab'; }
-});
+document.addEventListener('mouseup', () => { if (textBlockDragging) { textBlockDragging = false; textBlock.style.cursor = 'grab'; } });
 textBlock.addEventListener('touchstart', e => {
   if (e.target.classList.contains('word-span')) return;
-  e.preventDefault();
-  const t = e.touches[0];
-  textBlockDragging = true;
+  e.preventDefault(); const t = e.touches[0]; textBlockDragging = true;
   tbStartMX = t.clientX; tbStartMY = t.clientY;
-  const p = getElemStartPos(textBlock);
-  tbStartL = p.left; tbStartT = p.top;
+  const p = getElemStartPos(textBlock); tbStartL = p.left; tbStartT = p.top;
 }, { passive: false });
 document.addEventListener('touchmove', e => {
-  if (!textBlockDragging) return;
-  e.preventDefault();
-  const t = e.touches[0];
+  if (!textBlockDragging) return; e.preventDefault(); const t = e.touches[0];
   moveTextBlock(tbStartL + (t.clientX - tbStartMX), tbStartT + (t.clientY - tbStartMY));
 }, { passive: false });
 document.addEventListener('touchend', () => { textBlockDragging = false; });
 
 function setTextPos(preset) {
-  const cW = cardEl.offsetWidth, cH = cardEl.offsetHeight;
-  const bW = textBlock.offsetWidth, bH = textBlock.offsetHeight;
+  const cH = cardEl.offsetHeight;
+  const bH = textBlock.offsetHeight;
   const PAD = 36;
   if (preset === 'top')    moveTextBlock(PAD, 80);
   if (preset === 'center') moveTextBlock(PAD, Math.round((cH - bH) / 2));
   if (preset === 'bottom') moveTextBlock(PAD, cH - bH - 40);
 }
 
-/* ============================================================
-   DOWNLOAD
-   ============================================================ */
+/* ====================================================
+   DOWNLOAD — uses actual export resolution
+   ==================================================== */
 document.getElementById('download-btn').addEventListener('click', async () => {
   wordZoomBar.style.display = 'none';
   document.getElementById('text-drag-hint').style.display = 'none';
-
   document.querySelectorAll('.word-span.selected-word').forEach(w => w.classList.remove('selected-word'));
   selectedWordKey = null;
 
   const btn = document.getElementById('download-btn');
+  const s   = CARD_SIZES[currentSize];
   btn.textContent = '⏳ Generating...';
   btn.disabled = true;
 
   try {
+    // Scale factor = export resolution / display resolution
+    const scaleX = s.exportW / cardEl.offsetWidth;
+    const scaleY = s.exportH / cardEl.offsetHeight;
+    const scale  = Math.max(scaleX, scaleY); // use max to ensure at least export size
+
     const canvas = await html2canvas(cardEl, {
-      scale: 3, useCORS: true, allowTaint: true,
+      scale: scale,
+      useCORS: true,
+      allowTaint: true,
       backgroundColor: null,
-      width: cardEl.offsetWidth, height: cardEl.offsetHeight,
+      width:  cardEl.offsetWidth,
+      height: cardEl.offsetHeight,
     });
+
     const link = document.createElement('a');
-    link.download = 'shayari_' + PROFILES[activeProfileIdx].handle.replace('@','') + '_' + Date.now() + '.png';
+    const sizeSuffix = { story: '9x16', post: '1x1', portrait: '4x5' }[currentSize];
+    link.download = `shayari_${PROFILES[activeProfileIdx].handle.replace('@','')}_${sizeSuffix}_${Date.now()}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
   } catch (err) {
@@ -1398,16 +1297,18 @@ document.getElementById('download-btn').addEventListener('click', async () => {
   }
 
   document.getElementById('text-drag-hint').style.display = '';
-  btn.textContent = '⬇ Download Image (9:16)';
+  const s2 = CARD_SIZES[currentSize];
+  btn.textContent = `⬇ Download Image (${s2.label})`;
   btn.disabled = false;
 });
 
-/* ============================================================
+/* ====================================================
    INIT
-   ============================================================ */
+   ==================================================== */
 loadProfile(0);
 renderShayariText();
 buildLineEditor();
+setCardSize('story'); // default 9:16, also sets button label
 
 </script>
 </body>

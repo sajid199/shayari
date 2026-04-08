@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shayari Card Maker — Multi Size</title>
-<link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&family=Rozha+One&family=Noto+Serif+Devanagari:wght@400;700&family=Baloo+2:wght@700;800&family=Martel:wght@700;900&family=Yatra+One&family=Mukta:wght@700&family=Eczar:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&family=Rozha+One&family=Noto+Serif+Devanagari:wght@400;700&family=Baloo+2:wght@700;800&family=Martel:wght@700;900&family=Yatra+One&family=Mukta:wght@700&family=Eczar:wght@700&family=Tiro+Devanagari+Hindi:ital@0;1&family=Poppins:wght@700&family=Playfair+Display:wght@700;900&family=Lora:wght@700&family=Abril+Fatface&family=Cinzel:wght@700;900&family=Josefin+Sans:wght@700&family=Dancing+Script:wght@700&family=Pacifico&family=Satisfy&family=Great+Vibes&family=Caveat:wght@700&family=Amatic+SC:wght@700&family=Raleway:wght@700;900&family=Oswald:wght@700&family=Bebas+Neue&family=Anton&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 
@@ -151,34 +151,43 @@ body {
   position: absolute;
   z-index: 30;
   display: none;
-  align-items: center;
-  gap: 4px;
-  background: rgba(10,10,10,0.88);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  background: rgba(10,10,10,0.95);
   border: 1px solid #444;
-  border-radius: 20px;
-  padding: 4px 10px;
+  border-radius: 14px;
+  padding: 8px 10px;
   transform: translateX(-50%);
   white-space: nowrap;
+  min-width: 220px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+}
+#word-zoom-bar .wz-row1 {
+  display: flex; align-items: center; gap: 4px; margin-bottom: 7px;
+}
+#word-zoom-bar .wz-row2 {
+  display: flex; align-items: center; gap: 0;
 }
 #word-zoom-bar button {
   background: #222; border: 1px solid #555; color: #fff;
-  border-radius: 50%; width: 22px; height: 22px;
-  font-size: 14px; cursor: pointer;
+  border-radius: 50%; width: 24px; height: 24px;
+  font-size: 15px; cursor: pointer;
   display:flex;align-items:center;justify-content:center;
-  transition: background 0.15s;
+  transition: background 0.15s; flex-shrink: 0;
 }
 #word-zoom-bar button:hover { background: #444; }
-#word-zoom-bar .wz-size { font-size: 11px; color: #ccc; min-width: 30px; text-align: center; }
+#word-zoom-bar .wz-size { font-size: 11px; color: #ccc; min-width: 34px; text-align: center; }
 #word-zoom-bar .wz-reset {
-  font-size: 10px; color: #888; cursor: pointer; padding: 0 4px;
+  font-size: 10px; color: #888; cursor: pointer; padding: 0 6px;
   background: none; border: none; border-left: 1px solid #333;
-  margin-left: 2px;
+  margin-left: auto;
 }
 #word-zoom-bar .wz-reset:hover { color: #ccc; }
 #word-zoom-bar .wz-color-wrap {
-  position: relative; width: 22px; height: 22px;
+  position: relative; width: 24px; height: 24px;
   border-radius: 50%; border: 2px solid #555;
-  overflow: hidden; cursor: pointer; flex-shrink: 0; margin-left: 2px;
+  overflow: hidden; cursor: pointer; flex-shrink: 0; margin-left: 4px;
 }
 #word-zoom-bar .wz-color-swatch {
   position: absolute; inset: 0; border-radius: 50%;
@@ -189,7 +198,32 @@ body {
   width: calc(100% + 8px); height: calc(100% + 8px);
   opacity: 0; cursor: pointer; border: none; padding: 0;
 }
-#word-zoom-bar .wz-divider { width: 1px; height: 14px; background: #333; margin: 0 2px; flex-shrink: 0; }
+#word-zoom-bar .wz-divider { width: 1px; height: 16px; background: #333; margin: 0 3px; flex-shrink: 0; }
+
+/* Word font select */
+#wz-font-select {
+  flex: 1;
+  background: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  color: #ddd;
+  font-size: 11px;
+  padding: 4px 6px;
+  cursor: pointer;
+  outline: none;
+  font-family: 'Hind', sans-serif;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 7px center;
+  padding-right: 22px;
+}
+#wz-font-select:focus { border-color: #888; }
+#wz-font-label { font-size: 10px; color: #666; margin-right: 5px; white-space: nowrap; flex-shrink: 0; }
+
+/* Two-finger drag hint */
+#text-drag-hint { font-size: 9px; color: rgba(0,0,0,0.25); }
 
 /* Watermark */
 #watermark {
@@ -429,15 +463,21 @@ input[type="file"]  { display:none; }
 
         <!-- Word Zoom Bar -->
         <div id="word-zoom-bar">
-          <button id="wz-minus">−</button>
-          <span class="wz-size" id="wz-size-display">23px</span>
-          <button id="wz-plus">+</button>
-          <div class="wz-divider"></div>
-          <div class="wz-color-wrap" title="Word colour">
-            <div class="wz-color-swatch" id="wz-color-swatch"></div>
-            <input type="color" id="wz-color-picker" value="#111111">
+          <div class="wz-row1">
+            <button id="wz-minus">−</button>
+            <span class="wz-size" id="wz-size-display">23px</span>
+            <button id="wz-plus">+</button>
+            <div class="wz-divider"></div>
+            <div class="wz-color-wrap" title="Word colour">
+              <div class="wz-color-swatch" id="wz-color-swatch"></div>
+              <input type="color" id="wz-color-picker" value="#111111">
+            </div>
+            <button class="wz-reset" id="wz-reset" style="border-radius:6px;width:auto;height:auto;padding:0 8px;font-size:10px;">✕ Reset</button>
           </div>
-          <button class="wz-reset" id="wz-reset">✕</button>
+          <div class="wz-row2">
+            <span id="wz-font-label">Font:</span>
+            <select id="wz-font-select" title="Word font"></select>
+          </div>
         </div>
 
         <!-- Draggable Profile Chip -->
@@ -452,7 +492,7 @@ input[type="file"]  { display:none; }
         <!-- Draggable Shayari Text -->
         <div id="shayari-display">
           <div id="shayari-text"></div>
-          <div id="text-drag-hint">↕ drag to reposition</div>
+          <div id="text-drag-hint">✌ 2 fingers = move text</div>
         </div>
 
         <!-- Watermark -->
@@ -506,9 +546,10 @@ input[type="file"]  { display:none; }
     <div class="panel">
       <div class="panel-title">🔍 Word Zoom (Per-Word Size)</div>
       <div class="word-zoom-info">
-        Kisi bhi <b>word ko card par click</b> karein — uske upar ek zoom bar aayega.<br>
-        <b>+ / −</b> se us word ka size badhayein ya ghatayein.<br>
-        <b>✕</b> se us word ka override hata dein.
+        Kisi bhi <b>word ko card par tap/click</b> karein — uske upar zoom bar aayega.<br>
+        <b>+ / −</b> se size badhayein, 🎨 se rang chunein, <b>Font dropdown</b> se us word ka font chunein.<br>
+        Text move karne ke liye <b>2 ungliyaan</b> rakhein aur drag karein.<br>
+        <b>✕ Reset</b> se word override hata dein.
       </div>
       <button id="clear-all-word-overrides" style="width:100%;background:#111;border:1px solid #2a2a2a;border-radius:8px;color:#777;font-size:12px;padding:8px;cursor:pointer;font-family:'Hind',sans-serif;transition:color 0.2s,border-color 0.2s;">
         🗑 Sabhi Word Overrides Hataayein
@@ -727,8 +768,9 @@ function renderShayariText() {
         wspan.dataset.word = wi;
         wspan.textContent = segment;
         if (wordOverrides[key] !== undefined) {
-          if (wordOverrides[key].fontSize !== undefined) wspan.style.fontSize = wordOverrides[key].fontSize + 'px';
-          if (wordOverrides[key].color    !== undefined) wspan.style.color    = wordOverrides[key].color;
+          if (wordOverrides[key].fontSize   !== undefined) wspan.style.fontSize   = wordOverrides[key].fontSize + 'px';
+          if (wordOverrides[key].color      !== undefined) wspan.style.color      = wordOverrides[key].color;
+          if (wordOverrides[key].fontFamily !== undefined) wspan.style.fontFamily = wordOverrides[key].fontFamily;
         }
         lineSpan.appendChild(wspan);
       });
@@ -796,6 +838,9 @@ function handleWordClick(e) {
   const curColor = (wordOverrides[key] && wordOverrides[key].color !== undefined) ? wordOverrides[key].color : globalColor;
   document.getElementById('wz-color-picker').value = curColor;
   document.getElementById('wz-color-swatch').style.background = curColor;
+  // Set font select
+  const curFont = (wordOverrides[key] && wordOverrides[key].fontFamily !== undefined) ? wordOverrides[key].fontFamily : '';
+  document.getElementById('wz-font-select').value = curFont;
 }
 
 function adjustSelectedWordSize(delta) {
@@ -817,7 +862,7 @@ document.getElementById('wz-reset').addEventListener('click', () => {
   if (!selectedWordKey) return;
   delete wordOverrides[selectedWordKey];
   const ws = document.querySelector(`.word-span[data-key="${selectedWordKey}"]`);
-  if (ws) { ws.style.fontSize = ''; ws.style.color = ''; ws.classList.remove('selected-word'); }
+  if (ws) { ws.style.fontSize = ''; ws.style.color = ''; ws.style.fontFamily = ''; ws.classList.remove('selected-word'); }
   selectedWordKey = null;
   wordZoomBar.style.display = 'none';
 });
@@ -851,7 +896,7 @@ document.getElementById('clear-all-word-overrides').addEventListener('click', ()
   selectedWordKey = null;
   wordZoomBar.style.display = 'none';
   document.querySelectorAll('.word-span').forEach(ws => {
-    ws.style.fontSize = ''; ws.style.color = '';
+    ws.style.fontSize = ''; ws.style.color = ''; ws.style.fontFamily = '';
     ws.classList.remove('selected-word');
   });
 });
@@ -1070,16 +1115,39 @@ document.querySelectorAll('.align-btn').forEach(btn => {
    FONTS
    ==================================================== */
 const fonts = [
-  { family:"'Hind',sans-serif",             label:'Hind Bold',  preview:'शायरी' },
-  { family:"'Rozha One',serif",             label:'Rozha One',  preview:'शायरी' },
-  { family:"'Noto Serif Devanagari',serif", label:'Noto Serif', preview:'शायरी' },
-  { family:"'Baloo 2',cursive",             label:'Baloo 2',    preview:'शायरी' },
-  { family:"'Martel',serif",                label:'Martel',     preview:'शायरी' },
-  { family:"'Yatra One',cursive",           label:'Yatra One',  preview:'शायरी' },
-  { family:"'Mukta',sans-serif",            label:'Mukta',      preview:'शायरी' },
-  { family:"'Eczar',serif",                 label:'Eczar',      preview:'शायरी' },
+  // Devanagari / Hindi fonts
+  { family:"'Hind',sans-serif",                    label:'Hind Bold',        preview:'शायरी', group:'Hindi' },
+  { family:"'Rozha One',serif",                    label:'Rozha One',        preview:'शायरी', group:'Hindi' },
+  { family:"'Noto Serif Devanagari',serif",        label:'Noto Serif',       preview:'शायरी', group:'Hindi' },
+  { family:"'Baloo 2',cursive",                    label:'Baloo 2',          preview:'शायरी', group:'Hindi' },
+  { family:"'Martel',serif",                       label:'Martel',           preview:'शायरी', group:'Hindi' },
+  { family:"'Yatra One',cursive",                  label:'Yatra One',        preview:'शायरी', group:'Hindi' },
+  { family:"'Mukta',sans-serif",                   label:'Mukta',            preview:'शायरी', group:'Hindi' },
+  { family:"'Eczar',serif",                        label:'Eczar',            preview:'शायरी', group:'Hindi' },
+  { family:"'Tiro Devanagari Hindi',serif",        label:'Tiro Devanagari',  preview:'शायरी', group:'Hindi' },
+  // Stylish Latin / Decorative
+  { family:"'Playfair Display',serif",             label:'Playfair',         preview:'Shayari', group:'Stylish' },
+  { family:"'Lora',serif",                         label:'Lora',             preview:'Shayari', group:'Stylish' },
+  { family:"'Cinzel',serif",                       label:'Cinzel',           preview:'Shayari', group:'Stylish' },
+  { family:"'Abril Fatface',cursive",              label:'Abril Fatface',    preview:'Shayari', group:'Stylish' },
+  { family:"'Dancing Script',cursive",             label:'Dancing Script',   preview:'Shayari', group:'Stylish' },
+  { family:"'Pacifico',cursive",                   label:'Pacifico',         preview:'Shayari', group:'Stylish' },
+  { family:"'Satisfy',cursive",                    label:'Satisfy',          preview:'Shayari', group:'Stylish' },
+  { family:"'Great Vibes',cursive",                label:'Great Vibes',      preview:'Shayari', group:'Stylish' },
+  { family:"'Caveat',cursive",                     label:'Caveat',           preview:'Shayari', group:'Stylish' },
+  { family:"'Amatic SC',cursive",                  label:'Amatic SC',        preview:'Shayari', group:'Stylish' },
+  // Bold / Display
+  { family:"'Poppins',sans-serif",                 label:'Poppins',          preview:'Shayari', group:'Bold' },
+  { family:"'Josefin Sans',sans-serif",            label:'Josefin Sans',     preview:'Shayari', group:'Bold' },
+  { family:"'Raleway',sans-serif",                 label:'Raleway',          preview:'Shayari', group:'Bold' },
+  { family:"'Oswald',sans-serif",                  label:'Oswald',           preview:'Shayari', group:'Bold' },
+  { family:"'Bebas Neue',cursive",                 label:'Bebas Neue',       preview:'SHAYARI', group:'Bold' },
+  { family:"'Anton',sans-serif",                   label:'Anton',            preview:'SHAYARI', group:'Bold' },
 ];
 const fontGrid = document.getElementById('font-grid');
+let currentGlobalFontFamily = "'Hind',sans-serif";
+
+// Build font grid (global font panel)
 fonts.forEach((f, idx) => {
   const card = document.createElement('div');
   card.className = 'font-card' + (idx === 0 ? ' active' : '');
@@ -1087,9 +1155,46 @@ fonts.forEach((f, idx) => {
   card.addEventListener('click', () => {
     document.querySelectorAll('#font-grid .font-card').forEach(c => c.classList.remove('active'));
     card.classList.add('active');
+    currentGlobalFontFamily = f.family;
     document.getElementById('shayari-text').style.fontFamily = f.family;
   });
   fontGrid.appendChild(card);
+});
+
+// Build word-zoom font dropdown
+const wzFontSel = document.getElementById('wz-font-select');
+// Default option = inherit global
+const defOpt = document.createElement('option');
+defOpt.value = '';
+defOpt.textContent = '— Default (global) —';
+wzFontSel.appendChild(defOpt);
+
+let lastGroup = '';
+fonts.forEach(f => {
+  if (f.group !== lastGroup) {
+    const og = document.createElement('optgroup');
+    og.label = f.group === 'Hindi' ? '🇮🇳 Hindi Fonts' : f.group === 'Stylish' ? '✨ Stylish Fonts' : '💪 Bold / Display';
+    wzFontSel.appendChild(og);
+    lastGroup = f.group;
+  }
+  const opt = document.createElement('option');
+  opt.value = f.family;
+  opt.textContent = f.label;
+  opt.style.fontFamily = f.family;
+  wzFontSel.lastChild.appendChild(opt);
+});
+
+wzFontSel.addEventListener('change', e => {
+  if (!selectedWordKey) return;
+  const fam = e.target.value;
+  if (!wordOverrides[selectedWordKey]) wordOverrides[selectedWordKey] = {};
+  if (fam === '') {
+    delete wordOverrides[selectedWordKey].fontFamily;
+  } else {
+    wordOverrides[selectedWordKey].fontFamily = fam;
+  }
+  const ws = document.querySelector(`.word-span[data-key="${selectedWordKey}"]`);
+  if (ws) ws.style.fontFamily = fam || '';
 });
 
 /* ====================================================
@@ -1237,16 +1342,37 @@ document.addEventListener('mousemove', e => {
 });
 document.addEventListener('mouseup', () => { if (textBlockDragging) { textBlockDragging = false; textBlock.style.cursor = 'grab'; } });
 textBlock.addEventListener('touchstart', e => {
-  if (e.target.classList.contains('word-span')) return;
-  e.preventDefault(); const t = e.touches[0]; textBlockDragging = true;
-  tbStartMX = t.clientX; tbStartMY = t.clientY;
-  const p = getElemStartPos(textBlock); tbStartL = p.left; tbStartT = p.top;
+  // Two fingers = drag the block
+  if (e.touches.length === 2) {
+    e.preventDefault();
+    textBlockDragging = true;
+    // Use midpoint of two fingers
+    const t0 = e.touches[0], t1 = e.touches[1];
+    tbStartMX = (t0.clientX + t1.clientX) / 2;
+    tbStartMY = (t0.clientY + t1.clientY) / 2;
+    const p = getElemStartPos(textBlock); tbStartL = p.left; tbStartT = p.top;
+    return;
+  }
+  // Single finger on word-span → handled by word click, do nothing
+  textBlockDragging = false;
 }, { passive: false });
 document.addEventListener('touchmove', e => {
-  if (!textBlockDragging) return; e.preventDefault(); const t = e.touches[0];
-  moveTextBlock(tbStartL + (t.clientX - tbStartMX), tbStartT + (t.clientY - tbStartMY));
+  if (!textBlockDragging) return;
+  e.preventDefault();
+  let mx, my;
+  if (e.touches.length >= 2) {
+    const t0 = e.touches[0], t1 = e.touches[1];
+    mx = (t0.clientX + t1.clientX) / 2;
+    my = (t0.clientY + t1.clientY) / 2;
+  } else {
+    const t = e.touches[0];
+    mx = t.clientX; my = t.clientY;
+  }
+  moveTextBlock(tbStartL + (mx - tbStartMX), tbStartT + (my - tbStartMY));
 }, { passive: false });
-document.addEventListener('touchend', () => { textBlockDragging = false; });
+document.addEventListener('touchend', e => {
+  if (e.touches.length < 2) textBlockDragging = false;
+});
 
 function setTextPos(preset) {
   const cH = cardEl.offsetHeight;

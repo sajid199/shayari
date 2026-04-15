@@ -78,6 +78,93 @@ body {
 #bg-image-layer { position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 0.3s;z-index:1; }
 #overlay-layer  { position:absolute;inset:0;background:rgba(255,255,255,0);z-index:2; }
 
+/* ====================================================
+   4:5 GUIDELINE OVERLAY — sirf editing mein dikhta hai
+   ==================================================== */
+#guideline-45 {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px dashed rgba(255, 80, 80, 0.75);
+  border-radius: 6px;
+  z-index: 100;
+  pointer-events: none;
+  display: none; /* JS se on/off */
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.18); /* slight dim outside */
+}
+
+/* Corner labels */
+#guideline-45::before {
+  content: '4:5 Safe Zone';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  font-family: 'Hind', sans-serif;
+  font-weight: 700;
+  color: rgba(255,80,80,0.9);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: rgba(0,0,0,0.45);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* GUIDELINE TOGGLE BUTTON */
+#guideline-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1a1a1a;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+  padding: 8px 14px;
+  width: 100%;
+  max-width: 420px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  user-select: none;
+}
+#guideline-toggle-wrap:hover { border-color: #555; }
+#guideline-toggle-wrap.active { border-color: #ff5050; background: #1e1414; }
+
+#guideline-toggle-switch {
+  width: 36px; height: 20px;
+  border-radius: 10px;
+  background: #333;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+#guideline-toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  top: 3px; left: 3px;
+  transition: left 0.2s;
+}
+#guideline-toggle-wrap.active #guideline-toggle-switch { background: #ff5050; }
+#guideline-toggle-wrap.active #guideline-toggle-switch::after { left: 19px; }
+
+#guideline-toggle-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #777;
+  flex: 1;
+}
+#guideline-toggle-wrap.active #guideline-toggle-label { color: #ff8080; }
+
+#guideline-toggle-hint {
+  font-size: 10px;
+  color: #444;
+  line-height: 1.4;
+}
+
 /* PROFILE CHIP */
 #profile-chip {
   position: absolute;
@@ -456,10 +543,24 @@ input[type="file"]  { display:none; }
         </button>
       </div>
 
+      <!-- =============================================
+           4:5 GUIDELINE TOGGLE — sirf 9:16 mein useful
+           ============================================= -->
+      <div id="guideline-toggle-wrap" onclick="toggleGuideline()">
+        <div id="guideline-toggle-switch"></div>
+        <div>
+          <div id="guideline-toggle-label">📐 4:5 Safe Zone Guide (On/Off)</div>
+          <div id="guideline-toggle-hint">Download mein ye line nahi aayegi</div>
+        </div>
+      </div>
+
       <div id="card">
         <div id="bg-layer"></div>
         <div id="bg-image-layer"></div>
         <div id="overlay-layer"></div>
+
+        <!-- 4:5 Virtual Guideline — download excluded -->
+        <div id="guideline-45"></div>
 
         <!-- Word Zoom Bar -->
         <div id="word-zoom-bar">
@@ -668,8 +769,6 @@ const PROFILES = [
 
 /* ====================================================
    CARD SIZE DEFINITIONS
-   actual pixel dimensions for export (at 1x, then scaled 3x by html2canvas)
-   display dimensions are scaled to fit screen
    ==================================================== */
 const CARD_SIZES = {
   story:    { w: 360, h: 640,  label: '9:16 Story/Reel',  exportW: 1080, exportH: 1920 },
@@ -696,6 +795,9 @@ function setCardSize(sizeKey) {
   // Update download button label
   document.getElementById('download-btn').textContent = `⬇ Download Image (${s.label})`;
 
+  // Guideline sirf 9:16 ke liye relevant hai, size change par update karo
+  updateGuidelineSize();
+
   // Re-center text block after resize
   setTimeout(() => {
     const tb = document.getElementById('shayari-display');
@@ -707,6 +809,51 @@ function setCardSize(sizeKey) {
     document.getElementById('text-pos-display').textContent =
       `top: ${newTop}px, left: 36px`;
   }, 50);
+}
+
+/* ====================================================
+   4:5 GUIDELINE LOGIC
+   ==================================================== */
+let guidelineOn = false;
+
+function updateGuidelineSize() {
+  const cardEl = document.getElementById('card');
+  const gl = document.getElementById('guideline-45');
+  const cardW = cardEl.offsetWidth;
+  const cardH = cardEl.offsetHeight;
+
+  // 4:5 ratio box — width same as card, height = width * (5/4)
+  // But it must fit inside card height, so:
+  // Option A: full card width, height = cardW * 5/4
+  // Option B: full card height, width = cardH * 4/5
+  // We want the 4:5 box centered — use the one that fits inside the card
+
+  let boxW, boxH;
+  const targetH = cardW * (5 / 4);
+
+  if (targetH <= cardH) {
+    // 4:5 box fits vertically with full width
+    boxW = cardW;
+    boxH = targetH;
+  } else {
+    // Card not tall enough for full-width 4:5 — constrain by height
+    boxH = cardH;
+    boxW = cardH * (4 / 5);
+  }
+
+  gl.style.width  = Math.round(boxW) + 'px';
+  gl.style.height = Math.round(boxH) + 'px';
+}
+
+function toggleGuideline() {
+  guidelineOn = !guidelineOn;
+  const wrap = document.getElementById('guideline-toggle-wrap');
+  const gl   = document.getElementById('guideline-45');
+
+  wrap.classList.toggle('active', guidelineOn);
+  gl.style.display = guidelineOn ? 'block' : 'none';
+
+  if (guidelineOn) updateGuidelineSize();
 }
 
 /* ====================================================
@@ -838,7 +985,6 @@ function handleWordClick(e) {
   const curColor = (wordOverrides[key] && wordOverrides[key].color !== undefined) ? wordOverrides[key].color : globalColor;
   document.getElementById('wz-color-picker').value = curColor;
   document.getElementById('wz-color-swatch').style.background = curColor;
-  // Set font select
   const curFont = (wordOverrides[key] && wordOverrides[key].fontFamily !== undefined) ? wordOverrides[key].fontFamily : '';
   document.getElementById('wz-font-select').value = curFont;
 }
@@ -1115,7 +1261,6 @@ document.querySelectorAll('.align-btn').forEach(btn => {
    FONTS
    ==================================================== */
 const fonts = [
-  // Devanagari / Hindi fonts
   { family:"'Hind',sans-serif",                    label:'Hind Bold',        preview:'शायरी', group:'Hindi' },
   { family:"'Rozha One',serif",                    label:'Rozha One',        preview:'शायरी', group:'Hindi' },
   { family:"'Noto Serif Devanagari',serif",        label:'Noto Serif',       preview:'शायरी', group:'Hindi' },
@@ -1125,7 +1270,6 @@ const fonts = [
   { family:"'Mukta',sans-serif",                   label:'Mukta',            preview:'शायरी', group:'Hindi' },
   { family:"'Eczar',serif",                        label:'Eczar',            preview:'शायरी', group:'Hindi' },
   { family:"'Tiro Devanagari Hindi',serif",        label:'Tiro Devanagari',  preview:'शायरी', group:'Hindi' },
-  // Stylish Latin / Decorative
   { family:"'Playfair Display',serif",             label:'Playfair',         preview:'Shayari', group:'Stylish' },
   { family:"'Lora',serif",                         label:'Lora',             preview:'Shayari', group:'Stylish' },
   { family:"'Cinzel',serif",                       label:'Cinzel',           preview:'Shayari', group:'Stylish' },
@@ -1136,7 +1280,6 @@ const fonts = [
   { family:"'Great Vibes',cursive",                label:'Great Vibes',      preview:'Shayari', group:'Stylish' },
   { family:"'Caveat',cursive",                     label:'Caveat',           preview:'Shayari', group:'Stylish' },
   { family:"'Amatic SC',cursive",                  label:'Amatic SC',        preview:'Shayari', group:'Stylish' },
-  // Bold / Display
   { family:"'Poppins',sans-serif",                 label:'Poppins',          preview:'Shayari', group:'Bold' },
   { family:"'Josefin Sans',sans-serif",            label:'Josefin Sans',     preview:'Shayari', group:'Bold' },
   { family:"'Raleway',sans-serif",                 label:'Raleway',          preview:'Shayari', group:'Bold' },
@@ -1147,7 +1290,6 @@ const fonts = [
 const fontGrid = document.getElementById('font-grid');
 let currentGlobalFontFamily = "'Hind',sans-serif";
 
-// Build font grid (global font panel)
 fonts.forEach((f, idx) => {
   const card = document.createElement('div');
   card.className = 'font-card' + (idx === 0 ? ' active' : '');
@@ -1161,9 +1303,7 @@ fonts.forEach((f, idx) => {
   fontGrid.appendChild(card);
 });
 
-// Build word-zoom font dropdown
 const wzFontSel = document.getElementById('wz-font-select');
-// Default option = inherit global
 const defOpt = document.createElement('option');
 defOpt.value = '';
 defOpt.textContent = '— Default (global) —';
@@ -1342,18 +1482,15 @@ document.addEventListener('mousemove', e => {
 });
 document.addEventListener('mouseup', () => { if (textBlockDragging) { textBlockDragging = false; textBlock.style.cursor = 'grab'; } });
 textBlock.addEventListener('touchstart', e => {
-  // Two fingers = drag the block
   if (e.touches.length === 2) {
     e.preventDefault();
     textBlockDragging = true;
-    // Use midpoint of two fingers
     const t0 = e.touches[0], t1 = e.touches[1];
     tbStartMX = (t0.clientX + t1.clientX) / 2;
     tbStartMY = (t0.clientY + t1.clientY) / 2;
     const p = getElemStartPos(textBlock); tbStartL = p.left; tbStartT = p.top;
     return;
   }
-  // Single finger on word-span → handled by word click, do nothing
   textBlockDragging = false;
 }, { passive: false });
 document.addEventListener('touchmove', e => {
@@ -1384,13 +1521,19 @@ function setTextPos(preset) {
 }
 
 /* ====================================================
-   DOWNLOAD — uses actual export resolution
+   DOWNLOAD — guideline hide karke download karo
    ==================================================== */
 document.getElementById('download-btn').addEventListener('click', async () => {
+  // Guideline aur UI elements temporarily hide karo
   wordZoomBar.style.display = 'none';
   document.getElementById('text-drag-hint').style.display = 'none';
   document.querySelectorAll('.word-span.selected-word').forEach(w => w.classList.remove('selected-word'));
   selectedWordKey = null;
+
+  // *** GUIDELINE HIDE — download ke liye ***
+  const gl = document.getElementById('guideline-45');
+  const glWasVisible = gl.style.display !== 'none';
+  gl.style.display = 'none'; // download mein nahi aana chahiye
 
   const btn = document.getElementById('download-btn');
   const s   = CARD_SIZES[currentSize];
@@ -1398,10 +1541,9 @@ document.getElementById('download-btn').addEventListener('click', async () => {
   btn.disabled = true;
 
   try {
-    // Scale factor = export resolution / display resolution
     const scaleX = s.exportW / cardEl.offsetWidth;
     const scaleY = s.exportH / cardEl.offsetHeight;
-    const scale  = Math.max(scaleX, scaleY); // use max to ensure at least export size
+    const scale  = Math.max(scaleX, scaleY);
 
     const canvas = await html2canvas(cardEl, {
       scale: scale,
@@ -1422,6 +1564,9 @@ document.getElementById('download-btn').addEventListener('click', async () => {
     console.error(err);
   }
 
+  // *** GUIDELINE RESTORE — agar pehle on tha to wapas dikhao ***
+  if (glWasVisible) gl.style.display = 'block';
+
   document.getElementById('text-drag-hint').style.display = '';
   const s2 = CARD_SIZES[currentSize];
   btn.textContent = `⬇ Download Image (${s2.label})`;
@@ -1434,7 +1579,7 @@ document.getElementById('download-btn').addEventListener('click', async () => {
 loadProfile(0);
 renderShayariText();
 buildLineEditor();
-setCardSize('story'); // default 9:16, also sets button label
+setCardSize('story'); // default 9:16
 
 </script>
 </body>

@@ -176,23 +176,35 @@ body {
   flex-shrink: 0;
 }
 
+#avatar-ring-outer {
+  position: absolute;
+  inset: -3.5px;
+  border-radius: 50%;
+  background: rgba(29,155,240,0.7);
+  z-index: 0;
+}
+#avatar-ring-inner {
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  z-index: 1;
+}
 #avatar-img-wrap {
+  position: relative;
   width: 46px; height: 46px;
   border-radius: 50%;
   overflow: hidden;
   background: #888;
   display: flex; align-items: center; justify-content: center;
   font-size: 20px; color: #fff;
-  box-shadow:
-    0 0 0 2px rgba(255,255,255,0.9),
-    0 0 0 3.5px rgba(29,155,240,0.7),
-    0 2px 8px rgba(0,0,0,0.25);
+  z-index: 2;
 }
 #avatar-img-wrap img { width:100%;height:100%;object-fit:cover; }
 
 /* =====================================================
-   VERIFIED BADGE — now an <img> tag for html2canvas
-   Uses a data URI so it renders correctly on download
+   VERIFIED BADGE — now a <canvas> tag for html2canvas
+   Canvas elements are rendered perfectly by html2canvas.
    ===================================================== */
 #verified-badge {
   position: absolute;
@@ -203,9 +215,9 @@ body {
   z-index: 25;
   filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4));
   transition: transform 0.2s ease;
-  /* Prevent any CSS that would block html2canvas */
   display: block;
   pointer-events: none;
+  border-radius: 50%;
 }
 #verified-badge:hover { transform: scale(1.15); }
 
@@ -651,18 +663,14 @@ input[type="file"]  { display:none; }
         <!-- Draggable Profile Chip -->
         <div id="profile-chip">
           <div id="avatar-wrap">
+            <div id="avatar-ring-outer"></div>
+            <div id="avatar-ring-inner"></div>
             <div id="avatar-img-wrap">✍️</div>
             <!--
-              IMPORTANT FIX: The verified badge is now an <img> tag using a
-              base64 data URI instead of an inline <svg>.
-              html2canvas cannot render inline SVG elements, but it CAN render
-              <img> tags with data URIs. This ensures the blue tick appears in
-              the downloaded image.
+              FIXED: The verified badge is now a <canvas> element.
+              html2canvas renders <canvas> perfectly — no SVG/img data URI issues.
             -->
-            <img id="verified-badge"
-              src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAgMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImJhZGdlLWJsdWUiIGN4PSI0MCUiIGN5PSIzMCUiIHI9IjcwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0MmI0ZjUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMWE4ZGQ0Ii8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJiYWRnZS1nbG9zcyIgY3g9IjM4JSIgY3k9IjI4JSIgcj0iNjUlIiBmeD0iMzglIiBmeT0iMjglIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0icmdiYSgyNTUsMjU1LDI1NSwwLjU1KSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjYwJSIgc3RvcC1jb2xvcj0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9InJnYmEoMjU1LDI1NSwyNTUsMCkiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxjaXJjbGUgY3g9IjEwIiBjeT0iMTAiIHI9IjkuNSIgZmlsbD0id2hpdGUiLz4KICA8cGF0aCBkPSJNMTAgMS4yIEwxMS44IDMuMiBMMTQuNCAyLjYgTDE0LjYgNS4zIEwxNy4xIDYuNCBMMTUuOSA4LjggTDE3LjUgMTEuMCBMMTUuMiAxMi41IEwxNS4wIDE1LjIgTDEyLjMgMTUuMCBMMTAuOCAxNy4yIEw4LjggMTUuNSBMNi4xIDE2LjMgTDUuNiAxMy42IEwzLjAgMTIuNyBMMy45IDEwLjIgTDIuMCA4LjIgTDQuMiA2LjUgTDMuOCAzLjggTDYuNSAzLjggWiIgZmlsbD0idXJsKCNiYWRnZS1ibHVlKSIvPgogIDxwYXRoIGQ9Ik0xMCAxLjIgTDExLjggMy4yIEwxNC40IDIuNiBMMTQuNiA1LjMgTDE3LjEgNi40IEwxNS45IDguOCBMMTcuNSAxMS4wIEwxNS4yIDEyLjUgTDE1LjAgMTUuMiBMMTIuMyAxNS4wIEwxMC44IDE3LjIgTDguOCAxNS41IEw2LjEgMTYuMyBMNS42IDEzLjYgTDMuMCAxMi43IEwzLjkgMTAuMiBMMi4wIDguMiBMNC4yIDYuNSBMMy44IDMuOCBMNi41IDMuOCBaIiBmaWxsPSJ1cmwoI2JhZGdlLWdsb3NzKSIvPgogIDxwb2x5bGluZSBwb2ludHM9IjYuMiwxMC4xIDguOCwxMi43IDEzLjgsNy40IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPg=="
-              alt="verified"
-            >
+            <canvas id="verified-badge" width="36" height="36"></canvas>
           </div>
           <div id="profile-info">
             <div id="profile-name-display">Ghalib Nama</div>
@@ -946,8 +954,10 @@ function toggleGuideline() {
 
 /* ====================================================
    VERIFIED BADGE LOGIC
-   The badge is now an <img> with a base64 data URI src.
-   html2canvas renders <img> tags correctly, unlike inline SVGs.
+   The badge is a <canvas> element drawn with 2D API.
+   html2canvas renders <canvas> perfectly — this is the
+   most reliable way to guarantee the badge appears in
+   the downloaded image without any CORS/SVG issues.
    ==================================================== */
 let badgeVisible = true;
 
@@ -958,6 +968,57 @@ const BADGE_SIZES = {
   xlarge: 30,
 };
 let currentBadgeSize = 'medium';
+
+function drawBadgeOnCanvas(px) {
+  const badge = document.getElementById('verified-badge');
+  const dpr = window.devicePixelRatio || 1;
+  const size = px * dpr;
+  badge.width  = size;
+  badge.height = size;
+  badge.style.width  = px + 'px';
+  badge.style.height = px + 'px';
+
+  const ctx = badge.getContext('2d');
+  ctx.clearRect(0, 0, size, size);
+  const cx = size / 2, cy = size / 2, r = size / 2 - 0.5 * dpr;
+
+  // White border circle
+  ctx.beginPath();
+  ctx.arc(cx, cy, r + 1 * dpr, 0, Math.PI * 2);
+  ctx.fillStyle = 'white';
+  ctx.fill();
+
+  // Blue gradient fill
+  const grad = ctx.createRadialGradient(cx - r * 0.2, cy - r * 0.2, 0, cx, cy, r);
+  grad.addColorStop(0,   '#42b4f5');
+  grad.addColorStop(1,   '#1a8dd4');
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Gloss overlay
+  const gloss = ctx.createRadialGradient(cx - r * 0.22, cy - r * 0.22, 0, cx, cy, r * 1.05);
+  gloss.addColorStop(0,    'rgba(255,255,255,0.45)');
+  gloss.addColorStop(0.55, 'rgba(255,255,255,0.04)');
+  gloss.addColorStop(1,    'rgba(255,255,255,0)');
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = gloss;
+  ctx.fill();
+
+  // White checkmark
+  const s = size;
+  ctx.strokeStyle = 'white';
+  ctx.lineWidth   = s * 0.095;
+  ctx.lineCap     = 'round';
+  ctx.lineJoin    = 'round';
+  ctx.beginPath();
+  ctx.moveTo(s * 0.285, s * 0.505);
+  ctx.lineTo(s * 0.44,  s * 0.655);
+  ctx.lineTo(s * 0.715, s * 0.37);
+  ctx.stroke();
+}
 
 function toggleVerifiedBadge() {
   badgeVisible = !badgeVisible;
@@ -972,8 +1033,8 @@ function setBadgeSize(sizeKey) {
   currentBadgeSize = sizeKey;
   const px = BADGE_SIZES[sizeKey];
   const badge = document.getElementById('verified-badge');
-  badge.style.width  = px + 'px';
-  badge.style.height = px + 'px';
+
+  drawBadgeOnCanvas(px);
 
   const offset = Math.round(px * 0.15);
   badge.style.bottom = `-${offset}px`;
@@ -1671,6 +1732,41 @@ document.getElementById('download-btn').addEventListener('click', async () => {
     const scaleY = s.exportH / cardEl.offsetHeight;
     const scale  = Math.max(scaleX, scaleY);
 
+    // Redraw badge canvas at export resolution so it's sharp in download
+    if (badgeVisible) {
+      const badgeEl = document.getElementById('verified-badge');
+      const displayPx = BADGE_SIZES[currentBadgeSize];
+      const exportPx = Math.round(displayPx * scale);
+      // Temporarily resize canvas to export size
+      badgeEl.width  = exportPx;
+      badgeEl.height = exportPx;
+      badgeEl.style.width  = displayPx + 'px';
+      badgeEl.style.height = displayPx + 'px';
+      const ctx = badgeEl.getContext('2d');
+      const cx = exportPx / 2, cy = exportPx / 2, r = exportPx / 2 - 0.5;
+      ctx.clearRect(0, 0, exportPx, exportPx);
+      ctx.beginPath(); ctx.arc(cx, cy, r + 1, 0, Math.PI * 2);
+      ctx.fillStyle = 'white'; ctx.fill();
+      const grad = ctx.createRadialGradient(cx - r*0.2, cy - r*0.2, 0, cx, cy, r);
+      grad.addColorStop(0, '#42b4f5'); grad.addColorStop(1, '#1a8dd4');
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fillStyle = grad; ctx.fill();
+      const gloss = ctx.createRadialGradient(cx - r*0.22, cy - r*0.22, 0, cx, cy, r*1.05);
+      gloss.addColorStop(0,    'rgba(255,255,255,0.45)');
+      gloss.addColorStop(0.55, 'rgba(255,255,255,0.04)');
+      gloss.addColorStop(1,    'rgba(255,255,255,0)');
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fillStyle = gloss; ctx.fill();
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth   = exportPx * 0.095;
+      ctx.lineCap     = 'round'; ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(exportPx * 0.285, exportPx * 0.505);
+      ctx.lineTo(exportPx * 0.44,  exportPx * 0.655);
+      ctx.lineTo(exportPx * 0.715, exportPx * 0.37);
+      ctx.stroke();
+    }
+
     const canvas = await html2canvas(cardEl, {
       scale: scale,
       useCORS: true,
@@ -1689,6 +1785,9 @@ document.getElementById('download-btn').addEventListener('click', async () => {
     alert('Download mein problem hui. Dobara try karein.');
     console.error(err);
   }
+
+  // Restore badge canvas to display resolution
+  if (badgeVisible) drawBadgeOnCanvas(BADGE_SIZES[currentBadgeSize]);
 
   if (glWasVisible) gl.style.display = 'block';
 

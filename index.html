@@ -1728,44 +1728,77 @@ function setTextPos(preset) {
 }
 
 /* ====================================================
-   BADGE SVG → PNG HELPER
-   Converts the inline SVG badge to a crisp PNG <img>
-   so html2canvas captures it perfectly every time.
+   DOWNLOAD — Robust canvas-based approach
+   Draws avatar ring + blue tick badge via Canvas API
+   so html2canvas captures everything perfectly.
    ==================================================== */
-function svgToPngDataUrl(svgEl, widthPx, heightPx) {
-  return new Promise((resolve, reject) => {
-    const svgClone = svgEl.cloneNode(true);
-    svgClone.setAttribute('width',  widthPx);
-    svgClone.setAttribute('height', heightPx);
-    // Ensure xmlns is present so browsers parse it as SVG
-    svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 
-    const serializer = new XMLSerializer();
-    const svgStr = serializer.serializeToString(svgClone);
+/**
+ * Draw a crisp blue verified badge onto a canvas context.
+ * cx/cy = center of badge, r = radius of badge circle.
+ */
+function drawBadgeOnCanvas(ctx, cx, cy, r) {
+  // Outer white border ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, r + 1.5, 0, Math.PI * 2);
+  ctx.fillStyle = 'white';
+  ctx.shadowColor = 'rgba(0,0,0,0.35)';
+  ctx.shadowBlur = r * 0.4;
+  ctx.fill();
+  ctx.shadowBlur = 0;
 
-    // Use base64 data URI — works in every browser, no CORS/blob restrictions
-    const base64 = btoa(unescape(encodeURIComponent(svgStr)));
-    const dataUrl = 'data:image/svg+xml;base64,' + base64;
+  // Blue gradient fill
+  const blueGrad = ctx.createRadialGradient(cx - r * 0.2, cy - r * 0.3, 0, cx, cy, r * 1.1);
+  blueGrad.addColorStop(0, '#42b4f5');
+  blueGrad.addColorStop(1, '#1a8dd4');
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = blueGrad;
+  ctx.fill();
 
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      // 4× supersampling for crisp edges
-      canvas.width  = widthPx  * 4;
-      canvas.height = heightPx * 4;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL('image/png'));
-    };
-    img.onerror = (e) => reject(e);
-    img.src = dataUrl;
-  });
+  // Gloss highlight (top-left arc)
+  const glossGrad = ctx.createRadialGradient(cx - r * 0.2, cy - r * 0.3, 0, cx, cy, r * 0.9);
+  glossGrad.addColorStop(0, 'rgba(255,255,255,0.45)');
+  glossGrad.addColorStop(0.6, 'rgba(255,255,255,0.04)');
+  glossGrad.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = glossGrad;
+  ctx.fill();
+
+  // White checkmark — scaled to badge size
+  const s = r / 9; // scale factor based on viewBox 0 0 20 20 where r≈9
+  ctx.beginPath();
+  ctx.moveTo(cx + (6.2 - 10) * s,  cy + (10.1 - 10) * s);
+  ctx.lineTo(cx + (8.8 - 10) * s,  cy + (12.7 - 10) * s);
+  ctx.lineTo(cx + (13.8 - 10) * s, cy + (7.4  - 10) * s);
+  ctx.strokeStyle = 'white';
+  ctx.lineWidth   = r * 0.38;
+  ctx.lineCap     = 'round';
+  ctx.lineJoin    = 'round';
+  ctx.stroke();
 }
 
-/* ====================================================
-   DOWNLOAD — blue tick badge pre-rendered to PNG
-   so html2canvas captures it correctly
-   ==================================================== */
+/**
+ * Draw the avatar ring (white ring + blue ring) around the avatar circle.
+ * cx/cy = center, avatarR = avatar circle radius.
+ */
+function drawAvatarRing(ctx, cx, cy, avatarR) {
+  // White ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, avatarR + 2.2, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(255,255,255,0.92)';
+  ctx.lineWidth = 2.2;
+  ctx.stroke();
+
+  // Blue ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, avatarR + 4.0, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(29,155,240,0.72)';
+  ctx.lineWidth = 2.0;
+  ctx.stroke();
+}
+
 document.getElementById('download-btn').addEventListener('click', async () => {
   wordZoomBar.style.display = 'none';
   document.getElementById('text-drag-hint').style.display = 'none';
@@ -1781,50 +1814,27 @@ document.getElementById('download-btn').addEventListener('click', async () => {
   btn.textContent = '⏳ Generating...';
   btn.disabled = true;
 
-  // --- BADGE FIX: replace SVG with a pre-rendered PNG img ---
-  const badgeSvg   = document.getElementById('verified-badge');
-  const badgeWrap  = document.getElementById('avatar-wrap');
+  // Hide the SVG badge and CSS box-shadow ring before html2canvas
+  // (they render incorrectly); we'll draw them on canvas manually after.
+  const badgeSvg      = document.getElementById('verified-badge');
+  const avatarImgWrap = document.getElementById('avatar-img-wrap');
   const badgeWasVisible = badgeSvg && badgeSvg.style.display !== 'none';
-  let   badgePngImg = null;
 
-  if (badgeSvg && badgeWasVisible) {
-    try {
-      const badgePx  = parseInt(badgeSvg.style.width)  || 18;
-      const pngUrl   = await svgToPngDataUrl(badgeSvg, badgePx, badgePx);
+  // Temporarily hide badge SVG so html2canvas doesn't try to render it
+  if (badgeSvg) badgeSvg.style.visibility = 'hidden';
+  // Temporarily remove box-shadow from avatar so we draw it cleanly
+  const origBoxShadow = avatarImgWrap.style.boxShadow;
+  avatarImgWrap.style.boxShadow = 'none';
 
-      badgePngImg = document.createElement('img');
-      badgePngImg.src = pngUrl;
-      badgePngImg.id  = 'verified-badge-png';
-
-      // Copy all computed styles from the SVG element
-      badgePngImg.style.cssText    = badgeSvg.style.cssText;
-      badgePngImg.style.position   = 'absolute';
-      badgePngImg.style.width      = badgeSvg.style.width  || '18px';
-      badgePngImg.style.height     = badgeSvg.style.height || '18px';
-      badgePngImg.style.bottom     = badgeSvg.style.bottom || '-2px';
-      badgePngImg.style.right      = badgeSvg.style.right  || '-4px';
-      badgePngImg.style.zIndex     = '25';
-      badgePngImg.style.display    = 'block';
-      badgePngImg.style.filter     = 'drop-shadow(0 1px 3px rgba(0,0,0,0.4))';
-
-      // Hide original SVG, insert PNG sibling
-      badgeSvg.style.display = 'none';
-      badgeWrap.appendChild(badgePngImg);
-
-      // Small delay so the img renders before capture
-      await new Promise(r => setTimeout(r, 80));
-    } catch (e) {
-      console.warn('Badge PNG conversion failed, capturing SVG as-is:', e);
-    }
-  }
-  // ----------------------------------------------------------
+  // Small settle delay
+  await new Promise(r => setTimeout(r, 40));
 
   try {
     const scaleX = s.exportW / cardEl.offsetWidth;
     const scaleY = s.exportH / cardEl.offsetHeight;
     const scale  = Math.max(scaleX, scaleY);
 
-    const canvas = await html2canvas(cardEl, {
+    const html2canvas_result = await html2canvas(cardEl, {
       scale: scale,
       useCORS: true,
       allowTaint: true,
@@ -1833,25 +1843,61 @@ document.getElementById('download-btn').addEventListener('click', async () => {
       height: cardEl.offsetHeight,
     });
 
+    // --- Now manually draw ring + badge onto the captured canvas ---
+    const ctx = html2canvas_result.getContext('2d');
+
+    // Get avatar-wrap position relative to card
+    const cardRect      = cardEl.getBoundingClientRect();
+    const avatarWrapEl  = document.getElementById('avatar-wrap');
+    const avatarWrapRect = avatarWrapEl.getBoundingClientRect();
+
+    // Avatar img-wrap is 46x46px, centered inside avatar-wrap (also 46x46)
+    const avatarRelX = (avatarWrapRect.left - cardRect.left) * scale;
+    const avatarRelY = (avatarWrapRect.top  - cardRect.top)  * scale;
+    const avatarW    = avatarWrapRect.width  * scale;
+    const avatarH    = avatarWrapRect.height * scale;
+    const avatarCX   = avatarRelX + avatarW / 2;
+    const avatarCY   = avatarRelY + avatarH / 2;
+    const avatarR    = (avatarW / 2);
+
+    // Draw avatar ring
+    drawAvatarRing(ctx, avatarCX, avatarCY, avatarR);
+
+    // Draw blue tick badge if visible
+    if (badgeWasVisible) {
+      const badgePxCSS = parseInt(badgeSvg.style.width) || 18;
+      const badgePx    = badgePxCSS * scale;
+      const badgeR     = badgePx / 2;
+
+      // Badge is positioned at bottom-right of avatar-wrap
+      // Use the same offset logic as setBadgeSize()
+      const offsetCSS = Math.round(badgePxCSS * 0.15);
+      const bottomCSS = offsetCSS;
+      const rightCSS  = offsetCSS + 2;
+
+      // Badge center in canvas coords
+      const badgeCX = avatarRelX + avatarW - rightCSS  * scale - badgeR;
+      const badgeCY = avatarRelY + avatarH - bottomCSS * scale - badgeR;
+
+      drawBadgeOnCanvas(ctx, badgeCX, badgeCY, badgeR);
+    }
+    // --------------------------------------------------------------
+
     const link = document.createElement('a');
     const sizeSuffix = { story: '9x16', post: '1x1', portrait: '4x5' }[currentSize];
     link.download = `shayari_${PROFILES[activeProfileIdx].handle.replace('@','')}_${sizeSuffix}_${Date.now()}.png`;
-    link.href = canvas.toDataURL('image/png');
+    link.href = html2canvas_result.toDataURL('image/png');
     link.click();
   } catch (err) {
     alert('Download mein problem hui. Dobara try karein.');
     console.error(err);
   }
 
-  // --- Restore original SVG badge ---
-  if (badgePngImg) {
-    badgePngImg.remove();
-    if (badgeSvg) badgeSvg.style.display = 'block';
-  }
-  // ----------------------------------
+  // Restore badge SVG and box-shadow
+  if (badgeSvg) badgeSvg.style.visibility = '';
+  avatarImgWrap.style.boxShadow = origBoxShadow;
 
   if (glWasVisible) gl.style.display = 'block';
-
   document.getElementById('text-drag-hint').style.display = '';
   const s2 = CARD_SIZES[currentSize];
   btn.textContent = `⬇ Download Image (${s2.label})`;

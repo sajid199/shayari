@@ -203,8 +203,8 @@ body {
 #avatar-img-wrap img { width:100%;height:100%;object-fit:cover; }
 
 /* =====================================================
-   VERIFIED BADGE — now a <canvas> tag for html2canvas
-   Canvas elements are rendered perfectly by html2canvas.
+   VERIFIED BADGE — <img> loaded as data URI from bluetick.jpeg
+   Data URI src ensures html2canvas renders it correctly.
    ===================================================== */
 #verified-badge {
   position: absolute;
@@ -213,11 +213,11 @@ body {
   width: 18px;
   height: 18px;
   z-index: 25;
-  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4));
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
   transition: transform 0.2s ease;
   display: block;
   pointer-events: none;
-  border-radius: 50%;
+  object-fit: contain;
 }
 #verified-badge:hover { transform: scale(1.15); }
 
@@ -667,10 +667,10 @@ input[type="file"]  { display:none; }
             <div id="avatar-ring-inner"></div>
             <div id="avatar-img-wrap">✍️</div>
             <!--
-              FIXED: The verified badge is now a <canvas> element.
-              html2canvas renders <canvas> perfectly — no SVG/img data URI issues.
+              FIXED: Badge loads bluetick.jpeg as a data URI at startup.
+              html2canvas renders <img> with data URI src perfectly.
             -->
-            <canvas id="verified-badge" width="36" height="36"></canvas>
+            <img id="verified-badge" src="" alt="verified">
           </div>
           <div id="profile-info">
             <div id="profile-name-display">Ghalib Nama</div>
@@ -954,12 +954,11 @@ function toggleGuideline() {
 
 /* ====================================================
    VERIFIED BADGE LOGIC
-   The badge is a <canvas> element drawn with 2D API.
-   html2canvas renders <canvas> perfectly — this is the
-   most reliable way to guarantee the badge appears in
-   the downloaded image without any CORS/SVG issues.
+   Loads bluetick.jpeg as a data URI so html2canvas
+   captures it perfectly — no CORS, no SVG issues.
    ==================================================== */
 let badgeVisible = true;
+let badgeDataURI = ''; // will be set on load
 
 const BADGE_SIZES = {
   small:  14,
@@ -969,62 +968,35 @@ const BADGE_SIZES = {
 };
 let currentBadgeSize = 'medium';
 
-function drawBadgeOnCanvas(px) {
-  const badge = document.getElementById('verified-badge');
-  const dpr = window.devicePixelRatio || 1;
-  const size = px * dpr;
-  badge.width  = size;
-  badge.height = size;
-  badge.style.width  = px + 'px';
-  badge.style.height = px + 'px';
-
-  const ctx = badge.getContext('2d');
-  ctx.clearRect(0, 0, size, size);
-  const cx = size / 2, cy = size / 2, r = size / 2 - 0.5 * dpr;
-
-  // White border circle
-  ctx.beginPath();
-  ctx.arc(cx, cy, r + 1 * dpr, 0, Math.PI * 2);
-  ctx.fillStyle = 'white';
-  ctx.fill();
-
-  // Blue gradient fill
-  const grad = ctx.createRadialGradient(cx - r * 0.2, cy - r * 0.2, 0, cx, cy, r);
-  grad.addColorStop(0,   '#42b4f5');
-  grad.addColorStop(1,   '#1a8dd4');
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fillStyle = grad;
-  ctx.fill();
-
-  // Gloss overlay
-  const gloss = ctx.createRadialGradient(cx - r * 0.22, cy - r * 0.22, 0, cx, cy, r * 1.05);
-  gloss.addColorStop(0,    'rgba(255,255,255,0.45)');
-  gloss.addColorStop(0.55, 'rgba(255,255,255,0.04)');
-  gloss.addColorStop(1,    'rgba(255,255,255,0)');
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fillStyle = gloss;
-  ctx.fill();
-
-  // White checkmark
-  const s = size;
-  ctx.strokeStyle = 'white';
-  ctx.lineWidth   = s * 0.095;
-  ctx.lineCap     = 'round';
-  ctx.lineJoin    = 'round';
-  ctx.beginPath();
-  ctx.moveTo(s * 0.285, s * 0.505);
-  ctx.lineTo(s * 0.44,  s * 0.655);
-  ctx.lineTo(s * 0.715, s * 0.37);
-  ctx.stroke();
-}
+// Pre-load bluetick.jpeg as a data URI
+(function preloadBadge() {
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = function() {
+    const canvas = document.createElement('canvas');
+    canvas.width  = img.naturalWidth  || 64;
+    canvas.height = img.naturalHeight || 64;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    try {
+      badgeDataURI = canvas.toDataURL('image/png');
+    } catch(e) {
+      // If cross-origin blocked, fall back to direct src
+      badgeDataURI = './bluetick.jpeg';
+    }
+    document.getElementById('verified-badge').src = badgeDataURI;
+  };
+  img.onerror = function() {
+    // File not found or CORS — use src directly (works fine locally)
+    badgeDataURI = './bluetick.jpeg';
+    document.getElementById('verified-badge').src = badgeDataURI;
+  };
+  img.src = './bluetick.jpeg';
+})();
 
 function toggleVerifiedBadge() {
   badgeVisible = !badgeVisible;
   const badge    = document.getElementById('verified-badge');
   const toggleEl = document.getElementById('badge-toggle');
-
   badge.style.display = badgeVisible ? 'block' : 'none';
   toggleEl.classList.toggle('active', badgeVisible);
 }
@@ -1033,8 +1005,8 @@ function setBadgeSize(sizeKey) {
   currentBadgeSize = sizeKey;
   const px = BADGE_SIZES[sizeKey];
   const badge = document.getElementById('verified-badge');
-
-  drawBadgeOnCanvas(px);
+  badge.style.width  = px + 'px';
+  badge.style.height = px + 'px';
 
   const offset = Math.round(px * 0.15);
   badge.style.bottom = `-${offset}px`;
@@ -1732,41 +1704,6 @@ document.getElementById('download-btn').addEventListener('click', async () => {
     const scaleY = s.exportH / cardEl.offsetHeight;
     const scale  = Math.max(scaleX, scaleY);
 
-    // Redraw badge canvas at export resolution so it's sharp in download
-    if (badgeVisible) {
-      const badgeEl = document.getElementById('verified-badge');
-      const displayPx = BADGE_SIZES[currentBadgeSize];
-      const exportPx = Math.round(displayPx * scale);
-      // Temporarily resize canvas to export size
-      badgeEl.width  = exportPx;
-      badgeEl.height = exportPx;
-      badgeEl.style.width  = displayPx + 'px';
-      badgeEl.style.height = displayPx + 'px';
-      const ctx = badgeEl.getContext('2d');
-      const cx = exportPx / 2, cy = exportPx / 2, r = exportPx / 2 - 0.5;
-      ctx.clearRect(0, 0, exportPx, exportPx);
-      ctx.beginPath(); ctx.arc(cx, cy, r + 1, 0, Math.PI * 2);
-      ctx.fillStyle = 'white'; ctx.fill();
-      const grad = ctx.createRadialGradient(cx - r*0.2, cy - r*0.2, 0, cx, cy, r);
-      grad.addColorStop(0, '#42b4f5'); grad.addColorStop(1, '#1a8dd4');
-      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.fillStyle = grad; ctx.fill();
-      const gloss = ctx.createRadialGradient(cx - r*0.22, cy - r*0.22, 0, cx, cy, r*1.05);
-      gloss.addColorStop(0,    'rgba(255,255,255,0.45)');
-      gloss.addColorStop(0.55, 'rgba(255,255,255,0.04)');
-      gloss.addColorStop(1,    'rgba(255,255,255,0)');
-      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.fillStyle = gloss; ctx.fill();
-      ctx.strokeStyle = 'white';
-      ctx.lineWidth   = exportPx * 0.095;
-      ctx.lineCap     = 'round'; ctx.lineJoin = 'round';
-      ctx.beginPath();
-      ctx.moveTo(exportPx * 0.285, exportPx * 0.505);
-      ctx.lineTo(exportPx * 0.44,  exportPx * 0.655);
-      ctx.lineTo(exportPx * 0.715, exportPx * 0.37);
-      ctx.stroke();
-    }
-
     const canvas = await html2canvas(cardEl, {
       scale: scale,
       useCORS: true,
@@ -1785,9 +1722,6 @@ document.getElementById('download-btn').addEventListener('click', async () => {
     alert('Download mein problem hui. Dobara try karein.');
     console.error(err);
   }
-
-  // Restore badge canvas to display resolution
-  if (badgeVisible) drawBadgeOnCanvas(BADGE_SIZES[currentBadgeSize]);
 
   if (glWasVisible) gl.style.display = 'block';
 

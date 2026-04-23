@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="hi">
 <head>
@@ -45,7 +44,6 @@ body {
   }
 }
 
-/* CARD WRAP */
 .card-wrap {
   flex-shrink: 0;
   display: flex;
@@ -63,7 +61,6 @@ body {
   gap: 12px;
 }
 
-/* The card itself — size controlled by JS */
 #card {
   position: relative;
   overflow: hidden;
@@ -74,12 +71,10 @@ body {
   transition: width 0.3s, height 0.3s;
 }
 
-/* Layers */
 #bg-layer       { position:absolute;inset:0;background:linear-gradient(160deg,#d2d2d2,#e2e2e2,#cacaca);transition:background 0.3s;z-index:0; }
 #bg-image-layer { position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 0.3s;z-index:1; }
 #overlay-layer  { position:absolute;inset:0;background:rgba(255,255,255,0);z-index:2; }
 
-/* 4:5 GUIDELINE OVERLAY */
 #guideline-45 {
   position: absolute;
   left: 50%;
@@ -111,7 +106,6 @@ body {
   border-radius: 4px;
 }
 
-/* GUIDELINE TOGGLE BUTTON */
 #guideline-toggle-wrap {
   display: flex;
   align-items: center;
@@ -163,9 +157,7 @@ body {
   line-height: 1.4;
 }
 
-/* =====================================================
-   PROFILE CHIP — with premium verified badge
-   ===================================================== */
+/* PROFILE CHIP */
 #profile-chip {
   position: absolute;
   top: 22px; left: 22px;
@@ -178,7 +170,6 @@ body {
 }
 #profile-chip:active { cursor: grabbing; }
 
-/* Avatar container — relative so badge can be positioned over it */
 #avatar-wrap {
   position: relative;
   width: 46px; height: 46px;
@@ -192,7 +183,6 @@ body {
   background: #888;
   display: flex; align-items: center; justify-content: center;
   font-size: 20px; color: #fff;
-  /* Premium ring around avatar */
   box-shadow:
     0 0 0 2px rgba(255,255,255,0.9),
     0 0 0 3.5px rgba(29,155,240,0.7),
@@ -201,7 +191,8 @@ body {
 #avatar-img-wrap img { width:100%;height:100%;object-fit:cover; }
 
 /* =====================================================
-   VERIFIED BADGE — premium blue tick
+   VERIFIED BADGE — now an <img> tag for html2canvas
+   Uses a data URI so it renders correctly on download
    ===================================================== */
 #verified-badge {
   position: absolute;
@@ -212,10 +203,11 @@ body {
   z-index: 25;
   filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4));
   transition: transform 0.2s ease;
+  /* Prevent any CSS that would block html2canvas */
+  display: block;
+  pointer-events: none;
 }
 #verified-badge:hover { transform: scale(1.15); }
-
-/* SVG badge inline styles handled by the SVG itself */
 
 #profile-name-display {
   font-family:'Hind',sans-serif;font-weight:700;font-style:italic;
@@ -226,7 +218,6 @@ body {
   font-size:12px;color:#555;line-height:1.3;white-space:nowrap;
 }
 
-/* SHAYARI TEXT */
 #shayari-display {
   position: absolute;
   top: 100px; left: 36px;
@@ -261,7 +252,6 @@ body {
 }
 #shayari-text .line-span { display: block; }
 
-/* WORD ZOOM BAR */
 #word-zoom-bar {
   position: absolute;
   z-index: 30;
@@ -336,16 +326,6 @@ body {
 #wz-font-select:focus { border-color: #888; }
 #wz-font-label { font-size: 10px; color: #666; margin-right: 5px; white-space: nowrap; flex-shrink: 0; }
 
-#text-drag-hint { font-size: 9px; color: rgba(0,0,0,0.25); }
-
-/* Watermark */
-#watermark {
-  position:absolute;bottom:20px;left:0;right:0;
-  text-align:center;font-family:'Hind',sans-serif;
-  font-size:11px;color:rgba(0,0,0,0.28);
-  letter-spacing:1px;z-index:10;pointer-events:none;
-}
-
 #text-drag-hint {
   position: absolute; bottom: -18px; left: 50%;
   transform: translateX(-50%);
@@ -353,7 +333,13 @@ body {
   pointer-events: none; white-space: nowrap; letter-spacing: 0.5px;
 }
 
-/* SIZE SELECTOR */
+#watermark {
+  position:absolute;bottom:20px;left:0;right:0;
+  text-align:center;font-family:'Hind',sans-serif;
+  font-size:11px;color:rgba(0,0,0,0.28);
+  letter-spacing:1px;z-index:10;pointer-events:none;
+}
+
 .size-selector {
   width: 100%;
   max-width: 420px;
@@ -383,7 +369,6 @@ body {
 .size-btn .sb-ratio { font-size: 14px; display: block; margin-bottom: 2px; }
 .size-btn .sb-label { font-size: 9px; color: inherit; opacity: 0.7; letter-spacing: 0.5px; text-transform: uppercase; }
 
-/* DOWNLOAD BTN */
 #download-btn {
   width: 100%;
   max-width: 420px;
@@ -402,7 +387,6 @@ body {
 #download-btn:hover { opacity:0.85;transform:translateY(-1px); }
 #download-btn:disabled { opacity:0.5;cursor:not-allowed;transform:none; }
 
-/* CONTROLS */
 .controls {
   width: 100%;
   display:flex;flex-direction:column;gap:14px;
@@ -456,7 +440,6 @@ input[type="file"]  { display:none; }
 }
 .upload-btn:hover { border-color:#bbb;color:#bbb; }
 
-/* PROFILE TABS */
 .profile-tabs { display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px; }
 .ptab {
   background:#111;border:2px solid #2a2a2a;border-radius:10px;
@@ -468,7 +451,6 @@ input[type="file"]  { display:none; }
 .ptab .pt-name { font-size:12px;color:#fff;font-weight:700;margin-bottom:2px; }
 .ptab .pt-handle { font-size:10px;color:#555; }
 
-/* FONT GRID */
 .font-grid { display:grid;grid-template-columns:1fr 1fr;gap:6px; }
 .font-card {
   background:#111;border:2px solid #2a2a2a;border-radius:8px;
@@ -498,7 +480,6 @@ input[type="file"]  { display:none; }
 .bg-swatch:hover { transform:scale(1.1); }
 .bg-swatch.active { border-color:#fff; }
 
-/* PER-LINE EDITOR */
 #line-editor-list { display:flex;flex-direction:column;gap:7px;padding-right:2px; }
 
 .line-row {
@@ -543,9 +524,6 @@ input[type="file"]  { display:none; }
 }
 .word-zoom-info b { color:#888; }
 
-/* =====================================================
-   VERIFIED BADGE TOGGLE — in controls panel
-   ===================================================== */
 .badge-toggle-row {
   display: flex;
   align-items: center;
@@ -587,7 +565,6 @@ input[type="file"]  { display:none; }
 .badge-toggle-row.active .badge-switch { background: #1d9bf0; }
 .badge-toggle-row.active .badge-switch::after { left: 18px; }
 
-/* Badge size selector */
 .badge-size-row {
   display: flex;
   gap: 5px;
@@ -650,7 +627,6 @@ input[type="file"]  { display:none; }
         <div id="bg-image-layer"></div>
         <div id="overlay-layer"></div>
 
-        <!-- 4:5 Virtual Guideline -->
         <div id="guideline-45"></div>
 
         <!-- Word Zoom Bar -->
@@ -675,69 +651,18 @@ input[type="file"]  { display:none; }
         <!-- Draggable Profile Chip -->
         <div id="profile-chip">
           <div id="avatar-wrap">
-            <!-- Avatar image wrapper with premium ring -->
             <div id="avatar-img-wrap">✍️</div>
-
-            <!-- =============================================
-                 PREMIUM VERIFIED BLUE TICK BADGE
-                 Multi-layer SVG: outer glow ring + blue fill +
-                 white checkmark + inner gloss highlight
-                 ============================================= -->
-            <svg id="verified-badge" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <!-- Outer glow filter for premium depth -->
-                <filter id="badge-glow" x="-30%" y="-30%" width="160%" height="160%">
-                  <feGaussianBlur stdDeviation="0.8" result="blur"/>
-                  <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-                </filter>
-                <!-- Gloss gradient for 3D premium feel -->
-                <radialGradient id="badge-gloss" cx="38%" cy="28%" r="65%" fx="38%" fy="28%">
-                  <stop offset="0%" stop-color="rgba(255,255,255,0.55)"/>
-                  <stop offset="60%" stop-color="rgba(255,255,255,0.05)"/>
-                  <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
-                </radialGradient>
-                <!-- Blue fill gradient for depth -->
-                <radialGradient id="badge-blue" cx="40%" cy="30%" r="70%">
-                  <stop offset="0%" stop-color="#42b4f5"/>
-                  <stop offset="100%" stop-color="#1a8dd4"/>
-                </radialGradient>
-              </defs>
-
-              <!-- White outer border ring (for contrast on any bg) -->
-              <circle cx="10" cy="10" r="9.5" fill="white" filter="url(#badge-glow)"/>
-
-              <!-- Main blue badge shape — 8-point star / shield hybrid -->
-              <path d="M10 1.2
-                L11.8 3.2 L14.4 2.6 L14.6 5.3 L17.1 6.4
-                L15.9 8.8 L17.5 11.0 L15.2 12.5
-                L15.0 15.2 L12.3 15.0 L10.8 17.2
-                L8.8 15.5 L6.1 16.3 L5.6 13.6
-                L3.0 12.7 L3.9 10.2 L2.0 8.2
-                L4.2 6.5 L3.8 3.8 L6.5 3.8
-                Z"
-                fill="url(#badge-blue)" />
-
-              <!-- Gloss overlay for 3D premium look -->
-              <path d="M10 1.2
-                L11.8 3.2 L14.4 2.6 L14.6 5.3 L17.1 6.4
-                L15.9 8.8 L17.5 11.0 L15.2 12.5
-                L15.0 15.2 L12.3 15.0 L10.8 17.2
-                L8.8 15.5 L6.1 16.3 L5.6 13.6
-                L3.0 12.7 L3.9 10.2 L2.0 8.2
-                L4.2 6.5 L3.8 3.8 L6.5 3.8
-                Z"
-                fill="url(#badge-gloss)" />
-
-              <!-- White checkmark — bold and crisp -->
-              <polyline
-                points="6.2,10.1 8.8,12.7 13.8,7.4"
-                fill="none"
-                stroke="white"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
+            <!--
+              IMPORTANT FIX: The verified badge is now an <img> tag using a
+              base64 data URI instead of an inline <svg>.
+              html2canvas cannot render inline SVG elements, but it CAN render
+              <img> tags with data URIs. This ensures the blue tick appears in
+              the downloaded image.
+            -->
+            <img id="verified-badge"
+              src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAgMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImJhZGdlLWJsdWUiIGN4PSI0MCUiIGN5PSIzMCUiIHI9IjcwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0MmI0ZjUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMWE4ZGQ0Ii8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJiYWRnZS1nbG9zcyIgY3g9IjM4JSIgY3k9IjI4JSIgcj0iNjUlIiBmeD0iMzglIiBmeT0iMjglIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0icmdiYSgyNTUsMjU1LDI1NSwwLjU1KSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjYwJSIgc3RvcC1jb2xvcj0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9InJnYmEoMjU1LDI1NSwyNTUsMCkiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxjaXJjbGUgY3g9IjEwIiBjeT0iMTAiIHI9IjkuNSIgZmlsbD0id2hpdGUiLz4KICA8cGF0aCBkPSJNMTAgMS4yIEwxMS44IDMuMiBMMTQuNCAyLjYgTDE0LjYgNS4zIEwxNy4xIDYuNCBMMTUuOSA4LjggTDE3LjUgMTEuMCBMMTUuMiAxMi41IEwxNS4wIDE1LjIgTDEyLjMgMTUuMCBMMTAuOCAxNy4yIEw4LjggMTUuNSBMNi4xIDE2LjMgTDUuNiAxMy42IEwzLjAgMTIuNyBMMy45IDEwLjIgTDIuMCA4LjIgTDQuMiA2LjUgTDMuOCAzLjggTDYuNSAzLjggWiIgZmlsbD0idXJsKCNiYWRnZS1ibHVlKSIvPgogIDxwYXRoIGQ9Ik0xMCAxLjIgTDExLjggMy4yIEwxNC40IDIuNiBMMTQuNiA1LjMgTDE3LjEgNi40IEwxNS45IDguOCBMMTcuNSAxMS4wIEwxNS4yIDEyLjUgTDE1LjAgMTUuMiBMMTIuMyAxNS4wIEwxMC44IDE3LjIgTDguOCAxNS41IEw2LjEgMTYuMyBMNS42IDEzLjYgTDMuMCAxMi43IEwzLjkgMTAuMiBMMi4wIDguMiBMNC4yIDYuNSBMMy44IDMuOCBMNi41IDMuOCBaIiBmaWxsPSJ1cmwoI2JhZGdlLWdsb3NzKSIvPgogIDxwb2x5bGluZSBwb2ludHM9IjYuMiwxMC4xIDguOCwxMi43IDEzLjgsNy40IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPg=="
+              alt="verified"
+            >
           </div>
           <div id="profile-info">
             <div id="profile-name-display">Ghalib Nama</div>
@@ -840,9 +765,6 @@ input[type="file"]  { display:none; }
         <span>Handle ka rang</span>
       </div>
 
-      <!-- ============================================
-           VERIFIED BADGE CONTROLS
-           ============================================ -->
       <label style="margin-top:14px">Verified Badge</label>
       <div class="badge-toggle-row active" id="badge-toggle" onclick="toggleVerifiedBadge()">
         <div class="badge-toggle-left">
@@ -856,7 +778,6 @@ input[type="file"]  { display:none; }
         </div>
         <div class="badge-switch" id="badge-switch"></div>
       </div>
-      <!-- Badge size -->
       <div class="badge-size-row" id="badge-size-row">
         <button class="badge-size-btn" data-bsize="small" onclick="setBadgeSize('small')">Small</button>
         <button class="badge-size-btn active" data-bsize="medium" onclick="setBadgeSize('medium')">Medium</button>
@@ -1025,10 +946,11 @@ function toggleGuideline() {
 
 /* ====================================================
    VERIFIED BADGE LOGIC
+   The badge is now an <img> with a base64 data URI src.
+   html2canvas renders <img> tags correctly, unlike inline SVGs.
    ==================================================== */
 let badgeVisible = true;
 
-// Badge size map: CSS width/height in px
 const BADGE_SIZES = {
   small:  14,
   medium: 18,
@@ -1053,7 +975,6 @@ function setBadgeSize(sizeKey) {
   badge.style.width  = px + 'px';
   badge.style.height = px + 'px';
 
-  // Reposition badge offset based on size so it stays at avatar corner
   const offset = Math.round(px * 0.15);
   badge.style.bottom = `-${offset}px`;
   badge.style.right  = `-${offset + 2}px`;
@@ -1728,43 +1649,7 @@ function setTextPos(preset) {
 }
 
 /* ====================================================
-   BADGE SVG → PNG HELPER
-   Converts the inline SVG badge to a crisp PNG <img>
-   so html2canvas captures it perfectly every time.
-   ==================================================== */
-function svgToPngDataUrl(svgEl, widthPx, heightPx) {
-  return new Promise((resolve, reject) => {
-    const svgClone = svgEl.cloneNode(true);
-    svgClone.setAttribute('width',  widthPx);
-    svgClone.setAttribute('height', heightPx);
-    // Ensure xmlns is present so browsers parse it as SVG
-    svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-
-    const serializer = new XMLSerializer();
-    const svgStr = serializer.serializeToString(svgClone);
-
-    // Use base64 data URI — works in every browser, no CORS/blob restrictions
-    const base64 = btoa(unescape(encodeURIComponent(svgStr)));
-    const dataUrl = 'data:image/svg+xml;base64,' + base64;
-
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      // 4× supersampling for crisp edges
-      canvas.width  = widthPx  * 4;
-      canvas.height = heightPx * 4;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL('image/png'));
-    };
-    img.onerror = (e) => reject(e);
-    img.src = dataUrl;
-  });
-}
-
-/* ====================================================
-   DOWNLOAD — blue tick badge pre-rendered to PNG
-   so html2canvas captures it correctly
+   DOWNLOAD
    ==================================================== */
 document.getElementById('download-btn').addEventListener('click', async () => {
   wordZoomBar.style.display = 'none';
@@ -1780,44 +1665,6 @@ document.getElementById('download-btn').addEventListener('click', async () => {
   const s   = CARD_SIZES[currentSize];
   btn.textContent = '⏳ Generating...';
   btn.disabled = true;
-
-  // --- BADGE FIX: replace SVG with a pre-rendered PNG img ---
-  const badgeSvg   = document.getElementById('verified-badge');
-  const badgeWrap  = document.getElementById('avatar-wrap');
-  const badgeWasVisible = badgeSvg && badgeSvg.style.display !== 'none';
-  let   badgePngImg = null;
-
-  if (badgeSvg && badgeWasVisible) {
-    try {
-      const badgePx  = parseInt(badgeSvg.style.width)  || 18;
-      const pngUrl   = await svgToPngDataUrl(badgeSvg, badgePx, badgePx);
-
-      badgePngImg = document.createElement('img');
-      badgePngImg.src = pngUrl;
-      badgePngImg.id  = 'verified-badge-png';
-
-      // Copy all computed styles from the SVG element
-      badgePngImg.style.cssText    = badgeSvg.style.cssText;
-      badgePngImg.style.position   = 'absolute';
-      badgePngImg.style.width      = badgeSvg.style.width  || '18px';
-      badgePngImg.style.height     = badgeSvg.style.height || '18px';
-      badgePngImg.style.bottom     = badgeSvg.style.bottom || '-2px';
-      badgePngImg.style.right      = badgeSvg.style.right  || '-4px';
-      badgePngImg.style.zIndex     = '25';
-      badgePngImg.style.display    = 'block';
-      badgePngImg.style.filter     = 'drop-shadow(0 1px 3px rgba(0,0,0,0.4))';
-
-      // Hide original SVG, insert PNG sibling
-      badgeSvg.style.display = 'none';
-      badgeWrap.appendChild(badgePngImg);
-
-      // Small delay so the img renders before capture
-      await new Promise(r => setTimeout(r, 80));
-    } catch (e) {
-      console.warn('Badge PNG conversion failed, capturing SVG as-is:', e);
-    }
-  }
-  // ----------------------------------------------------------
 
   try {
     const scaleX = s.exportW / cardEl.offsetWidth;
@@ -1843,13 +1690,6 @@ document.getElementById('download-btn').addEventListener('click', async () => {
     console.error(err);
   }
 
-  // --- Restore original SVG badge ---
-  if (badgePngImg) {
-    badgePngImg.remove();
-    if (badgeSvg) badgeSvg.style.display = 'block';
-  }
-  // ----------------------------------
-
   if (glWasVisible) gl.style.display = 'block';
 
   document.getElementById('text-drag-hint').style.display = '';
@@ -1865,9 +1705,8 @@ loadProfile(0);
 renderShayariText();
 buildLineEditor();
 setCardSize('story');
-setBadgeSize('medium'); // default badge size
+setBadgeSize('medium');
 
-// Badge toggle is active by default (badge visible)
 document.getElementById('badge-toggle').classList.add('active');
 
 </script>

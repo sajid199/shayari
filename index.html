@@ -1,3 +1,5 @@
+html
+
 <!DOCTYPE html>
 <html lang="hi">
 <head>
@@ -78,9 +80,7 @@ body {
 #bg-image-layer { position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 0.3s;z-index:1; }
 #overlay-layer  { position:absolute;inset:0;background:rgba(255,255,255,0);z-index:2; }
 
-/* ====================================================
-   4:5 GUIDELINE OVERLAY — sirf editing mein dikhta hai
-   ==================================================== */
+/* 4:5 GUIDELINE OVERLAY */
 #guideline-45 {
   position: absolute;
   left: 50%;
@@ -90,11 +90,10 @@ body {
   border-radius: 6px;
   z-index: 100;
   pointer-events: none;
-  display: none; /* JS se on/off */
-  box-shadow: 0 0 0 9999px rgba(0,0,0,0.18); /* slight dim outside */
+  display: none;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.18);
 }
 
-/* Corner labels */
 #guideline-45::before {
   content: '4:5 Safe Zone';
   position: absolute;
@@ -165,7 +164,9 @@ body {
   line-height: 1.4;
 }
 
-/* PROFILE CHIP */
+/* =====================================================
+   PROFILE CHIP — with premium verified badge
+   ===================================================== */
 #profile-chip {
   position: absolute;
   top: 22px; left: 22px;
@@ -178,16 +179,44 @@ body {
 }
 #profile-chip:active { cursor: grabbing; }
 
+/* Avatar container — relative so badge can be positioned over it */
 #avatar-wrap {
+  position: relative;
+  width: 46px; height: 46px;
+  flex-shrink: 0;
+}
+
+#avatar-img-wrap {
   width: 46px; height: 46px;
   border-radius: 50%;
   overflow: hidden;
   background: #888;
-  flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   font-size: 20px; color: #fff;
+  /* Premium ring around avatar */
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,0.9),
+    0 0 0 3.5px rgba(29,155,240,0.7),
+    0 2px 8px rgba(0,0,0,0.25);
 }
-#avatar-wrap img { width:100%;height:100%;object-fit:cover; }
+#avatar-img-wrap img { width:100%;height:100%;object-fit:cover; }
+
+/* =====================================================
+   VERIFIED BADGE — premium blue tick
+   ===================================================== */
+#verified-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  z-index: 25;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4));
+  transition: transform 0.2s ease;
+}
+#verified-badge:hover { transform: scale(1.15); }
+
+/* SVG badge inline styles handled by the SVG itself */
 
 #profile-name-display {
   font-family:'Hind',sans-serif;font-weight:700;font-style:italic;
@@ -287,7 +316,6 @@ body {
 }
 #word-zoom-bar .wz-divider { width: 1px; height: 16px; background: #333; margin: 0 3px; flex-shrink: 0; }
 
-/* Word font select */
 #wz-font-select {
   flex: 1;
   background: #1a1a1a;
@@ -309,7 +337,6 @@ body {
 #wz-font-select:focus { border-color: #888; }
 #wz-font-label { font-size: 10px; color: #666; margin-right: 5px; white-space: nowrap; flex-shrink: 0; }
 
-/* Two-finger drag hint */
 #text-drag-hint { font-size: 9px; color: rgba(0,0,0,0.25); }
 
 /* Watermark */
@@ -517,6 +544,73 @@ input[type="file"]  { display:none; }
 }
 .word-zoom-info b { color:#888; }
 
+/* =====================================================
+   VERIFIED BADGE TOGGLE — in controls panel
+   ===================================================== */
+.badge-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 9px;
+  padding: 10px 13px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  user-select: none;
+}
+.badge-toggle-row:hover { border-color: #444; }
+.badge-toggle-row.active { border-color: #1d9bf0; background: #0d1520; }
+
+.badge-toggle-left { display: flex; align-items: center; gap: 9px; }
+.badge-toggle-icon { font-size: 15px; }
+.badge-toggle-text { font-size: 12px; color: #777; font-weight: 700; }
+.badge-toggle-row.active .badge-toggle-text { color: #5bc0f8; }
+
+.badge-switch {
+  width: 34px; height: 19px;
+  border-radius: 10px;
+  background: #333;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.badge-switch::after {
+  content: '';
+  position: absolute;
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  background: #fff;
+  top: 3px; left: 3px;
+  transition: left 0.2s;
+}
+.badge-toggle-row.active .badge-switch { background: #1d9bf0; }
+.badge-toggle-row.active .badge-switch::after { left: 18px; }
+
+/* Badge size selector */
+.badge-size-row {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+}
+.badge-size-btn {
+  flex: 1;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 7px;
+  color: #666;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 6px 4px;
+  cursor: pointer;
+  text-align: center;
+  font-family: 'Hind', sans-serif;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.badge-size-btn:hover { border-color: #1d9bf0; color: #5bc0f8; }
+.badge-size-btn.active { border-color: #1d9bf0; background: #0d1520; color: #5bc0f8; }
+
 </style>
 </head>
 <body>
@@ -543,9 +637,7 @@ input[type="file"]  { display:none; }
         </button>
       </div>
 
-      <!-- =============================================
-           4:5 GUIDELINE TOGGLE — sirf 9:16 mein useful
-           ============================================= -->
+      <!-- 4:5 GUIDELINE TOGGLE -->
       <div id="guideline-toggle-wrap" onclick="toggleGuideline()">
         <div id="guideline-toggle-switch"></div>
         <div>
@@ -559,7 +651,7 @@ input[type="file"]  { display:none; }
         <div id="bg-image-layer"></div>
         <div id="overlay-layer"></div>
 
-        <!-- 4:5 Virtual Guideline — download excluded -->
+        <!-- 4:5 Virtual Guideline -->
         <div id="guideline-45"></div>
 
         <!-- Word Zoom Bar -->
@@ -583,7 +675,71 @@ input[type="file"]  { display:none; }
 
         <!-- Draggable Profile Chip -->
         <div id="profile-chip">
-          <div id="avatar-wrap">✍️</div>
+          <div id="avatar-wrap">
+            <!-- Avatar image wrapper with premium ring -->
+            <div id="avatar-img-wrap">✍️</div>
+
+            <!-- =============================================
+                 PREMIUM VERIFIED BLUE TICK BADGE
+                 Multi-layer SVG: outer glow ring + blue fill +
+                 white checkmark + inner gloss highlight
+                 ============================================= -->
+            <svg id="verified-badge" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <!-- Outer glow filter for premium depth -->
+                <filter id="badge-glow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="0.8" result="blur"/>
+                  <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                </filter>
+                <!-- Gloss gradient for 3D premium feel -->
+                <radialGradient id="badge-gloss" cx="38%" cy="28%" r="65%" fx="38%" fy="28%">
+                  <stop offset="0%" stop-color="rgba(255,255,255,0.55)"/>
+                  <stop offset="60%" stop-color="rgba(255,255,255,0.05)"/>
+                  <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                </radialGradient>
+                <!-- Blue fill gradient for depth -->
+                <radialGradient id="badge-blue" cx="40%" cy="30%" r="70%">
+                  <stop offset="0%" stop-color="#42b4f5"/>
+                  <stop offset="100%" stop-color="#1a8dd4"/>
+                </radialGradient>
+              </defs>
+
+              <!-- White outer border ring (for contrast on any bg) -->
+              <circle cx="10" cy="10" r="9.5" fill="white" filter="url(#badge-glow)"/>
+
+              <!-- Main blue badge shape — 8-point star / shield hybrid -->
+              <path d="M10 1.2
+                L11.8 3.2 L14.4 2.6 L14.6 5.3 L17.1 6.4
+                L15.9 8.8 L17.5 11.0 L15.2 12.5
+                L15.0 15.2 L12.3 15.0 L10.8 17.2
+                L8.8 15.5 L6.1 16.3 L5.6 13.6
+                L3.0 12.7 L3.9 10.2 L2.0 8.2
+                L4.2 6.5 L3.8 3.8 L6.5 3.8
+                Z"
+                fill="url(#badge-blue)" />
+
+              <!-- Gloss overlay for 3D premium look -->
+              <path d="M10 1.2
+                L11.8 3.2 L14.4 2.6 L14.6 5.3 L17.1 6.4
+                L15.9 8.8 L17.5 11.0 L15.2 12.5
+                L15.0 15.2 L12.3 15.0 L10.8 17.2
+                L8.8 15.5 L6.1 16.3 L5.6 13.6
+                L3.0 12.7 L3.9 10.2 L2.0 8.2
+                L4.2 6.5 L3.8 3.8 L6.5 3.8
+                Z"
+                fill="url(#badge-gloss)" />
+
+              <!-- White checkmark — bold and crisp -->
+              <polyline
+                points="6.2,10.1 8.8,12.7 13.8,7.4"
+                fill="none"
+                stroke="white"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
           <div id="profile-info">
             <div id="profile-name-display">Ghalib Nama</div>
             <div id="profile-handle-display">@Ghalibnama</div>
@@ -684,6 +840,31 @@ input[type="file"]  { display:none; }
         <input type="color" id="handle-color" value="#555555">
         <span>Handle ka rang</span>
       </div>
+
+      <!-- ============================================
+           VERIFIED BADGE CONTROLS
+           ============================================ -->
+      <label style="margin-top:14px">Verified Badge</label>
+      <div class="badge-toggle-row active" id="badge-toggle" onclick="toggleVerifiedBadge()">
+        <div class="badge-toggle-left">
+          <span class="badge-toggle-icon">
+            <svg width="16" height="16" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="10" cy="10" r="9" fill="#1d9bf0"/>
+              <polyline points="6.2,10.1 8.8,12.7 13.8,7.4" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="badge-toggle-text">Blue Tick Badge Show Karein</span>
+        </div>
+        <div class="badge-switch" id="badge-switch"></div>
+      </div>
+      <!-- Badge size -->
+      <div class="badge-size-row" id="badge-size-row">
+        <button class="badge-size-btn" data-bsize="small" onclick="setBadgeSize('small')">Small</button>
+        <button class="badge-size-btn active" data-bsize="medium" onclick="setBadgeSize('medium')">Medium</button>
+        <button class="badge-size-btn" data-bsize="large" onclick="setBadgeSize('large')">Large</button>
+        <button class="badge-size-btn" data-bsize="xlarge" onclick="setBadgeSize('xlarge')">XL</button>
+      </div>
+
       <label style="margin-top:16px">Profile Chip Position</label>
       <p class="panel-desc" style="margin-bottom:0">Card par directly drag karein, ya preset chunein:</p>
       <div class="pos-grid">
@@ -787,18 +968,13 @@ function setCardSize(sizeKey) {
   cardEl.style.height = s.h + 'px';
   cardEl.style.borderRadius = sizeKey === 'post' ? '12px' : '18px';
 
-  // Update active button
   document.querySelectorAll('.size-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.size === sizeKey);
   });
 
-  // Update download button label
   document.getElementById('download-btn').textContent = `⬇ Download Image (${s.label})`;
-
-  // Guideline sirf 9:16 ke liye relevant hai, size change par update karo
   updateGuidelineSize();
 
-  // Re-center text block after resize
   setTimeout(() => {
     const tb = document.getElementById('shayari-display');
     const tbH = tb.offsetHeight;
@@ -822,21 +998,13 @@ function updateGuidelineSize() {
   const cardW = cardEl.offsetWidth;
   const cardH = cardEl.offsetHeight;
 
-  // 4:5 ratio box — width same as card, height = width * (5/4)
-  // But it must fit inside card height, so:
-  // Option A: full card width, height = cardW * 5/4
-  // Option B: full card height, width = cardH * 4/5
-  // We want the 4:5 box centered — use the one that fits inside the card
-
   let boxW, boxH;
   const targetH = cardW * (5 / 4);
 
   if (targetH <= cardH) {
-    // 4:5 box fits vertically with full width
     boxW = cardW;
     boxH = targetH;
   } else {
-    // Card not tall enough for full-width 4:5 — constrain by height
     boxH = cardH;
     boxW = cardH * (4 / 5);
   }
@@ -854,6 +1022,46 @@ function toggleGuideline() {
   gl.style.display = guidelineOn ? 'block' : 'none';
 
   if (guidelineOn) updateGuidelineSize();
+}
+
+/* ====================================================
+   VERIFIED BADGE LOGIC
+   ==================================================== */
+let badgeVisible = true;
+
+// Badge size map: CSS width/height in px
+const BADGE_SIZES = {
+  small:  14,
+  medium: 18,
+  large:  24,
+  xlarge: 30,
+};
+let currentBadgeSize = 'medium';
+
+function toggleVerifiedBadge() {
+  badgeVisible = !badgeVisible;
+  const badge    = document.getElementById('verified-badge');
+  const toggleEl = document.getElementById('badge-toggle');
+
+  badge.style.display = badgeVisible ? 'block' : 'none';
+  toggleEl.classList.toggle('active', badgeVisible);
+}
+
+function setBadgeSize(sizeKey) {
+  currentBadgeSize = sizeKey;
+  const px = BADGE_SIZES[sizeKey];
+  const badge = document.getElementById('verified-badge');
+  badge.style.width  = px + 'px';
+  badge.style.height = px + 'px';
+
+  // Reposition badge offset based on size so it stays at avatar corner
+  const offset = Math.round(px * 0.15);
+  badge.style.bottom = `-${offset}px`;
+  badge.style.right  = `-${offset + 2}px`;
+
+  document.querySelectorAll('.badge-size-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.bsize === sizeKey);
+  });
 }
 
 /* ====================================================
@@ -1184,7 +1392,7 @@ document.getElementById('avatar-upload').addEventListener('change', e => {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
-    document.getElementById('avatar-wrap').innerHTML = `<img src="${ev.target.result}" alt="avatar">`;
+    document.getElementById('avatar-img-wrap').innerHTML = `<img src="${ev.target.result}" alt="avatar">`;
   };
   reader.readAsDataURL(file);
 });
@@ -1201,12 +1409,12 @@ function loadProfile(idx) {
   document.getElementById('profile-name-display').textContent   = p.name;
   document.getElementById('profile-handle-display').textContent = p.handle;
   document.getElementById('watermark').textContent = p.watermark;
-  const avatarWrap = document.getElementById('avatar-wrap');
+  const avatarImgWrap = document.getElementById('avatar-img-wrap');
   const avatarPath = PROFILE_AVATARS[idx];
   if (avatarPath) {
-    avatarWrap.innerHTML = `<img src="${avatarPath}" alt="${p.name}" onerror="this.parentElement.innerHTML='${p.emoji}'">`;
+    avatarImgWrap.innerHTML = `<img src="${avatarPath}" alt="${p.name}" onerror="this.parentElement.innerHTML='${p.emoji}'">`;
   } else {
-    avatarWrap.innerHTML = p.emoji;
+    avatarImgWrap.innerHTML = p.emoji;
   }
   document.querySelectorAll('.ptab').forEach((t, i) => t.classList.toggle('active', i === idx));
 }
@@ -1521,19 +1729,17 @@ function setTextPos(preset) {
 }
 
 /* ====================================================
-   DOWNLOAD — guideline hide karke download karo
+   DOWNLOAD — guideline + badge SVG handled cleanly
    ==================================================== */
 document.getElementById('download-btn').addEventListener('click', async () => {
-  // Guideline aur UI elements temporarily hide karo
   wordZoomBar.style.display = 'none';
   document.getElementById('text-drag-hint').style.display = 'none';
   document.querySelectorAll('.word-span.selected-word').forEach(w => w.classList.remove('selected-word'));
   selectedWordKey = null;
 
-  // *** GUIDELINE HIDE — download ke liye ***
   const gl = document.getElementById('guideline-45');
   const glWasVisible = gl.style.display !== 'none';
-  gl.style.display = 'none'; // download mein nahi aana chahiye
+  gl.style.display = 'none';
 
   const btn = document.getElementById('download-btn');
   const s   = CARD_SIZES[currentSize];
@@ -1564,7 +1770,6 @@ document.getElementById('download-btn').addEventListener('click', async () => {
     console.error(err);
   }
 
-  // *** GUIDELINE RESTORE — agar pehle on tha to wapas dikhao ***
   if (glWasVisible) gl.style.display = 'block';
 
   document.getElementById('text-drag-hint').style.display = '';
@@ -1579,7 +1784,11 @@ document.getElementById('download-btn').addEventListener('click', async () => {
 loadProfile(0);
 renderShayariText();
 buildLineEditor();
-setCardSize('story'); // default 9:16
+setCardSize('story');
+setBadgeSize('medium'); // default badge size
+
+// Badge toggle is active by default (badge visible)
+document.getElementById('badge-toggle').classList.add('active');
 
 </script>
 </body>

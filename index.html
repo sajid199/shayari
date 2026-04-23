@@ -1814,47 +1814,19 @@ document.getElementById('download-btn').addEventListener('click', async () => {
   btn.textContent = '⏳ Generating...';
   btn.disabled = true;
 
+  // Hide the SVG badge and CSS box-shadow ring before html2canvas
+  // (they render incorrectly); we'll draw them on canvas manually after.
   const badgeSvg      = document.getElementById('verified-badge');
   const avatarImgWrap = document.getElementById('avatar-img-wrap');
-  const avatarWrapEl  = document.getElementById('avatar-wrap');
   const badgeWasVisible = badgeSvg && badgeSvg.style.display !== 'none';
 
-  // --- Snapshot avatar positions BEFORE hiding anything ---
-  // Use offsetLeft/offsetTop chain to get position relative to card
-  // chip (profile-chip) has left/top set inline; avatar-wrap is first child
-  const chip = document.getElementById('profile-chip');
-  const chipLeft = parseFloat(chip.style.left) || 22;
-  const chipTop  = parseFloat(chip.style.top)  || 22;
-
-  // avatar-wrap is 46×46, it's the first child of chip, at offset 0,0 within chip
-  // avatar-img-wrap is also 46×46 inside avatar-wrap
-  const avatarSizePx = avatarWrapEl.offsetWidth;   // 46
-  const avatarCX_css = chipLeft + avatarSizePx / 2;
-  const avatarCY_css = chipTop  + avatarSizePx / 2;
-  const avatarR_css  = avatarSizePx / 2;
-
-  // badge CSS size
-  const badgePxCSS = parseInt(badgeSvg ? badgeSvg.style.width : '18') || 18;
-  const offsetCSS  = Math.round(badgePxCSS * 0.15);
-  const bottomCSS  = offsetCSS;   // badge.style.bottom = -offsetCSS  (negative = overlapping)
-  const rightCSS   = offsetCSS + 2; // badge.style.right = -(offsetCSS+2)
-
-  // Badge top-left corner relative to card:
-  // avatar-wrap right edge = chipLeft + avatarSizePx
-  // badge right edge = avatarWrap right edge + rightCSS (because right is negative = extends right)
-  // badge left = (chipLeft + avatarSizePx) + rightCSS - badgePxCSS
-  const badgeLeft_css = chipLeft + avatarSizePx + rightCSS - badgePxCSS;
-  // badge bottom edge = chipTop + avatarSizePx + bottomCSS
-  // badge top = chipTop + avatarSizePx + bottomCSS - badgePxCSS
-  const badgeTop_css  = chipTop + avatarSizePx + bottomCSS - badgePxCSS;
-  const badgeCX_css   = badgeLeft_css + badgePxCSS / 2;
-  const badgeCY_css   = badgeTop_css  + badgePxCSS / 2;
-
-  // Hide SVG badge + remove box-shadow so html2canvas doesn't render broken versions
+  // Temporarily hide badge SVG so html2canvas doesn't try to render it
   if (badgeSvg) badgeSvg.style.visibility = 'hidden';
+  // Temporarily remove box-shadow from avatar so we draw it cleanly
   const origBoxShadow = avatarImgWrap.style.boxShadow;
   avatarImgWrap.style.boxShadow = 'none';
 
+  // Small settle delay
   await new Promise(r => setTimeout(r, 40));
 
   try {
@@ -1862,7 +1834,7 @@ document.getElementById('download-btn').addEventListener('click', async () => {
     const scaleY = s.exportH / cardEl.offsetHeight;
     const scale  = Math.max(scaleX, scaleY);
 
-    const canvas = await html2canvas(cardEl, {
+    const html2canvas_result = await html2canvas(cardEl, {
       scale: scale,
       useCORS: true,
       allowTaint: true,
@@ -1871,35 +1843,57 @@ document.getElementById('download-btn').addEventListener('click', async () => {
       height: cardEl.offsetHeight,
     });
 
-    // --- Draw ring + badge onto captured canvas at correct positions ---
-    const ctx = canvas.getContext('2d');
+    // --- Now manually draw ring + badge onto the captured canvas ---
+    const ctx = html2canvas_result.getContext('2d');
 
-    // Convert CSS px → canvas px
-    const avatarCX = avatarCX_css * scale;
-    const avatarCY = avatarCY_css * scale;
-    const avatarR  = avatarR_css  * scale;
+    // Get avatar-wrap position relative to card
+    const cardRect      = cardEl.getBoundingClientRect();
+    const avatarWrapEl  = document.getElementById('avatar-wrap');
+    const avatarWrapRect = avatarWrapEl.getBoundingClientRect();
 
-    drawAvatarRing(ctx, avatarCX, avatarCY, avatarR, scale);
+    // Avatar img-wrap is 46x46px, centered inside avatar-wrap (also 46x46)
+    const avatarRelX = (avatarWrapRect.left - cardRect.left) * scale;
+    const avatarRelY = (avatarWrapRect.top  - cardRect.top)  * scale;
+    const avatarW    = avatarWrapRect.width  * scale;
+    const avatarH    = avatarWrapRect.height * scale;
+    const avatarCX   = avatarRelX + avatarW / 2;
+    const avatarCY   = avatarRelY + avatarH / 2;
+    const avatarR    = (avatarW / 2);
 
+    // Draw avatar ring
+    drawAvatarRing(ctx, avatarCX, avatarCY, avatarR);
+
+    // Draw blue tick badge if visible
     if (badgeWasVisible) {
-      const badgeCX = badgeCX_css * scale;
-      const badgeCY = badgeCY_css * scale;
-      const badgeR  = (badgePxCSS / 2) * scale;
+      const badgePxCSS = parseInt(badgeSvg.style.width) || 18;
+      const badgePx    = badgePxCSS * scale;
+      const badgeR     = badgePx / 2;
+
+      // Badge is positioned at bottom-right of avatar-wrap
+      // Use the same offset logic as setBadgeSize()
+      const offsetCSS = Math.round(badgePxCSS * 0.15);
+      const bottomCSS = offsetCSS;
+      const rightCSS  = offsetCSS + 2;
+
+      // Badge center in canvas coords
+      const badgeCX = avatarRelX + avatarW - rightCSS  * scale - badgeR;
+      const badgeCY = avatarRelY + avatarH - bottomCSS * scale - badgeR;
+
       drawBadgeOnCanvas(ctx, badgeCX, badgeCY, badgeR);
     }
-    // -----------------------------------------------------------------
+    // --------------------------------------------------------------
 
     const link = document.createElement('a');
     const sizeSuffix = { story: '9x16', post: '1x1', portrait: '4x5' }[currentSize];
     link.download = `shayari_${PROFILES[activeProfileIdx].handle.replace('@','')}_${sizeSuffix}_${Date.now()}.png`;
-    link.href = canvas.toDataURL('image/png');
+    link.href = html2canvas_result.toDataURL('image/png');
     link.click();
   } catch (err) {
     alert('Download mein problem hui. Dobara try karein.');
     console.error(err);
   }
 
-  // Restore
+  // Restore badge SVG and box-shadow
   if (badgeSvg) badgeSvg.style.visibility = '';
   avatarImgWrap.style.boxShadow = origBoxShadow;
 
